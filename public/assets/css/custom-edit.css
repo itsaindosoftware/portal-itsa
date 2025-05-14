@@ -1,0 +1,43 @@
+#create-reqdar .modal-xl {
+  max-width: 95%; /* Membuat modal hampir selebar layar */
+  width: 1400px; /* Anda bisa menyesuaikan lebar ini */
+}
+@media (max-width: 1500px) {
+  #create-reqdar .modal-xl {
+    width: 95%;
+  }
+}
+#view-reqdar .modal-xl {
+  max-width: 95%; /* Membuat modal hampir selebar layar */
+  width: 1400px; /* Anda bisa menyesuaikan lebar ini */
+}
+@media (max-width: 1500px) {
+  #view-reqdar .modal-xl {
+    width: 95%;
+  }
+}
+#edit-reqdar .modal-xl {
+  max-width: 95%; /* Membuat modal hampir selebar layar */
+  width: 1400px; /* Anda bisa menyesuaikan lebar ini */
+}
+@media (max-width: 1500px) {
+  #edit-reqdar .modal-xl {
+    width: 95%;
+  }
+}
+@media (max-width: 768px) {
+    #pdf-viewer-modal .modal-dialog {
+        max-width: 100%;
+        margin: 0;
+        height: 100%;
+    }
+    
+    #pdf-viewer-modal .modal-content {
+        height: 100%;
+        border-radius: 0;
+    }
+    
+    #pdf-viewer-modal .modal-body {
+        height: calc(100% - 120px); /* Kurangi height header dan footer */
+    }
+}
