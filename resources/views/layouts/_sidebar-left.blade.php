@@ -13,10 +13,13 @@
         <a href="{{ route('home') }}" class="nav-link"><i class="fas fa-home"></i><span>Dashboard</span></a>
       </li>
         @role('admin')
-        @include('layouts._menu-admin')
+             @include('layouts._menu-admin')
         @endrole
         @role('user-employee')
-        @include('layouts._menu-users')
+             @include('layouts._menu-users')
+        @endrole
+        @role('manager')
+             @include('layouts._menu-users-mgr')
         @endrole
 
       </ul>

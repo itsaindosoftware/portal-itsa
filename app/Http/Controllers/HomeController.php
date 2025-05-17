@@ -65,6 +65,24 @@ class HomeController extends Controller
                 'monthlyRequests' => $monthlyRequests
             ]);
 
+        } elseif (\Auth::user()->hasRole('manager')) {
+            $usersInfo = DB::connection('dar-system')
+                    ->table('users')
+                    ->leftJoin('companys','users.company_id','=','companys.id')
+                    ->leftJoin('departments','users.department_id','=','departments.id')
+                    ->leftJoin('positions','users.position_id','=','positions.id')
+                    ->where('nik', Auth::user()->nik)->first();
+             $getData = Requestdar::where('nik_atasan', Auth::user()->nik)->count();
+             $pendingCount = Requestdar::where('nik_atasan', Auth::user()->nik)->where('approval_status1', '0')->count();
+             $approvedCount = Requestdar::where('nik_atasan', Auth::user()->nik)->where('approval_status1', '1')->count();
+             $rejectedCount = Requestdar::where('nik_atasan', Auth::user()->nik)->where('approval_status1', '2')->count();
+             return view('users-dashboard.user-manager.home',[
+                'totalDar'=>$getData,
+                'pending'=> $pendingCount,
+                'approved'=> $approvedCount,
+                'rejected'=> $rejectedCount,
+                'users'=> $usersInfo
+             ]);
         } else {
             return view('error.403');
         }

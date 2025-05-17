@@ -55,7 +55,9 @@
                                         <th class="text-center">Department</th>
                                         <th class="text-center">Company</th>
                                         <th class="text-center">Request Type</th>
-                                        <th class="text-center">Status</th>
+                                        <th class="text-center">ApprovalBy1</th>
+                                        <th class="text-center">ApprovalBy2</th>
+                                        <th class="text-center">ApprovalBy3</th>
 										<th class="text-center" width="15%">Action</th>
 									</tr>
 								</thead>
@@ -114,7 +116,9 @@ $(document).ready(function(){
             { data: 'department', name: 'department',className: 'text-center' },
             { data: 'position', name: 'position',className: 'text-center' },
             { data: 'reqtype', name: 'reqtype',className: 'text-center' },
-            { data: 'status', name: 'status',className: 'text-center' },
+            { data: 'approval_status1', name: 'approval_status1',className: 'text-center' },
+            { data: 'approval_status2', name: 'approval_status2',className: 'text-center' },
+            { data: 'approval_status3', name: 'approval_status3',className: 'text-center' },
 			{ data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-center' }
 			]
 	//
@@ -172,13 +176,13 @@ $(document).on('click','#show-create-dar', function(e){
         if ($('input[name="typereqform_id"]:checked').length === 0) {
             isValid = false;
         }
-        
-          
+
+
         if ($('input[name="request_desc_id"]:checked').length === 0) {
             isValid = false;
         }
-        
-         
+
+
         // Check required text inputs and textareas
         $('#reqdarForm input[type="text"], #reqdarForm input[type="number"], #reqdarForm textarea').each(function() {
             if ($(this).prop('required') && !$(this).val().trim()) {
@@ -207,7 +211,7 @@ $(document).on('click','#show-create-dar', function(e){
             isValid = false;
         }
 
-   
+
         // Enable or disable submit button based on validation
 
         $('.addrm').prop('disabled', !isValid);
@@ -275,10 +279,10 @@ $(document).on('click','#show-create-dar', function(e){
                     $('#create-reqdar').modal('hide');
 
                     showNotification('success', response.message);
-                    
+
                     resetForm();
                     $('#reqdarForm input, #reqdarForm textarea, #reqdarForm select').prop('disabled', false);
-                  
+
                     if (typeof refreshDataTable === 'function') {
                         refreshDataTable();
                     }
@@ -314,7 +318,7 @@ $(document).on('click','#show-create-dar', function(e){
         }
     });
 
- 
+
 
 })
 </script>
