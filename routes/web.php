@@ -40,5 +40,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('view-document/{id}', 'RequestDarController@viewDocument')->name('requestdar.view-document');
     Route::post('approved1/requestdar/{id}', 'RequestDarController@approvedBy1')->name('requestdar.approvedby1');
     Route::post('rejected1/requestdar/{id}', 'RequestDarController@rejectedAppr1')->name('requestdar.rejectedAppr1');
+    Route::post('approved2/requestdar/{id}', 'RequestDarController@approvedBy2')->name('requestdar.approvedby2');
+    Route::post('rejected2/requestdar/{id}', 'RequestDarController@rejectedAppr2')->name('requestdar.rejectedAppr2');
 
 });

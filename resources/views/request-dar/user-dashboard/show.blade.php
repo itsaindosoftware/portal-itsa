@@ -418,7 +418,7 @@
                 $('.custom-file-label-view').text(fileName);
                 $('#pdf-file-name-view').text(fileName);
                 $('#file-doc-path-view').val(response.file_doc);
-                
+
                 // Enable tombol view PDF dan set document ID
                 $('#-view-view').data('document-id', response.reqdar_id);
                 $('#-view-view').prop('disabled', false);
@@ -462,7 +462,7 @@
             { level: 'Sys Dev', index: 2 },
             { level: 'Manager IT', index: 3 }
         ];
-        
+
         // Progress bar calculation
         let approvedCount = 0;
         let progressPercentage = 0;
@@ -483,7 +483,7 @@
                 remarks: data.remark_approval_by1 || 'Tidak ada catatan'
             });
         }
-        
+
         // System Dev Approval (Level 2)
         if (data.approval_by2) {
             approvedCount++;
@@ -494,7 +494,7 @@
                 remarks: data.remark_approval_by2 || 'Tidak ada catatan'
             });
         }
-        
+
         // Manager IT Approval (Level 3)
         if (data.approval_by3) {
             approvedCount++;
@@ -505,7 +505,7 @@
                 remarks: data.remark_approval_by3 || 'Tidak ada catatan'
             });
         }
-        
+
         // Update progress bar
         // const progressPercentage = (approvedCount / totalApprovals) * 100;
         // $('.progress-bar').css('width', `${progressPercentage}%`);
@@ -517,16 +517,16 @@
         // console.log(data)
         const card = $(`.col-md-4:nth-child(${level}) .card`);
         const statusBadge = card.find('.badge');
-        
+
         // Update approver name
         card.find('label:contains("Approved By")').next().text(data.name);
-        
+
         // Update approval date
         card.find('label:contains("Approval Date")').next().text(data.date);
-        
+
         // Update status badge
         statusBadge.removeClass('badge-success badge-danger badge-warning');
-        
+
         if (data.status === '1') {
             statusBadge.addClass('badge-success').text('Approved');
             card.removeClass('border-danger').addClass('border-success');
@@ -543,10 +543,10 @@
       }
       function formatDate(dateString) {
             if (!dateString) return 'Belum ada tanggal';
-            
+
             const date = new Date(dateString);
             if (isNaN(date.getTime())) return dateString; // Return original if invalid
-                    
+
             return new Intl.DateTimeFormat('id-ID', {
                 day: '2-digit',
                 month: 'long',
@@ -568,7 +568,7 @@
             alert('Tidak ada dokumen PDF yang tersedia');
         }
         });
-        
+
         // Reset iframe saat modal ditutup
         $('#pdf-viewer-modal-view').on('hidden.bs.modal', function () {
             $('#pdf-viewer-iframe-view').attr('src', '');

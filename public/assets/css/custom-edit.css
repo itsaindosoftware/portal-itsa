@@ -31,12 +31,12 @@
         margin: 0;
         height: 100%;
     }
-    
+
     #pdf-viewer-modal .modal-content {
         height: 100%;
         border-radius: 0;
     }
-    
+
     #pdf-viewer-modal .modal-body {
         height: calc(100% - 120px); /* Kurangi height header dan footer */
     }

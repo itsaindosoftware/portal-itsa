@@ -7,6 +7,7 @@
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/custom-edit.css') }}">
 <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-daterangepicker/3.0.5/daterangepicker.css">
 <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/css/bootstrap-datetimepicker.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/rowgroup/1.2.0/css/rowGroup.bootstrap4.min.css">
 @endsection
 @section('content')
 
@@ -115,6 +116,7 @@
 										</div>
 									</div>
 								</div>
+                                <input type="hidden" name="group_by" id="group_by" value="department">
 							</form>
 						</div>
 					</div>
@@ -166,12 +168,14 @@
 
 @endsection
 @push('js')
-@include('request-dar.user-dashboard.edit')
+@include('request-dar.user-approved2.edit')
 @include('request-dar.user-dashboard.show')
 @include('request-dar.user-dashboard.view-docs.view-docs-view')
+@include('request-dar.user-dashboard.view-docs.view-docs-edit')
 @include('request-dar.user-approved2.rejected-appr2.rejected')
 <script src="{{ asset('assets/Datatables/jquery.dataTables.min.js') }}"></script>
 <script src="{{ asset('assets/Datatables/dataTables.bootstrap4.min.js') }}"></script>
+<script src="https://cdn.datatables.net/rowgroup/1.2.0/js/dataTables.rowGroup.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-daterangepicker/3.0.5/daterangepicker.min.js"></script>
 <script>
@@ -191,50 +195,118 @@ $(document).ready(function(){
 			$(this).val('');
 		});
 
-		var table = $('#table-request-manage').DataTable({
-			"columnDefs": [{
-				"searchable": false,
-				"orderable": false,
-				"targets": 0,
-				render: function(data, type, row, meta) {
-					return meta.row + meta.settings._iDisplayStart + 1;
-				},
-			}],
-			processing: true,
-			serverSide: true,
-			deferRender:true,
-			ajax: {
-				url: "{{ route('requestdar.index') }}",
-                data: function(d) {
-					d.date_range = $('#date_range').val();
-					d.nik_name = $('#nik_name').val();
-					d.reqtype = $('#reqtype').val();
-					d.status = $('#status').val();
-				}
-			},
-			order: [[ 0, 'desc']],
-			responsive: true,
-			columns: [
-			{
-				data: null,
-				name: null,
-				orderable: false,
-				searchable: false,
-				className: 'text-center'
-			},
-			{ data: 'created_date', name: 'created_date', className: 'text-center' },
-			{ data: 'nik_req', name: 'nik_req', className:'text-center' },
-            { data: 'position', name: 'position',className: 'text-center' },
-            { data: 'department', name: 'department',className: 'text-center' },
-            { data: 'position', name: 'position',className: 'text-center' },
-            { data: 'reqtype', name: 'reqtype',className: 'text-center' },
-            { data: 'approval_status1', name: 'approval_status1',className: 'text-center' },
-            { data: 'approval_status2', name: 'approval_status2',className: 'text-center' },
-            { data: 'approval_status3', name: 'approval_status3',className: 'text-center' },
-			{ data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-center' }
-			]
-	//
-});
+	// 	var table = $('#table-request-manage').DataTable({
+	// 		"columnDefs": [{
+	// 			"searchable": false,
+	// 			"orderable": false,
+	// 			"targets": 0,
+	// 			render: function(data, type, row, meta) {
+	// 				return meta.row + meta.settings._iDisplayStart + 1;
+	// 			},
+	// 		}],
+	// 		processing: true,
+	// 		serverSide: true,
+	// 		deferRender:true,
+	// 		ajax: {
+	// 			url: "{{ route('requestdar.index') }}",
+    //             data: function(d) {
+	// 				d.date_range = $('#date_range').val();
+	// 				d.nik_name = $('#nik_name').val();
+	// 				d.reqtype = $('#reqtype').val();
+	// 				d.status = $('#status').val();
+    //                 d.position = $('#position').val();
+    //                 d.company = $('#company').val();
+    //                 d.department = $('#department').val();
+	// 			}
+	// 		},
+	// 		order: [[ 0, 'desc']],
+	// 		responsive: true,
+	// 		columns: [
+	// 		{
+	// 			data: null,
+	// 			name: null,
+	// 			orderable: false,
+	// 			searchable: false,
+	// 			className: 'text-center'
+	// 		},
+	// 		{ data: 'created_date', name: 'created_date', className: 'text-center' },
+	// 		{ data: 'nik_req', name: 'nik_req', className:'text-center' },
+    //         { data: 'position', name: 'position',className: 'text-center' },
+    //         { data: 'department', name: 'department',className: 'text-center' },
+    //         { data: 'position', name: 'position',className: 'text-center' },
+    //         { data: 'reqtype', name: 'reqtype',className: 'text-center' },
+    //         { data: 'approval_status1', name: 'approval_status1',className: 'text-center' },
+    //         { data: 'approval_status2', name: 'approval_status2',className: 'text-center' },
+    //         { data: 'approval_status3', name: 'approval_status3',className: 'text-center' },
+	// 		{ data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-center' }
+	// 		]
+	// //
+    //    });
+
+    function initDataTable() {
+            // Destroy existing table if it exists
+            if ($.fn.DataTable.isDataTable('#table-request-manage')) {
+                $('#table-request-manage').DataTable().destroy();
+            }
+
+            // Configure DataTable with department grouping
+            var tableOptions = {
+                columnDefs: [{
+                    searchable: false,
+                    orderable: false,
+                    targets: 0,
+                    render: function(data, type, row, meta) {
+                        return meta.row + meta.settings._iDisplayStart + 1;
+                    },
+                }],
+                processing: true,
+                serverSide: true,
+                deferRender: true,
+                ajax: {
+                    url: "{{ route('requestdar.index') }}",
+                    data: function(d) {
+                        d.date_range = $('#date_range').val();
+                        d.nik_name = $('#nik_name').val();
+                        d.reqtype = $('#reqtype').val();
+                        d.status = $('#status').val();
+                        d.position = $('#position').val();
+                        d.company = $('#company').val();
+                        d.department = $('#department').val();
+                        d.group_by = 'department'; // Always group by department
+                    }
+                },
+                order: [[4, 'asc'], [0, 'desc']], // Sort by department first, then by default order
+                responsive: true,
+                columns: [
+                    {data: null, name: null, orderable: false, searchable: false, className: 'text-center'},
+                    {data: 'created_date', name: 'created_date', className: 'text-center'},
+                    {data: 'nik_req', name: 'nik_req', className: 'text-center'},
+                    {data: 'position', name: 'position', className: 'text-center'},
+                    {data: 'department', name: 'department', className: 'text-center'},
+                    {data: 'company', name: 'company', className: 'text-center'},
+                    {data: 'reqtype', name: 'reqtype', className: 'text-center'},
+                    {data: 'approval_status1', name: 'approval_status1', className: 'text-center'},
+                    {data: 'approval_status2', name: 'approval_status2', className: 'text-center'},
+                    {data: 'approval_status3', name: 'approval_status3', className: 'text-center'},
+                    {data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-center'}
+                ],
+                // Set up RowGroup for department
+                rowGroup: {
+                    dataSrc: 'department',
+                    startRender: function(rows, group) {
+                        return '<span class="font-weight-bold; color:white">Department: ' + group + ' (' + rows.count() + ' records)</span>';
+                    }
+                }
+            };
+
+            // Initialize the table with configured options
+            var table = $('#table-request-manage').DataTable(tableOptions);
+
+            return table;
+        }
+
+        // Initialize DataTable on page load
+        var table = initDataTable();
 
 
 
@@ -279,7 +351,27 @@ $(document).ready(function(){
     $(document).on('click', '#approved2-data-dar', function(e){
         e.preventDefault();
         let id = $(this).data('id');
-        let urlAction = $(this).attr('href')
+        let urlAction = $(this).attr('href');
+        let mgr  = $(this).attr('row-approve-manager');
+        let sysdev  = $(this).attr('row-approve-sysdev');
+
+
+        if(mgr == ''){
+            Swal.fire({
+                icon: 'warning',
+                title: 'Warning',
+                text: 'data ini harus diapproval terlebih dahulu oleh manager yang bersangkutan!',
+            })
+            return false;
+        }
+        if(sysdev != ''){
+            Swal.fire({
+                icon: 'warning',
+                title: 'Warning',
+                text: 'data ini Sudah diapproved',
+            })
+            return false;
+        }
         Swal.fire({
 			title: 'Approved',
 			text: 'setujui untuk pengajuan ini?',
@@ -341,9 +433,9 @@ $(document).ready(function(){
         $('.submit-reject2').click(function() {
             // Validasi form
             let id = $('#reject2-id').val();
-            let route = "{{ route('requestdar.rejectedAppr1',':param') }}";
+            let route = "{{ route('requestdar.rejectedAppr2',':param') }}";
             let urlAction = route.replace(':param', id);
-                if (!$('#reject_reason').val()) {
+                if (!$('#reject_reason2').val()) {
                 Swal.fire({
                         icon: 'warning',
                         title: 'Warning',

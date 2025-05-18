@@ -1,6 +1,6 @@
 @permission(['manage-dar-system'])
-<a href="{{ $edit_url }}" id="edit-data-dar" 
-data-id="{{ $model->id }}" 
+<a href="{{ $edit_url }}" id="edit-data-dar"
+data-id="{{ $model->reqdar_id }}"
 row-approve-manager="{{ $model->approval_date1 }}"
 row-approve-sysdev="{{ $model->approval_date2 }}"
 row-approve-manit="{{ $model->approval_date3 }}"
