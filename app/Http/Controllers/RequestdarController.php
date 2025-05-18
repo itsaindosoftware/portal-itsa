@@ -103,7 +103,56 @@ class RequestdarController extends Controller
                     }
 
                     $data = $data->get();
-                }else {
+                } elseif(Auth::user()->hasRole('sysdev')){
+                    $data = DB::connection('dar-system')->table('request_dar')->leftJoin('users', 'request_dar.user_id', '=', 'users.id')
+                        ->leftJoin('departments', 'request_dar.dept_id', '=', 'departments.id')
+                        ->leftJoin('companys', 'request_dar.company_id', '=', 'companys.id')
+                        ->leftJoin('positions', 'request_dar.position_id', '=', 'positions.id')
+                        ->leftJoin('type_of_reqforms', 'request_dar.typereqform_id', '=', 'type_of_reqforms.id')
+                        ->leftJoin('request_desc', 'request_dar.request_desc_id', '=', 'request_desc.id')
+                        ->select(
+                            'request_dar.*',
+                            'request_dar.id as reqdar_id',
+                            'users.*',
+                            'departments.description as department',
+                            'companys.company_desc as company',
+                            'positions.position_desc as position',
+                            'type_of_reqforms.request_type as reqtype',
+                            'request_desc.request_descript'
+                        );
+
+                    if ($request->has('date_range') && !empty($request->date_range)) {
+                        $dateRange = explode(' - ', $request->date_range);
+                        if (count($dateRange) == 2) {
+                            $data->whereBetween('request_dar.created_date', [$dateRange[0], $dateRange[1]]);
+                        }
+                    }
+
+                    if ($request->has('nik_name') && !empty($request->nik_name)) {
+                        $nikName = $request->nik_name;
+                        $data->where(function($query) use ($nikName) {
+                            $query->where('request_dar.nik_req', 'like', '%' . $nikName . '%')
+                                ->orWhere('users.name', 'like', '%' . $nikName . '%');
+                        });
+                    }
+
+                    if ($request->has('reqtype') && !empty($request->reqtype)) {
+                        $data->where('request_dar.typereqform_id', $request->reqtype);
+                    }
+
+                    if ($request->has('status') && !empty($request->status)) {
+                        if($request->status == 'Pending'){
+                            $data->where('request_dar.approval_status2', '0');
+                        } elseif ($request->status == 'Approved') {
+                            $data->where('request_dar.approval_status2', '1');
+                        } else {
+                            $data->where('request_dar.approval_status2', '2');
+                        }
+
+                    }
+
+                  $data = $data->get();
+                } else {
                     // Role tidak dikenali
                     return response()->json([], 403);
                 }
@@ -121,6 +170,14 @@ class RequestdarController extends Controller
                                 'approve1' => route('requestdar.approvedby1', $data->reqdar_id),
                                 'rejectedAppr1' => route('requestdar.rejectedAppr1', $data->reqdar_id),
                                 'show_url' => route('requestdar.show', $data->reqdar_id)
+                            ]);
+                        } elseif (Auth::user()->hasRole('sysdev')) {
+                            return view('datatables._action-user-reqdar-sysdev', [
+                                'model' => $data,
+                                'approve1' => route('requestdar.approvedby1', $data->reqdar_id),
+                                'rejectedAppr1' => route('requestdar.rejectedAppr1', $data->reqdar_id),
+                                'show_url' => route('requestdar.show', $data->reqdar_id),
+                                'edit_url' => route('requestdar.edit', $data->reqdar_id),
                             ]);
                         }
                         return '-';
@@ -167,10 +224,24 @@ class RequestdarController extends Controller
             ->table('departments')
             ->select('id', 'description')
             ->get();
+
+        // companys
+        $company = DB::connection('dar-system')
+            ->table('companys')
+            ->select('id', 'company_desc as company')
+            ->get();
+
+                // companys
+        $position = DB::connection('dar-system')
+            ->table('positions')
+            ->select('id', 'position_desc as position')
+            ->get();
         if (Auth::user()->hasRole('user-employee')) {
             return view('request-dar.user-dashboard.index', compact('reqTypes', 'requestDesc', 'department'));
         } elseif (Auth::user()->hasRole('manager')) {
             return view('request-dar.user-approved1.index', compact('reqTypes', 'requestDesc', 'department'));
+        } elseif (Auth::user()->hasRole('sysdev')) {
+            return view('request-dar.user-approved2.index', compact('reqTypes', 'requestDesc', 'department','company','position'));
         }
 
     }

@@ -21,6 +21,9 @@
         @role('manager')
              @include('layouts._menu-users-mgr')
         @endrole
+        @role('sysdev')
+             @include('layouts._menu-users-sysdev')
+        @endrole
 
       </ul>
     </li>
