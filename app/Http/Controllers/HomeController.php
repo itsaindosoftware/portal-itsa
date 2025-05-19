@@ -9,7 +9,7 @@ use App\Module;
 use App\User;
 use App\Requestdar;
 use DB;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facade\Auth;
 class HomeController extends Controller
 {
     /**
@@ -35,25 +35,25 @@ class HomeController extends Controller
             $module = Module::count();
             $user = User::count();
             return view('admin-dashboard.home', [
-                'user'=> $user,
-                'role'=> $role,
-                'permission'=> $permission,
-                'module'=> $module
+                'user' => $user,
+                'role' => $role,
+                'permission' => $permission,
+                'module' => $module
             ]);
 
-        } elseif(\Auth::user()->hasRole('user-employee')) {
-            $getData = Requestdar::where('nik_req', Auth::user()->nik)->count();
+        } elseif (\Auth::user()->hasRole('user-employee')) {
+            $getData = Requestdar::where('nik_req', \Auth::user()->nik)->count();
 
             // Get user information
             $usersInfo = DB::connection('dar-system')
-                       ->table('users')
-                       ->leftJoin('companys','users.company_id','=','companys.id')
-                       ->leftJoin('departments','users.department_id','=','departments.id')
-                       ->leftJoin('positions','users.position_id','=','positions.id')
-                       ->where('nik', Auth::user()->nik)->first();
+                ->table('users')
+                ->leftJoin('companys', 'users.company_id', '=', 'companys.id')
+                ->leftJoin('departments', 'users.department_id', '=', 'departments.id')
+                ->leftJoin('positions', 'users.position_id', '=', 'positions.id')
+                ->where('nik', \Auth::user()->nik)->first();
 
             // Get monthly requests
-            $monthlyRequests = Requestdar::where('nik_req', Auth::user()->nik)
+            $monthlyRequests = Requestdar::where('nik_req', \Auth::user()->nik)
                 ->whereMonth('created_date', date('m'))
                 ->whereYear('created_date', date('Y'))
                 ->count();
@@ -65,6 +65,8 @@ class HomeController extends Controller
                 'monthlyRequests' => $monthlyRequests
             ]);
 
+        } elseif (\Auth::user()->hasRole('manager')) {
+            return view('user-dashboard.user-manager.home');
         } else {
             return view('error.403');
         }
