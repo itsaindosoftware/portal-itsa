@@ -52,6 +52,116 @@ class RequestdarController extends Controller
                             'request_desc.request_descript'
                         )
                         ->where('request_dar.nik_req', Auth::user()->nik)->get();
+                } elseif(Auth::user()->hasRole('manager')){
+
+                    $data = DB::connection('dar-system')->table('request_dar')->leftJoin('users', 'request_dar.user_id', '=', 'users.id')
+                        ->leftJoin('departments', 'request_dar.dept_id', '=', 'departments.id')
+                        ->leftJoin('companys', 'request_dar.company_id', '=', 'companys.id')
+                        ->leftJoin('positions', 'request_dar.position_id', '=', 'positions.id')
+                        ->leftJoin('type_of_reqforms', 'request_dar.typereqform_id', '=', 'type_of_reqforms.id')
+                        ->leftJoin('request_desc', 'request_dar.request_desc_id', '=', 'request_desc.id')
+                        ->select(
+                            'request_dar.*',
+                            'request_dar.id as reqdar_id',
+                            'users.*',
+                            'departments.description as department',
+                            'companys.company_desc as company',
+                            'positions.position_desc as position',
+                            'type_of_reqforms.request_type as reqtype',
+                            'request_desc.request_descript'
+                        )
+                        ->where('request_dar.nik_atasan', Auth::user()->nik);
+
+                    if ($request->has('date_range') && !empty($request->date_range)) {
+                        $dateRange = explode(' - ', $request->date_range);
+                        if (count($dateRange) == 2) {
+                            $data->whereBetween('request_dar.created_date', [$dateRange[0], $dateRange[1]]);
+                        }
+                    }
+
+                    if ($request->has('nik_name') && !empty($request->nik_name)) {
+                        $nikName = $request->nik_name;
+                        $data->where(function($query) use ($nikName) {
+                            $query->where('request_dar.nik_req', 'like', '%' . $nikName . '%')
+                                ->orWhere('users.name', 'like', '%' . $nikName . '%');
+                        });
+                    }
+
+                    if ($request->has('reqtype') && !empty($request->reqtype)) {
+                        $data->where('request_dar.typereqform_id', $request->reqtype);
+                    }
+
+                    if ($request->has('status') && !empty($request->status)) {
+                        if($request->status == 'Pending'){
+                            $data->where('request_dar.approval_status1', '0');
+                        } elseif ($request->status == 'Approved') {
+                            $data->where('request_dar.approval_status1', '1');
+                        } else {
+                            $data->where('request_dar.approval_status1', '2');
+                        }
+
+                    }
+
+                    $data = $data->get();
+                } elseif(Auth::user()->hasRole('sysdev')){
+                    $data = DB::connection('dar-system')->table('request_dar')->leftJoin('users', 'request_dar.user_id', '=', 'users.id')
+                        ->leftJoin('departments', 'request_dar.dept_id', '=', 'departments.id')
+                        ->leftJoin('companys', 'request_dar.company_id', '=', 'companys.id')
+                        ->leftJoin('positions', 'request_dar.position_id', '=', 'positions.id')
+                        ->leftJoin('type_of_reqforms', 'request_dar.typereqform_id', '=', 'type_of_reqforms.id')
+                        ->leftJoin('request_desc', 'request_dar.request_desc_id', '=', 'request_desc.id')
+                        ->select(
+                            'request_dar.*',
+                            'request_dar.id as reqdar_id',
+                            'users.*',
+                            'departments.description as department',
+                            'companys.company_desc as company',
+                            'positions.position_desc as position',
+                            'type_of_reqforms.request_type as reqtype',
+                            'request_desc.request_descript'
+                        );
+
+                    if ($request->has('date_range') && !empty($request->date_range)) {
+                        $dateRange = explode(' - ', $request->date_range);
+                        if (count($dateRange) == 2) {
+                            $data->whereBetween('request_dar.created_date', [$dateRange[0], $dateRange[1]]);
+                        }
+                    }
+
+                    if ($request->has('nik_name') && !empty($request->nik_name)) {
+                        $nikName = $request->nik_name;
+                        $data->where(function($query) use ($nikName) {
+                            $query->where('request_dar.nik_req', 'like', '%' . $nikName . '%')
+                                ->orWhere('users.name', 'like', '%' . $nikName . '%');
+                        });
+                    }
+
+                    if ($request->has('reqtype') && !empty($request->reqtype)) {
+                        $data->where('request_dar.typereqform_id', $request->reqtype);
+                    }
+
+                    if ($request->has('position') && !empty($request->position)) {
+                        $data->where('request_dar.position_id', $request->position);
+                    }
+                     if ($request->has('company') && !empty($request->company)) {
+                        $data->where('request_dar.company_id', $request->company);
+                    }
+                     if ($request->has('department') && !empty($request->department)) {
+                        $data->where('request_dar.dept_id', $request->department);
+                    }
+
+                    if ($request->has('status') && !empty($request->status)) {
+                        if($request->status == 'Pending'){
+                            $data->where('request_dar.approval_status2', '0');
+                        } elseif ($request->status == 'Approved') {
+                            $data->where('request_dar.approval_status2', '1');
+                        } else {
+                            $data->where('request_dar.approval_status2', '2');
+                        }
+
+                    }
+
+                  $data = $data->get();
                 } else {
                     // Role tidak dikenali
                     return response()->json([], 403);
@@ -64,14 +174,40 @@ class RequestdarController extends Controller
                                 'edit_url' => route('requestdar.edit', $data->reqdar_id),
                                 'show_url' => route('requestdar.show', $data->reqdar_id)
                             ]);
+                        } elseif (Auth::user()->hasRole('manager')) {
+                            return view('datatables._action-user-reqdar-mgr', [
+                                'model' => $data,
+                                'approve1' => route('requestdar.approvedby1', $data->reqdar_id),
+                                'rejectedAppr1' => route('requestdar.rejectedAppr1', $data->reqdar_id),
+                                'show_url' => route('requestdar.show', $data->reqdar_id)
+                            ]);
+                        } elseif (Auth::user()->hasRole('sysdev')) {
+                            return view('datatables._action-user-reqdar-sysdev', [
+                                'model' => $data,
+                                'approve2' => route('requestdar.approvedby2', $data->reqdar_id),
+                                'rejectedAppr2' => route('requestdar.rejectedAppr2', $data->reqdar_id),
+                                'edit_url' => route('requestdar.edit', $data->reqdar_id),
+                                'show_url' => route('requestdar.show', $data->reqdar_id)
+
+                            ]);
                         }
                         return '-';
                     })
                     ->editColumn('nik_req', function ($data) {
                         return $data->nik_req . ' ' . '-' . ' ' . $data->name;
                     })
-                    ->editColumn('status', function ($data) {
-                        return view('datatables._action-status', [
+                    ->editColumn('approval_status1', function ($data) {
+                        return view('datatables._action-approvalstatus1', [
+                            'model' => $data
+                        ]);
+                    })
+                    ->editColumn('approval_status2', function ($data) {
+                        return view('datatables._action-approvalstatus2', [
+                            'model' => $data
+                        ]);
+                    })
+                    ->editColumn('approval_status3', function ($data) {
+                        return view('datatables._action-approvalstatus3', [
                             'model' => $data
                         ]);
                     })
@@ -100,7 +236,25 @@ class RequestdarController extends Controller
             ->select('id', 'description')
             ->get();
 
-        return view('request-dar.user-dashboard.index', compact('reqTypes', 'requestDesc', 'department'));
+        // companys
+        $company = DB::connection('dar-system')
+            ->table('companys')
+            ->select('id', 'company_desc as company')
+            ->get();
+
+                // companys
+        $position = DB::connection('dar-system')
+            ->table('positions')
+            ->select('id', 'position_desc as position')
+            ->get();
+        if (Auth::user()->hasRole('user-employee')) {
+            return view('request-dar.user-dashboard.index', compact('reqTypes', 'requestDesc', 'department'));
+        } elseif (Auth::user()->hasRole('manager')) {
+            return view('request-dar.user-approved1.index', compact('reqTypes', 'requestDesc', 'department'));
+        } elseif (Auth::user()->hasRole('sysdev')) {
+            return view('request-dar.user-approved2.index', compact('reqTypes', 'requestDesc', 'department','company','position'));
+        }
+
     }
 
     /**
@@ -283,6 +437,7 @@ class RequestdarController extends Controller
                 ->leftJoin('request_desc', 'request_dar.request_desc_id', '=', 'request_desc.id')
                 ->select(
                     'request_dar.*',
+                    'request_dar.id as reqdar_id',
                     'users.*',
                     'departments.description as department',
                     'companys.company_desc as company',
@@ -292,6 +447,8 @@ class RequestdarController extends Controller
                 )
                 ->where('request_dar.id', $id)->first();
 
+
+                // dd($data);
             return response()->json($data);
         } else {
             return view('error.403');
@@ -308,6 +465,7 @@ class RequestdarController extends Controller
      */
     public function update(Request $request, $id)
     {
+        // dd($request->all());
 
         if (Auth::user()->hasPermission('edit-dar')) {
             try {
@@ -334,15 +492,15 @@ class RequestdarController extends Controller
                     ], 404);
                 }
 
-                $data->dept_id = $request->dept_id;
-                $data->name_doc = $request->name_doc;
-                $data->no_doc = $request->no_doc;
-                $data->qty_pages = $request->qty_pages;
-                $data->reason = $request->reason;
-                $data->rev_no = $request->rev_no;
-                $data->storage_type = $request->storage_type;
-                $data->typereqform_id = $request->typereqform_id;
-                $data->request_desc_id = $request->request_desc_id;
+                $data->dept_id = empty($request->dept_id) ? $data->dept_id : $request->dept_id;
+                $data->name_doc = empty($request->name_doc) ? $data->name_doc : $request->name_doc;
+                $data->no_doc = empty($request->no_doc) ? $data->no_doc : $request->no_doc;
+                $data->qty_pages = empty($request->qty_pages) ? $data->qty_pages : $request->qty_pages;
+                $data->reason = empty($request->reason) ? $data->reason : $request->reason;
+                $data->rev_no = empty($request->rev_no) ? $data->rev_no: $request->rev_no;
+                $data->storage_type = empty($request->storage_type) ? $data->storage_type : $request->storage_type;
+                $data->typereqform_id = empty($request->typereqform_id) ? $data->typereqform_id : $request->typereqform_id;
+                $data->request_desc_id = empty($request->request_desc_id) ? $data->request_desc_id : $request->request_desc_id;
 
                 if ($request->hasFile('file_doc')) {
                     $oldFilePath = $data->file_doc;
@@ -418,7 +576,6 @@ class RequestdarController extends Controller
         $fullPath = storage_path('app/public/' . $filePath);
 
         if (!file_exists($fullPath)) {
-            // Coba cek di lokasi alternatif (public langsung)
             $altPath = public_path($filePath);
             if (!file_exists($altPath)) {
                 abort(404, 'File not found on disk');
@@ -428,4 +585,60 @@ class RequestdarController extends Controller
 
         return response()->file($fullPath);
     }
+
+    public function approvedBy1($id)
+    {
+        if (Auth::user()->hasPermission(['manager-dar-system','approved-by1'])) {
+            DB::connection('dar-system')->table('request_dar')->where('id', $id)->update([
+                'approval_date1' => date('Y-m-d H:i:s'),
+                'approval_status1'=> '1'
+            ]);
+
+            return response()->json([
+                'status'=> true
+            ]);
+        }
+    }
+    public function rejectedAppr1(Request $request, $id)
+    {
+        if (Auth::user()->hasPermission(['manager-dar-system','approved-by1','rejected-appr1'])) {
+            DB::connection('dar-system')->table('request_dar')->where('id', $id)->update([
+                'approval_date1' => date('Y-m-d H:i:s'),
+                'approval_status1'=> '2',
+                'remark_approval_by1' => $request->reject_reason
+            ]);
+
+            return response()->json([
+                'status'=> true
+            ]);
+        }
+    }
+     public function approvedBy2($id)
+    {
+        if (Auth::user()->hasPermission(['manager-dar-system','approved-by2'])) {
+            DB::connection('dar-system')->table('request_dar')->where('id', $id)->update([
+                'approval_date2' => date('Y-m-d H:i:s'),
+                'approval_status2'=> '1'
+            ]);
+
+            return response()->json([
+                'status'=> true
+            ]);
+        }
+    }
+    public function rejectedAppr2(Request $request, $id)
+    {
+        if (Auth::user()->hasPermission(['manager-dar-system','approved-by2','rejected-appr2'])) {
+            DB::connection('dar-system')->table('request_dar')->where('id', $id)->update([
+                'approval_date2' => date('Y-m-d H:i:s'),
+                'approval_status2'=> '2',
+                'remark_approval_by2' => $request->reject_reason
+            ]);
+
+            return response()->json([
+                'status'=> true
+            ]);
+        }
+    }
+
 }

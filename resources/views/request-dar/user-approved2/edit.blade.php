@@ -7,11 +7,11 @@
                 <button type="button" onclick="" class="close text-white" data-dismiss="modal"><span>&times;</span></button>
             </div>
             <div class="modal-body">
-                {{-- @role('user-employee') --}}
                 <form id="reqdarFormEdit" method="POST" action="javascript:void(0)" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
                     <input type="hidden" id="id-reqdar-form">
+                    <input type="hidden" id="approval-by1-edit">
                     <fieldset class="border p-3 mb-4 rounded">
                         <legend class="w-auto px-2 text-info font-weight-bold h6">Informasi Approval</legend>
 
@@ -166,7 +166,7 @@
                                         @foreach($reqTypes as $type)
                                         <div class="col-md-4 mb-2">
                                             <div class="custom-control custom-radio">
-                                                <input type="radio" class="custom-control-input" name="typereqform_id" id="type_{{ $type->id }}_edit" value="{{ $type->id }}" required>
+                                                <input type="radio" class="custom-control-input" name="typereqform_id" id="type_{{ $type->id }}_edit" value="{{ $type->id }}" disabled>
                                                 <label class="custom-control-label" for="type_{{ $type->id }}_edit">{{ $type->request_type }}</label>
                                             </div>
                                         </div>
@@ -180,7 +180,7 @@
                                         @foreach($requestDesc as $desc)
                                         <div class="col-md-4 mb-2">
                                             <div class="custom-control custom-radio">
-                                                <input type="radio" class="custom-control-input" name="request_desc_id" id="request-desc-id_{{ $desc->id }}_edit" value="{{ $desc->id }}" required>
+                                                <input type="radio" class="custom-control-input" name="request_desc_id" id="request-desc-id_{{ $desc->id }}_edit" value="{{ $desc->id }}" disabled>
                                                 <label class="custom-control-label" for="request-desc-id_{{ $desc->id }}_edit">{{ $desc->request_descript }}</label>
                                             </div>
                                         </div>
@@ -202,7 +202,7 @@
                                         <div class="input-group-prepend">
                                             <span class="input-group-text"><i class="fa fa-building"></i></span>
                                         </div>
-                                        <select class="form-control" name="dept_id" id="dept-id-edit" required>
+                                        <select class="form-control" name="dept_id" id="dept-id-edit" disabled>
                                             <option value="">Pilih Department</option>
                                             @foreach($department as $dept)
                                             <option value="{{ $dept->id }}">{{ $dept->description }}</option>
@@ -218,7 +218,7 @@
                                         <div class="input-group-prepend">
                                             <span class="input-group-text"><i class="fa fa-file"></i></span>
                                         </div>
-                                        <input type="text" class="form-control" name="name_doc" id="name-doc-edit" placeholder="Masukkan nama dokumen" required>
+                                        <input type="text" class="form-control" name="name_doc" id="name-doc-edit" placeholder="Masukkan nama dokumen" disabled>
                                     </div>
                                 </div>
                             </div>
@@ -229,7 +229,7 @@
                                         <div class="input-group-prepend">
                                             <span class="input-group-text"><i class="fa fa-id-badge"></i></span>
                                         </div>
-                                        <input type="text" class="form-control" name="no_doc" id="no-doc-edit" placeholder="Masukkan nomor dokumen" required>
+                                        <input type="text" class="form-control" name="no_doc" id="no-doc-edit" placeholder="Masukkan nomor dokumen" disabled>
                                     </div>
                                 </div>
                             </div>
@@ -240,7 +240,7 @@
                                         <div class="input-group-prepend">
                                             <span class="input-group-text"><i class="fa fa-list"></i></span>
                                         </div>
-                                        <input type="number" class="form-control" name="qty_pages" id="qty-pages-edit" min="1" placeholder="Masukkan jumlah halaman" required>
+                                        <input type="number" class="form-control" name="qty_pages" id="qty-pages-edit" min="1" placeholder="Masukkan jumlah halaman" disabled>
                                     </div>
                                 </div>
                             </div>
@@ -253,7 +253,7 @@
                                             <div class="input-group-prepend"  style="height: auto;">
                                                 <span class="input-group-text" style="height: 100%; display: flex; align-items: center; border-top-right-radius: 0; border-bottom-right-radius: 0;"><i class="fa fa-pencil-alt"></i></span>
                                             </div>
-                                            <textarea class="form-control" id="reason-edit" name="reason" rows="3" placeholder="Jelaskan alasan perubahan dokumen" required style="resize: vertical; min-height: 100px; border-top-left-radius: 0; border-bottom-left-radius: 0;"></textarea>
+                                            <textarea class="form-control" disabled id="reason-edit" name="reason" rows="3" placeholder="Jelaskan alasan perubahan dokumen" required style="resize: vertical; min-height: 100px; border-top-left-radius: 0; border-bottom-left-radius: 0;"></textarea>
                                         </div>
                                     </div>
                                 </div>
@@ -282,11 +282,11 @@
                                     <div class="d-flex">
                                         <div class="d-flex align-items-center">
                                             <div class="custom-control custom-radio mr-3">
-                                                <input type="radio" class="custom-control-input" id="storage_type_month_edit" name="storage_type" value="month" required>
+                                                <input type="radio" class="custom-control-input" id="storage_type_month_edit" name="storage_type" value="month" disabled>
                                                 <label class="custom-control-label" for="storage_type_month_edit">Bulan</label>
                                             </div>
                                             <div class="custom-control custom-radio">
-                                                <input type="radio" class="custom-control-input" id="storage_type_year_edit" name="storage_type" value="year" required>
+                                                <input type="radio" class="custom-control-input" id="storage_type_year_edit" name="storage_type" value="year" disabled>
                                                 <label class="custom-control-label" for="storage_type_year_edit">Tahun</label>
                                             </div>
                                         </div>
@@ -299,13 +299,13 @@
                                     <label class="font-weight-bold">Upload Document</label>
                                     <div class="custom-file">
                                         <input type="hidden" id="file-storage">
-                                        <input type="file" class="custom-file-input-edit" id="file_doc_edit" name="file_doc" accept=".pdf">
+                                        <input type="file" class="custom-file-input-edit" id="file_doc_edit" name="file_doc" accept=".pdf" disabled>
                                         <label class="custom-file-label-edit" for="file_doc">Pilih file PDF</label>
                                     </div>
                                     <small class="form-text text-muted">Format yang diterima: PDF. Maksimal ukuran: 5MB</small>
                                     <!-- Tambahkan tombol view PDF -->
                                    <div class="mt-2">
-                                    <button type="button" id="view-pdf-btn" class="btn btn-sm btn-primary" disabled>
+                                    <button type="button" id="view-pdf-btn" class="btn btn-sm btn-primary">
                                         <i class="fa fa-eye"></i> Lihat PDF
                                     </button>
                                     <span class="text-muted ml-2" id="pdf-file-name"></span>
@@ -319,8 +319,6 @@
 
                     </fieldset>
                 </form>
-                {{-- @endrole --}}
-
                 <div class="modal-footer bg-light">
                 <button type="button" class="btn btn-info editfrm">
                     <i class="ti-check"></i> Update
@@ -357,16 +355,28 @@
         e.preventDefault();
         let id = $(this).data('id');
         let actionUrl = $(this).attr('href');
+        // alert(actionUrl)
         let getApproveMgr = $(this).attr('row-approve-manager');
         let getApproveSysdev = $(this).attr('row-approve-sysdev');
+        let apprStatus2 = $(this).attr('row-approved-status2');
         $('#approval-by1-edit').val(getApproveMgr);
         if (getApproveMgr != "" && getApproveSysdev != "") {
-            Swal.fire({
-                icon: 'warning',
-                title: 'Perhatian',
-                text: 'Data ini sudah diapprove oleh sysdev dan pimpinan anda, data ini tidak bisa di edit',
-                showConfirmButton: true
-            });
+            if (apprStatus2 == '1') {
+                 Swal.fire({
+                    icon: 'warning',
+                    title: 'Perhatian',
+                    text: 'Data ini sudah diapprove,tidak bisa di edit',
+                    showConfirmButton: true
+                });
+            } else {
+                  Swal.fire({
+                    icon: 'warning',
+                    title: 'Perhatian',
+                    text: 'Data telah ditolak (rejected),tidak bisa di edit',
+                    showConfirmButton: true
+                });
+            }
+
 		//   $('#edit-reqdar').modal('hide');
         } else {
             EditDar(actionUrl)
@@ -603,7 +613,7 @@
             let id = $('#id-reqdar-form').val();
             var route = "{{ route('requestdar.update', ':param') }}";
             route_replace = route.replace(':param', id);
-            alert(id)
+
             var formData = new FormData($('#reqdarFormEdit')[0]);
 
             $.ajax({
