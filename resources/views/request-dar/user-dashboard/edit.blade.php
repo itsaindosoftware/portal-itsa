@@ -648,7 +648,9 @@
             // Set URL dan tampilkan modal
             const pdfUrl = `${window.location.origin}/view-document/${documentId}`;
             $('#pdf-viewer-iframe').attr('src', pdfUrl);
-            $('#download-pdf-btn').attr('href', pdfUrl);
+
+            const downloadUrl = `${window.location.origin}/download-document/${documentId}`;
+            $('#download-pdf-btn').attr('href', downloadUrl);
             $('#pdf-viewer-modal').modal('show');
         } else {
             alert('Tidak ada dokumen PDF yang tersedia');

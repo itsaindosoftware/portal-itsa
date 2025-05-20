@@ -463,7 +463,6 @@ class RequestdarController extends Controller
                     'public/' . $uploadPath,
                     $fileName
                 );
-                // dd($filePath);
                 // dd($request->file_doc->extension());
 
 
@@ -818,6 +817,43 @@ class RequestdarController extends Controller
                 'status' => true
             ]);
         }
+    }
+    public function downloadDocument($id)
+    {
+        $requestDar = RequestDar::findOrFail($id);
+
+        if (!$requestDar->file_doc) {
+            abort(404, 'File not found');
+        }
+
+        // Cek apakah file dimulai dengan 'public/'
+        $filePath = $requestDar->file_doc;
+        if (strpos($filePath, 'public/') === 0) {
+            $filePath = substr($filePath, 7);
+        }
+
+        // Cek file di storage
+        $fullPath = storage_path('app/public/' . $filePath);
+
+        if (!file_exists($fullPath)) {
+            $altPath = public_path($filePath);
+            if (!file_exists($altPath)) {
+                abort(404, 'File not found on disk');
+            }
+            $fullPath = $altPath;
+        }
+
+        // Ekstrak nama file asli dari path file
+        $originalFileName = basename($filePath);
+
+        // Jika nama file tidak tersedia, gunakan judul dokumen atau nama default
+        if (empty($originalFileName) || $originalFileName == $id) {
+            $originalFileName = !empty($requestDar->title) ?
+                Str::slug($requestDar->title, '-') . '.pdf' :
+                'document-' . $requestDar->id . '.pdf';
+        }
+
+        return response()->download($fullPath, $originalFileName);
     }
 
 }

@@ -412,7 +412,7 @@
                                 'Unknown';
             $('#approval-status3').text(approvalStatus3);
             $('#remark-approval3').text(response.remark_approval_by3);
-
+            // console.log(response.file_doc)
             if (response.file_doc) {
                 const fileName = response.file_doc.split('/').pop();
                 $('.custom-file-label-view').text(fileName);
@@ -562,7 +562,9 @@
             // Set URL dan tampilkan modal
             const pdfUrl = `${window.location.origin}/view-document/${documentId}`;
             $('#pdf-viewer-iframe-view').attr('src', pdfUrl);
-            $('#download-pdf-btn-view').attr('href', pdfUrl);
+
+            const downloadUrl = `${window.location.origin}/download-document/${documentId}`;
+            $('#download-pdf-btn-view').attr('href', downloadUrl);
             $('#pdf-viewer-modal-view').modal('show');
         } else {
             alert('Tidak ada dokumen PDF yang tersedia');

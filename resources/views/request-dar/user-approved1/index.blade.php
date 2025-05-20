@@ -243,7 +243,16 @@ $(document).ready(function(){
     $(document).on('click', '#approved1-data-dar', function(e){
         e.preventDefault();
         let id = $(this).data('id');
-        let urlAction = $(this).attr('href')
+        let urlAction = $(this).attr('href');
+		let mgr  = $(this).attr('row-approve-manager');
+		if (mgr != '') {
+		    Swal.fire({
+                icon: 'warning',
+                title: 'Warning',
+                text: 'data ini sudah di approved',
+            })
+			return false;
+		}
 		Swal.fire({
 				title: 'Approved',
 				text: 'setujui untuk pengajuan ini?',
@@ -275,8 +284,6 @@ $(document).ready(function(){
 				});
 				if (result.value || result.value == '') {
 					let remarks = result.value || '-'; // Get remarks value, empty string if nothing entered
-					
-					
 					$.ajax({
 						url: urlAction,
 						type: "POST",
