@@ -1,18 +1,34 @@
 @extends('layouts.app_custom')
 @section('title-head','Request Dar')
-@section('title','Request Dar')
+@role('user-employee')
+  @section('title','Request Dar')
+@endrole
+@role('admin')
+   @section('title','All Request Dar')
+@endrole
 
 @section('css')
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/Datatables/dataTables.bootstrap4.min.css') }}">
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/custom-edit.css') }}">
 <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-daterangepicker/3.0.5/daterangepicker.css">
 <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/css/bootstrap-datetimepicker.min.css">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/rowgroup/1.2.0/css/rowGroup.bootstrap4.min.css">
 @endsection
 @section('content')
-
 <section class="section">
-<div class="section-body">
-<div class="row">
+	{{-- <div class="section-header">
+		@permission('create-reqdar')
+		<a href="#" class="btn btn-icon icon-left btn-primary" id="show-create-dar"><i class="fas fa-plus"></i> Add request</a>
+		@endpermission
+		<div class="section-header-breadcrumb">
+			<div class="breadcrumb-item active"><a href="#">Dashboard</a></div>
+			<div class="breadcrumb-item"><a href="#">Request Dar</a></div>
+			{{-- <div class="breadcrumb-item">DataTables</div> --}}
+		{{-- </div>
+	</div> --}} 
+
+	<div class="section-body">
+        <div class="row">
 			<div class="col-12">
 				<div class="card">
 					<div class="card-header">
@@ -25,7 +41,7 @@
 						<div class="card-body">
 							<form id="filter-form">
 								<div class="row">
-									<div class="col-md-4">
+									<div class="col-md-3">
 										<div class="form-group">
 											<label>Date Range</label>
 											<div class="input-group">
@@ -38,38 +54,72 @@
 											</div>
 										</div>
 									</div>
-									<div class="col-md-4">
+									<div class="col-md-3">
 										<div class="form-group">
 											<label>NIK/Name</label>
 											<input type="text" class="form-control" name="nik_name" id="nik_name">
 										</div>
 									</div>
-									<div class="col-md-4">
+									<div class="col-md-3">
 										<div class="form-group">
-											<label>Request Type</label>
-											<select class="form-control" name="reqtype" id="reqtype">
-												<option value="">All Request Types</option>
-                                                @foreach ($reqTypes as $types )
-                                                   <option value="{{ $types->id }}">{{ $types->request_type }}</option>
+											<label>Department</label>
+											<select class="form-control" name="department" id="department">
+												<option value="">All Departments</option>
+                                                @foreach ($department as $dp )
+                                                   <option value="{{ $dp->id }}">{{ $dp->description }}</option>
                                                 @endforeach
-												<!-- Request type options will be loaded dynamically -->
+												<!-- Department options will be loaded dynamically -->
+											</select>
+										</div>
+									</div>
+									<div class="col-md-3">
+										<div class="form-group">
+											<label>Company</label>
+											<select class="form-control" name="company" id="company">
+												<option value="">All Companies</option>
+                                                @foreach ($company as $cp )
+                                                   <option value="{{ $cp->id }}">{{ $cp->company }}</option>
+                                                @endforeach
+												<!-- Company options will be loaded dynamically -->
 											</select>
 										</div>
 									</div>
 								</div>
 								<div class="row">
-									<div class="col-md-4">
+									<div class="col-md-3">
 										<div class="form-group">
-											<label>Status</label>
-											<select class="form-control" name="status" id="status">
-												<option value="">All Statuses</option>
-												<option value="Pending">Pending</option>
-												<option value="Approved">Approved</option>
-												<option value="Rejected">Rejected</option>
+											<label>Position</label>
+											<select class="form-control" name="position" id="position">
+												<option value="">All Positions</option>
+                                                @foreach ($position as $p )
+                                                   <option value="{{ $p->id }}">{{ $p->position }}</option>
+                                                @endforeach
+												<!-- Position options will be loaded dynamically -->
 											</select>
 										</div>
 									</div>
-									<div class="col-md-8">
+									<div class="col-md-3">
+										<div class="form-group">
+											<label>Request Type</label>
+											<select class="form-control" name="reqtype" id="reqtype">
+												<option value="">All Request Types</option>
+												@foreach ($reqTypes as $types )
+                                                   <option value="{{ $types->id }}">{{ $types->request_type }}</option>
+                                                @endforeach
+											</select>
+										</div>
+									</div>
+									<div class="col-md-3">
+										<div class="form-group">
+											<label>Status</label>
+											<select class="form-control select2" name="status" id="status">
+												<option value="">All Statuses</option>
+												<option value="1">Open</option>
+												<option value="2">Close</option>
+											</select>
+										</div>
+									</div>
+									<div class="col-md-3">
 										<div class="form-group mt-4 pt-1">
 											<button type="button" class="btn btn-primary" id="btn-filter">
 												<i class="fas fa-filter"></i> Apply Filter
@@ -80,6 +130,7 @@
 										</div>
 									</div>
 								</div>
+                                <input type="hidden" name="group_by" id="group_by" value="department">
 							</form>
 						</div>
 					</div>
@@ -113,9 +164,7 @@
                                         <th class="text-center">Department</th>
                                         <th class="text-center">Company</th>
                                         <th class="text-center">Request Type</th>
-                                        <th class="text-center">ApprovalBy1</th>
-                                        <th class="text-center">ApprovalBy2</th>
-                                        <th class="text-center">ApprovalBy3</th>
+                                        <th class="text-center">Status</th>
 										<th class="text-center" width="15%">Action</th>
 									</tr>
 								</thead>
@@ -132,15 +181,17 @@
 @endsection
 @push('js')
 @include('request-dar.user-dashboard.show')
+@include('request-dar.user-dashboard.edit')
 @include('request-dar.user-dashboard.view-docs.view-docs-view')
-@include('request-dar.user-approved1.rejected-appr1.rejected')
 <script src="{{ asset('assets/Datatables/jquery.dataTables.min.js') }}"></script>
 <script src="{{ asset('assets/Datatables/dataTables.bootstrap4.min.js') }}"></script>
+<script src="https://cdn.datatables.net/rowgroup/1.2.0/js/dataTables.rowGroup.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-daterangepicker/3.0.5/daterangepicker.min.js"></script>
 <script>
 $(document).ready(function(){
-    	$('.daterange-picker').daterangepicker({
+        // $('.addrm').prop('disabled', true);
+        $('.daterange-picker').daterangepicker({
 			locale: {format: 'YYYY-MM-DD'},
 			drops: 'down',
 			opens: 'right',
@@ -154,7 +205,6 @@ $(document).ready(function(){
 		$('.daterange-picker').on('cancel.daterangepicker', function(ev, picker) {
 			$(this).val('');
 		});
-
 		var table = $('#table-request-manage').DataTable({
 			"columnDefs": [{
 				"searchable": false,
@@ -169,12 +219,15 @@ $(document).ready(function(){
 			deferRender:true,
 			ajax: {
 				url: "{{ route('requestdar.index') }}",
-                data: function(d) {
-					d.date_range = $('#date_range').val();
-					d.nik_name = $('#nik_name').val();
-					d.reqtype = $('#reqtype').val();
-					d.status = $('#status').val();
-				}
+                 data: function(d) {
+                    d.date_range = $('#date_range').val();
+                    d.nik_name = $('#nik_name').val();
+                    d.reqtype = $('#reqtype').val();
+                    d.status = $('#status').val();
+                    d.position = $('#position').val();
+                    d.company = $('#company').val();
+                    d.department = $('#department').val();
+                }
 			},
 			order: [[ 0, 'desc']],
 			responsive: true,
@@ -192,16 +245,32 @@ $(document).ready(function(){
             { data: 'department', name: 'department',className: 'text-center' },
             { data: 'company', name: 'company',className: 'text-center' },
             { data: 'reqtype', name: 'reqtype',className: 'text-center' },
-            { data: 'approval_status1', name: 'approval_status1',className: 'text-center' },
-            { data: 'approval_status2', name: 'approval_status2',className: 'text-center' },
-            { data: 'approval_status3', name: 'approval_status3',className: 'text-center' },
+            { data: 'status', name: 'status',className: 'text-center' },
 			{ data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-center' }
 			]
 	//
 });
+   $('#btn-filter').click(function() {
+		table.ajax.reload();
+	});
+
+		// Reset filter
+    $('#btn-reset').click(function() {
+        $('#filter-form')[0].reset();
+        $('.select2').val('').trigger('change');
+        table.ajax.reload();
+    });
 
 
-
+     // Reset form function
+     function resetForm() {
+       $('#reqdarForm')[0].reset();
+        $('input[name="typereqform_id"]').prop('checked', false);
+        $('input[name="storage_type"]').prop('checked', false);
+        $('input[name="request_desc_id"]').prop('checked', false);
+        $('.custom-file-label').text('Pilih file PDF');
+        $('#reqdarForm input, #reqdarForm textarea, #reqdarForm select').prop('disabled', false);
+    }
     function showNotification(type, message) {
         if(type == 'success'){
             Swal.fire({
@@ -227,69 +296,42 @@ $(document).ready(function(){
         }
 
     }
+    
+    function refreshDataTable() {
+        $('#table-request-manage').DataTable().ajax.reload();
+    }
 
-    $('#btn-filter').click(function() {
-		table.ajax.reload();
-	});
-
-		// Reset filter
-    $('#btn-reset').click(function() {
-        $('#filter-form')[0].reset();
-        $('.select2').val('').trigger('change');
-        table.ajax.reload();
-    });
-
-
-    $(document).on('click', '#approved1-data-dar', function(e){
+    $(document).on('click','#delete-data-dar', function(e){
         e.preventDefault();
-        let id = $(this).data('id');
-        let urlAction = $(this).attr('href')
-		Swal.fire({
-				title: 'Approved',
-				text: 'setujui untuk pengajuan ini?',
+        let actionUrl = $(this).attr('data-href');
+        Swal.fire({
+				title: 'Delete?',
+				text: 'hapus data pengajuan ini?',
 				icon: 'warning',
-				input: 'textarea',
-				inputLabel: 'Remarks',
-				inputPlaceholder: 'Masukkan catatan atau komentar (opsional)',
-				inputAttributes: {
-					'aria-label': 'Remarks',
-					'maxlength': 500
-				},
 				showCancelButton: true,
 				confirmButtonColor: '#3085d6',
 				cancelButtonColor: '#d33',
 				confirmButtonText: 'Yes!',
-				cancelButtonText: 'Cancel',
-				inputValidator: (value) => {
-					// Remark is optional, so no validation needed here
-					// If you want to make it required, uncomment the below lines
-					// if (!value) {
-					//     return 'You need to write something!'
-					// }
-				}
+				cancelButtonText: 'Cancel'
 			}).then((result) => {
 				$.ajaxSetup({
 					headers: {
 						'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
 					}
 				});
-				if (result.value || result.value == '') {
-					let remarks = result.value || '-'; // Get remarks value, empty string if nothing entered
-					
-					
+				if (result.value) {	
 					$.ajax({
-						url: urlAction,
+						url: actionUrl,
 						type: "POST",
 						data: {
-							'_method': 'POST',
-							'remarks': remarks // Send remarks to the server
+							'_method': 'DELETE',
 						},
 						success: function(data) {
 							if (data.status == true) {
 								Swal.fire({
 									position: 'top',
 									icon: 'success',
-									title: 'Success Approval Data',
+									title: 'Success Deleted Data',
 									showConfirmButton: false,
 									timer: 3000
 								})
@@ -307,76 +349,7 @@ $(document).ready(function(){
 				  console.log(`data was canceled`);
 			    }
 			});
-
     })
-
-
-    $(document).on('click', '#rejected1-data-dar', function(e){
-        e.preventDefault();
-        let id_reqdar = $(this).data('id');
-        let urlAction = $(this).attr('href');
-        $('#reject-modal').modal('show')
-        $('#reject-id').val(id_reqdar)
-        $('#rejectForm').append()
-     })
-      $(document).ready(function() {
-        $('.submit-reject').click(function() {
-            // Validasi form
-            let id = $('#reject-id').val();
-            let route = "{{ route('requestdar.rejectedAppr1',':param') }}";
-            let urlAction = route.replace(':param', id);
-                if (!$('#reject_reason').val()) {
-                Swal.fire({
-                        icon: 'warning',
-                        title: 'Warning',
-                        text: 'Harap diisi alasan penolakan untuk perubahan dokumen ini!',
-                    })
-                    return;
-                }
-                Swal.fire({
-                    title: 'Rejected',
-                    text: 'Tolak untuk pengajuan ini?',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Yes!'
-                }).then((willRejected) => {
-                    $.ajaxSetup({
-                        headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                        }
-                    });
-                    if (willRejected.value) {
-                    $.ajax({
-                        url: urlAction,
-                        type: "POST",
-                        data: $('#rejectForm').serialize(),
-                        success: function(response) {
-                               closeRejectModal();
-                                Swal.fire({
-                                    position: 'top',
-                                    icon: 'success',
-                                    title: 'Dokumen berhasil direject',
-                                    showConfirmButton: false,
-                                    timer: 3000
-                                })
-                                $('#table-request-manage').DataTable().ajax.reload();
-
-                        },
-                            error: function(xhr) {
-                                alert('Terjadi kesalahan! ' + xhr.responseJSON.message);
-                            }
-                        });
-                    } else {
-                        console.log(`data was dismissed by ${willDeleted.dismiss}`);
-                    }
-
-                })
-
-            })
-
-        });
 
 
 

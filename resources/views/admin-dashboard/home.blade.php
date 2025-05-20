@@ -55,9 +55,9 @@
                 <div class="card-body">
                     {{ $user }}
                 </div>
-                <div class="card-footer bg-light">
+                {{-- <div class="card-footer bg-light">
                     <small class="text-muted">Aktif dalam system</small>
-                </div>
+                </div> --}}
             </div>
         </div>
     </div>
@@ -74,9 +74,9 @@
                 <div class="card-body">
                     {{ $permission }}
                 </div>
-                <div class="card-footer bg-light">
+                {{-- <div class="card-footer bg-light">
                     <small class="text-muted">Tersedia dalam system</small>
-                </div>
+                </div> --}}
             </div>
         </div>
     </div>
@@ -93,9 +93,9 @@
                 <div class="card-body">
                     {{ $module }}
                 </div>
-                <div class="card-footer bg-light">
+                {{-- <div class="card-footer bg-light">
                     <small class="text-muted">Modul dalam system</small>
-                </div>
+                </div> --}}
             </div>
         </div>
     </div>
@@ -112,9 +112,9 @@
                 <div class="card-body">
                     {{ $role }}
                 </div>
-                <div class="card-footer bg-light">
+                {{-- <div class="card-footer bg-light">
                     <small class="text-muted">Peran dalam system</small>
-                </div>
+                </div> --}}
             </div>
         </div>
     </div>
@@ -133,13 +133,13 @@
         <div class="card shadow-sm">
             <div class="card-header pb-0">
                 <h4>Permintaan DAR Bulanan</h4>
-                <div class="card-header-action">
+                {{-- <div class="card-header-action">
                     <div class="btn-group">
                         <button class="btn btn-primary btn-sm" onclick="filterChart('week')">Minggu Ini</button>
                         <button class="btn btn-primary btn-sm active" onclick="filterChart('month')">Bulan Ini</button>
                         <button class="btn btn-primary btn-sm" onclick="filterChart('year')">Tahun Ini</button>
                     </div>
-                </div>
+                </div> --}}
             </div>
             <div class="card-body">
                 <canvas id="darRequestChart" height="280"></canvas>
@@ -344,38 +344,38 @@
         }
         
         // Chart filtering function dengan event handling yang diperbaiki
-        window.filterChart = function(period) {
-            let newData;
-            let newLabels;
+        // window.filterChart = function(period) {
+        //     let newData;
+        //     let newLabels;
             
-            if (period === 'week') {
-                newData = [10, 15, 12, 8, 18, 14, 20];
-                newLabels = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'];
-            } else if (period === 'month') {
-                newData = [25, 30, 35, 40, 28, 52, 45, 38, 60, 55, 65, 70];
-                newLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
-            } else if (period === 'year') {
-                newData = [350, 420, 380, 450, 410, 490];
-                newLabels = ['2020', '2021', '2022', '2023', '2024', '2025'];
-            }
+        //     if (period === 'week') {
+        //         newData = [10, 15, 12, 8, 18, 14, 20];
+        //         newLabels = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'];
+        //     } else if (period === 'month') {
+        //         newData = [25, 30, 35, 40, 28, 52, 45, 38, 60, 55, 65, 70];
+        //         newLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+        //     } else if (period === 'year') {
+        //         newData = [350, 420, 380, 450, 410, 490];
+        //         newLabels = ['2020', '2021', '2022', '2023', '2024', '2025'];
+        //     }
             
-            // Update chart data tanpa animasi berlebihan
-            requestChart.data.datasets[0].data = newData;
-            requestChart.data.labels = newLabels;
+        //     // Update chart data tanpa animasi berlebihan
+        //     requestChart.data.datasets[0].data = newData;
+        //     requestChart.data.labels = newLabels;
             
-            // Update dengan animasi minimal
-            requestChart.update('none');
+        //     // Update dengan animasi minimal
+        //     requestChart.update('none');
             
-            // Update active button dengan cara yang lebih aman
-            document.querySelectorAll('.btn-group .btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
+        //     // Update active button dengan cara yang lebih aman
+        //     document.querySelectorAll('.btn-group .btn').forEach(btn => {
+        //         btn.classList.remove('active');
+        //     });
             
-            // Pastikan event.target tersedia
-            if (event && event.target) {
-                event.target.classList.add('active');
-            }
-        };
+        //     // Pastikan event.target tersedia
+        //     if (event && event.target) {
+        //         event.target.classList.add('active');
+        //     }
+        // };
     });
 </script>
 @endpush

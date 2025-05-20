@@ -39,18 +39,19 @@ class HomeController extends Controller
 
             // DAR request statistics
             $totalDar = Requestdar::count();
-            $totalPending = Requestdar::whereIn('approval_status1', [0])
-                ->orWhereIn('approval_status2', [0])
-                ->orWhereIn('approval_status3', [0])
+            $totalPending = Requestdar::whereIn('approval_status1', ['0'])
+                ->orWhereIn('approval_status2', ['0'])
+                ->orWhereIn('approval_status3', ['0'])
                 ->count();
-            $totalApproved = Requestdar::where('approval_status1', 1)
-                ->where('approval_status2', 1)
-                ->where('approval_status3', 1)
+
+            $totalApproved = Requestdar::where('approval_status1', '1')
+                ->where('approval_status2', '1')
+                ->where('approval_status3', '1')
                 ->count();
             $totalRejected = Requestdar::where(function ($query) {
-                $query->where('approval_status1', 2)
-                    ->orWhere('approval_status2', 2)
-                    ->orWhere('approval_status3', 2);
+                $query->where('approval_status1', '2')
+                    ->orWhere('approval_status2', '2')
+                    ->orWhere('approval_status3', '2');
             })->count();
 
             // Monthly trend data for the last 12 months
@@ -80,21 +81,13 @@ class HomeController extends Controller
                 ->select('departments.description', DB::raw('count(*) as total'))
                 ->groupBy('departments.description')
                 ->orderBy('total', 'desc')
-                ->limit(6)
                 ->get();
 
             // Department names and counts for chart
             $deptNames = $departmentDistribution->pluck('description')->toArray();
             $deptCounts = $departmentDistribution->pluck('total')->toArray();
 
-            // Recent activities (static data since there's no system_logs table)
-            $recentActivities = collect([
-                (object) ['user' => 'Admin System', 'action' => 'menambahkan user baru', 'created_at' => now()->subMinutes(10)],
-                (object) ['user' => 'Department HR', 'action' => 'mengubah modul pengaturan', 'created_at' => now()->subHours(1)],
-                (object) ['user' => 'System', 'action' => 'backup database otomatis', 'created_at' => now()->subHours(3)],
-                (object) ['user' => 'Manager IT', 'action' => 'menyetujui permintaan akses', 'created_at' => now()->subHours(5)],
-                (object) ['user' => 'Admin System', 'action' => 'mengubah pengaturan sistem', 'created_at' => now()->subDays(1)]
-            ]);
+
 
             return view('admin-dashboard.home', [
                 'user' => $user,
