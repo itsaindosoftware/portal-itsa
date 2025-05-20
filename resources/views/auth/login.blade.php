@@ -8,6 +8,7 @@
   <!-- General CSS Files -->
   <link rel="stylesheet" href="{{ asset("bootstrap5/css/bootstrap.min.css") }}">
   <link rel="stylesheet" href="{{ asset("bootstrap5/css/all.min.css") }} ">
+  <link rel="shortcut icon" href="{{ asset('assets/img/ts.png') }}">
 
   <style>
     :root {
