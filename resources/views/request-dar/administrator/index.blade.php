@@ -185,9 +185,9 @@
 @include('request-dar.user-dashboard.view-docs.view-docs-view')
 <script src="{{ asset('assets/Datatables/jquery.dataTables.min.js') }}"></script>
 <script src="{{ asset('assets/Datatables/dataTables.bootstrap4.min.js') }}"></script>
-<script src="https://cdn.datatables.net/rowgroup/1.2.0/js/dataTables.rowGroup.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-daterangepicker/3.0.5/daterangepicker.min.js"></script>
+<script src="{{ asset('bootstrap5/js/dataTables.rowGroup.min.js') }}"></script>
+<script src="{{ asset('bootstrap5/js/moment.min.js') }}"></script>
+<script src="{{ asset('bootstrap5/js/daterangepicker.min.js') }}"></script>
 <script>
 $(document).ready(function(){
         // $('.addrm').prop('disabled', true);
