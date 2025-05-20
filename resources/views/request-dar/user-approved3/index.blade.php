@@ -172,7 +172,7 @@
 @include('request-dar.user-dashboard.show')
 @include('request-dar.user-dashboard.view-docs.view-docs-view')
 @include('request-dar.user-dashboard.view-docs.view-docs-edit')
-@include('request-dar.user-approved2.rejected-appr2.rejected')
+@include('request-dar.user-approved3.rejected-appr3.rejected')
 <script src="{{ asset('assets/Datatables/jquery.dataTables.min.js') }}"></script>
 <script src="{{ asset('assets/Datatables/dataTables.bootstrap4.min.js') }}"></script>
 <script src="https://cdn.datatables.net/rowgroup/1.2.0/js/dataTables.rowGroup.min.js"></script>
@@ -194,54 +194,6 @@ $(document).ready(function(){
 		$('.daterange-picker').on('cancel.daterangepicker', function(ev, picker) {
 			$(this).val('');
 		});
-
-	// 	var table = $('#table-request-manage').DataTable({
-	// 		"columnDefs": [{
-	// 			"searchable": false,
-	// 			"orderable": false,
-	// 			"targets": 0,
-	// 			render: function(data, type, row, meta) {
-	// 				return meta.row + meta.settings._iDisplayStart + 1;
-	// 			},
-	// 		}],
-	// 		processing: true,
-	// 		serverSide: true,
-	// 		deferRender:true,
-	// 		ajax: {
-	// 			url: "{{ route('requestdar.index') }}",
-    //             data: function(d) {
-	// 				d.date_range = $('#date_range').val();
-	// 				d.nik_name = $('#nik_name').val();
-	// 				d.reqtype = $('#reqtype').val();
-	// 				d.status = $('#status').val();
-    //                 d.position = $('#position').val();
-    //                 d.company = $('#company').val();
-    //                 d.department = $('#department').val();
-	// 			}
-	// 		},
-	// 		order: [[ 0, 'desc']],
-	// 		responsive: true,
-	// 		columns: [
-	// 		{
-	// 			data: null,
-	// 			name: null,
-	// 			orderable: false,
-	// 			searchable: false,
-	// 			className: 'text-center'
-	// 		},
-	// 		{ data: 'created_date', name: 'created_date', className: 'text-center' },
-	// 		{ data: 'nik_req', name: 'nik_req', className:'text-center' },
-    //         { data: 'position', name: 'position',className: 'text-center' },
-    //         { data: 'department', name: 'department',className: 'text-center' },
-    //         { data: 'position', name: 'position',className: 'text-center' },
-    //         { data: 'reqtype', name: 'reqtype',className: 'text-center' },
-    //         { data: 'approval_status1', name: 'approval_status1',className: 'text-center' },
-    //         { data: 'approval_status2', name: 'approval_status2',className: 'text-center' },
-    //         { data: 'approval_status3', name: 'approval_status3',className: 'text-center' },
-	// 		{ data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-center' }
-	// 		]
-	// //
-    //    });
 
     function initDataTable() {
             // Destroy existing table if it exists
@@ -346,33 +298,33 @@ $(document).ready(function(){
         $('.select2').val('').trigger('change');
         table.ajax.reload();
     });
+	$(document).on('click', '#approved3-data-dar', function(e){
+		e.preventDefault();
+		let id = $(this).data('id');
+		let urlAction = $(this).attr('href');
+		let mgr  = $(this).attr('row-approve-manager');
+		let sysdev  = $(this).attr('row-approve-sysdev');
+		let mgrit = $(this).attr('row-approved-mgrit')
 
-
-    $(document).on('click', '#approved2-data-dar', function(e){
-        e.preventDefault();
-        let id = $(this).data('id');
-        let urlAction = $(this).attr('href');
-        let mgr  = $(this).attr('row-approve-manager');
-        let sysdev  = $(this).attr('row-approve-sysdev');
-
-
-        if(mgr == ''){
-            Swal.fire({
-                icon: 'warning',
-                title: 'Warning',
-                text: 'data ini harus diapproval terlebih dahulu oleh manager yang bersangkutan!',
-            })
-            return false;
-        }
-        if(sysdev != ''){
-            Swal.fire({
-                icon: 'warning',
-                title: 'Warning',
-                text: 'data ini Sudah diapproved',
-            })
-            return false;
-        }
-       Swal.fire({
+		if(sysdev == ''){
+			Swal.fire({
+				icon: 'warning',
+				title: 'Warning',
+				text: 'data ini harus diapproval terlebih dahulu oleh sysdev officer!',
+			})
+			return false;
+		}
+		if(mgrit != ''){
+			Swal.fire({
+				icon: 'warning',
+				title: 'Warning',
+				text: 'data ini Sudah diapproved',
+			})
+			return false;
+		}
+		
+		// Using input field for remarks
+		Swal.fire({
 			title: 'Approved',
 			text: 'setujui untuk pengajuan ini?',
 			icon: 'warning',
@@ -396,14 +348,13 @@ $(document).ready(function(){
 				// }
 			}
 		}).then((result) => {
-			$.ajaxSetup({
-				headers: {
-					'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-				}
-			});
 			if (result.value || result.value == '') {
 				let remarks = result.value || '-'; // Get remarks value, empty string if nothing entered
-			
+				$.ajaxSetup({
+					headers: {
+						'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+					}
+				});
 				
 				$.ajax({
 					url: urlAction,
@@ -429,40 +380,31 @@ $(document).ready(function(){
 								text: 'Something went wrong!',
 							})
 						}
-					},
-				 error: function(xhr, status, error) {
-                    console.error('AJAX Error:', status, error);
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'Terjadi kesalahan saat mengirim data',
-                    });
-                }
+					}
 				});
 			} else {
-				  console.log(`data was canceled`);
+				console.log('data is canceled')
 			}
 		});
+})
 
-    })
 
-
-    $(document).on('click', '#rejected2-data-dar', function(e){
+    $(document).on('click', '#rejected3-data-dar', function(e){
         e.preventDefault();
         let id_reqdar = $(this).data('id');
         let urlAction = $(this).attr('href');
-        $('#reject2-modal').modal('show')
-        $('#reject2-id').val(id_reqdar)
-        $('#rejectForm2').append()
+        $('#reject3-modal').modal('show')
+        $('#reject3-id').val(id_reqdar)
+        $('#rejectForm3').append()
      })
       $(document).ready(function() {
-        $('.submit-reject2').click(function() {
+        $('.submit-reject3').click(function() {
             // Validasi form
-            let id = $('#reject2-id').val();
-            let route = "{{ route('requestdar.rejectedAppr2',':param') }}";
+            let id = $('#reject3-id').val();
+            let route = "{{ route('requestdar.rejectedAppr3',':param') }}";
             let urlAction = route.replace(':param', id);
-                if (!$('#reject_reason2').val()) {
-                Swal.fire({
+                if (!$('#reject_reason3').val()) {
+                     Swal.fire({
                         icon: 'warning',
                         title: 'Warning',
                         text: 'Harap diisi alasan penolakan untuk perubahan dokumen ini!',
@@ -484,26 +426,26 @@ $(document).ready(function(){
                         }
                     });
                     if (willRejected.value) {
-                    $.ajax({
-                        url: urlAction,
-                        type: "POST",
-                        data: $('#rejectForm').serialize(),
-                        success: function(response) {
-                               closeRejectModal();
-                                Swal.fire({
-                                    position: 'top',
-                                    icon: 'success',
-                                    title: 'Dokumen berhasil direject',
-                                    showConfirmButton: false,
-                                    timer: 3000
-                                })
-                                $('#table-request-manage').DataTable().ajax.reload();
+						$.ajax({
+							url: urlAction,
+							type: "POST",
+							data: $('#rejectForm3').serialize(),
+							success: function(response) {
+								closeRejectModal();
+									Swal.fire({
+										position: 'top',
+										icon: 'success',
+										title: 'Dokumen berhasil direject',
+										showConfirmButton: false,
+										timer: 3000
+									})
+									$('#table-request-manage').DataTable().ajax.reload();
 
-                        },
-                            error: function(xhr) {
-                                alert('Terjadi kesalahan! ' + xhr.responseJSON.message);
-                            }
-                        });
+							},
+								error: function(xhr) {
+									alert('Terjadi kesalahan! ' + xhr.responseJSON.message);
+								}
+							});
                     } else {
                         console.log(`data was dismissed by ${willDeleted.dismiss}`);
                     }

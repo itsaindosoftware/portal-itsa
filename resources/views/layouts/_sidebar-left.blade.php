@@ -24,6 +24,9 @@
         @role('sysdev')
              @include('layouts._menu-users-sysdev')
         @endrole
+        @role('manager-it')
+             @include('layouts._menu-users-sysdev-mgrit')
+        @endrole
 
       </ul>
     </li>

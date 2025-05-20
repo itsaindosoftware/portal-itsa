@@ -244,51 +244,69 @@ $(document).ready(function(){
         e.preventDefault();
         let id = $(this).data('id');
         let urlAction = $(this).attr('href')
-        Swal.fire({
-			title: 'Approved',
-			text: 'setujui untuk pengajuan ini?',
-			icon: 'warning',
-			showCancelButton: true,
-			confirmButtonColor: '#3085d6',
-			cancelButtonColor: '#d33',
-			confirmButtonText: 'Yes!'
-		}).then((willApproved) => {
-			$.ajaxSetup({
-				headers: {
-					'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+		Swal.fire({
+				title: 'Approved',
+				text: 'setujui untuk pengajuan ini?',
+				icon: 'warning',
+				input: 'textarea',
+				inputLabel: 'Remarks',
+				inputPlaceholder: 'Masukkan catatan atau komentar (opsional)',
+				inputAttributes: {
+					'aria-label': 'Remarks',
+					'maxlength': 500
+				},
+				showCancelButton: true,
+				confirmButtonColor: '#3085d6',
+				cancelButtonColor: '#d33',
+				confirmButtonText: 'Yes!',
+				cancelButtonText: 'Cancel',
+				inputValidator: (value) => {
+					// Remark is optional, so no validation needed here
+					// If you want to make it required, uncomment the below lines
+					// if (!value) {
+					//     return 'You need to write something!'
+					// }
 				}
-			});
-			if (willApproved.value) {
-				$.ajax({
-					url: urlAction,
-					type: "POST",
-					data: {
-                        '_method': 'POST'
-                    },
-					success: function(data) {
-						if (data.status == true) {
-							Swal.fire({
-								position: 'top',
-								icon: 'success',
-								title: 'Success Approval Data',
-								showConfirmButton: false,
-								timer: 3000
-							})
-							$('#table-request-manage').DataTable().ajax.reload();
-						} else {
-							Swal.fire({
-								icon: 'error',
-								title: 'Oops...',
-								text: 'Something went wrong!',
-							})
-						}
+			}).then((result) => {
+				$.ajaxSetup({
+					headers: {
+						'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
 					}
-				})
-			} else {
-				console.log(`data was dismissed by ${willDeleted.dismiss}`);
-			}
-
-		})
+				});
+				if (result.value || result.value == '') {
+					let remarks = result.value || '-'; // Get remarks value, empty string if nothing entered
+					
+					
+					$.ajax({
+						url: urlAction,
+						type: "POST",
+						data: {
+							'_method': 'POST',
+							'remarks': remarks // Send remarks to the server
+						},
+						success: function(data) {
+							if (data.status == true) {
+								Swal.fire({
+									position: 'top',
+									icon: 'success',
+									title: 'Success Approval Data',
+									showConfirmButton: false,
+									timer: 3000
+								})
+								$('#table-request-manage').DataTable().ajax.reload();
+							} else {
+								Swal.fire({
+									icon: 'error',
+									title: 'Oops...',
+									text: 'Something went wrong!',
+								})
+							}
+						}
+					});
+				} else {
+				  console.log(`data was canceled`);
+			    }
+			});
 
     })
 

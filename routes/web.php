@@ -24,7 +24,6 @@ Route::get('/home_', 'HomeController@home_')->name('dashboard');
 
 
 Route::group(['middleware' => ['auth']], function () {
-    // :: ADMIN ::
     Route::get('/home', 'HomeController@index')->name('home');
     Route::resource('user', 'UserControllerManage');
     Route::resource('permission', 'PermissionController');
@@ -42,5 +41,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('rejected1/requestdar/{id}', 'RequestDarController@rejectedAppr1')->name('requestdar.rejectedAppr1');
     Route::post('approved2/requestdar/{id}', 'RequestDarController@approvedBy2')->name('requestdar.approvedby2');
     Route::post('rejected2/requestdar/{id}', 'RequestDarController@rejectedAppr2')->name('requestdar.rejectedAppr2');
+    Route::post('approved3/requestdar/{id}', 'RequestDarController@approvedBy3')->name('requestdar.approvedby3');
+    Route::post('rejected3/requestdar/{id}', 'RequestDarController@rejectedAppr3')->name('requestdar.rejectedAppr3');
 
 });
