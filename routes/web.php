@@ -17,6 +17,10 @@ Route::get('/', function () {
     return view('layouts.front-end.front-end-layouts');
 });
 
+Route::get('/login-digitalassets', function () {
+    return view('auth.login-da');
+});
+
 Auth::routes();
 
 
