@@ -1,3 +1,8 @@
+@extends('layouts.front-end.layouts-custom.layouts-custom')
+
+@section('title', 'Contactus - Portal ITSA')
+
+@section('content')
  <section class="contact-us" id="kontak">
         <div class="container">
             <div class="row justify-content-center">
@@ -241,3 +246,4 @@
             -->
         </div>
     </section>
+    @endsection

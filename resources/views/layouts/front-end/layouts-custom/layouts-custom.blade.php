@@ -1,7 +1,22 @@
+<!DOCTYPE html>
+<html lang="id">
+{{-- <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>@yield('title', 'Portal ITSA - PT Indonesia Thai Summit Auto')</title>
+  <!-- Bootstrap 5 CSS -->
+  <link href="{{ asset('assets-itsaportal/css/bootstrap.min.css') }}" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Custom CSS -->
+  {{-- <link rel="stylesheet" href="{{ asset('assets-itsaportal/css/custom.css') }}"> --}}
+{{-- </head> --}}
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Portal ITSA - PT Indonesia Thai Summit Auto</title>
+  <title>@yield('title', 'Portal ITSA - PT Indonesia Thai Summit Auto')</title>
   <!-- Bootstrap 5 CSS -->
   <link href="{{ asset('assets/assets-itsaportal/css/bootstrap.min.css') }}" rel="stylesheet">
   <!-- Font Awesome -->
@@ -643,5 +658,182 @@
                 align-items: center;
             }
         }
+        /* About Portal Section - Fixed */
+.about-portal {
+  padding-top: 120px !important;
+  padding-bottom: 100px !important;
+  background-color: #f8f9fa;
+  position: relative;
+  overflow: visible; /* Changed from hidden */
+  min-height: auto; /* Ensure minimum height */
+}
+
+/* Remove the skew effect that might cause cutting */
+.about-portal:before {
+  display: none; /* Temporarily disable the skew effect */
+}
+
+.about-portal .section-title {
+  margin-bottom: 40px;
+  position: relative;
+  display: inline-block;
+}
+
+.about-portal .section-title:after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 3px;
+  background: #0d6efd;
+}
+
+.about-portal p, .about-portal ul {
+  text-align: justify !important; /* Force justify alignment */
+  max-width: 100% !important; /* Remove max-width restriction */
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 20px;
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: #555;
+}
+
+.about-portal ul {
+  list-style-position: outside;
+  padding-left: 30px;
+}
+
+.about-portal ul li {
+  margin-bottom: 15px;
+  position: relative;
+}
+
+/* Remove the custom bullet point that might cause issues */
+.about-portal ul li:before {
+  display: none;
+}
+
+/* Add proper bullet points */
+.about-portal ul li {
+  list-style-type: disc;
+}
+
+/* Ensure content is fully visible */
+.about-content {
+  background: white;
+  padding: 40px;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  margin-bottom: 40px;
+  width: 100%;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .about-portal {
+    padding-top: 100px !important;
+    padding-bottom: 80px !important;
+  }
+  
+  .about-content {
+    padding: 30px 20px;
+  }
+  
+  .about-portal p, .about-portal ul {
+    font-size: 1rem;
+  }
+}
+
+/* Fix for header overlap */
+body {
+  padding-top: 0; /* Remove any top padding that might interfere */
+}
+
+/* Ensure proper spacing from header */
+.about-portal {
+  margin-top: 80px; /* Account for fixed header height */
+}
   </style>
 </head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="container">
+      <div class="header-content d-flex justify-content-between align-items-center py-3">
+        <div class="logo">
+          <img src="{{ asset('assets/assets-itsaportal/img/ts.png') }}" alt="ITSA Logo">
+          <div class="logo-text">PT Indonesia Thai Summit Auto</div>
+        </div>
+        <div class="menu-toggle d-lg-none" id="menu-toggle">
+          <i class="fas fa-bars fa-2x"></i>
+        </div>
+        <nav class="nav-links d-none d-lg-flex align-items-center" id="nav-links">
+          <a href="{{ route('beranda') }}" class="nav-item {{ request()->routeIs('beranda') ? 'active' : '' }}">Beranda</a>
+          <a href="{{ route('about') }}" class="nav-item {{ request()->routeIs('about') ? 'active' : '' }}">About us</a>
+          <a href="{{ route('service') }}" class="nav-item {{ request()->routeIs('service') ? 'active' : '' }}">Service</a>
+          <a href="{{ route('contact') }}" class="nav-item {{ request()->routeIs('contact') ? 'active' : '' }}">Contact</a>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main>
+    @yield('content')
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-col">
+          <h4>PT Indonesia Thai Summit Auto</h4>
+          <ul>
+            <li><a href="{{ route('about') }}">About us</a></li>
+            <li><a href="#">Location</a></li>
+            <li><a href="#">Career</a></li>
+            <li><a href="#">News</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Layanan</h4>
+          <ul>
+            <li><a href="{{ route('service') }}">Document Action Request System</a></li>
+            <li><a href="{{ route('service') }}">Digital Asset Registration</a></li>
+            <li><a href="#">Helpdesk IT</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Help</h4>
+          <ul>
+            <li><a href="#">FAQ</a></li>
+            <li><a href="#">User Guide</a></li>
+            <li><a href="{{ route('contact') }}">Contact Support</a></li>
+            <li><a href="#">Terms & Conditions</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="copyright text-center mt-4">
+        &copy; 2025 PT Indonesia Thai Summit Auto. All Rights Reserved.
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  {{-- <script src="{{ asset('assets/assets-itsaportal/js/bootstrap.bundle.min.js') }}"></script> --}}
+  <script>
+    const toggle = document.getElementById('menu-toggle');
+    const navLinks = document.getElementById('nav-links');
+    toggle.addEventListener('click', () => {
+      navLinks.classList.toggle('active');
+    });
+  </script>
+  
+  @stack('scripts')
+
+</body>
+</html>

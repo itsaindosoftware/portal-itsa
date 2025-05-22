@@ -58,7 +58,7 @@
     .form-section {
       padding: 1.5rem 2rem 2rem;
     }
-
+    
     .form-floating {
       margin-bottom: 1.25rem;
     }
