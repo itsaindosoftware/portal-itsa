@@ -5,6 +5,7 @@ use App\Http\Controllers\fe\AboutController;
 use App\Http\Controllers\fe\ServiceController;
 use App\Http\Controllers\fe\ContactController;
 use App\Http\Controllers\fe\BerandaController;
+use App\Http\Controllers\fe\NewsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -33,6 +34,7 @@ Route::get('/beranda', [BerandaController::class, 'index'])->name('beranda');
 Route::get('/about', [AboutController::class, 'index'])->name('about');
 Route::get('/service', [ServiceController::class, 'index'])->name('service');
 Route::get('/contact', [ContactController::class, 'index'])->name('contact');
+Route::get('/news', [NewsController::class, 'index'])->name('news');
 
 Route::get('/home_', 'HomeController@home_')->name('dashboard');
 
