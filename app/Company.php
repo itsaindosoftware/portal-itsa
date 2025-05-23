@@ -12,11 +12,11 @@ class Company extends Model
     protected $table = 'companys';
 
     protected $fillable = [
-       'company_desc'
-   ];
-   public function getCompany()
-   {
-       $getData = \DB::connection('dar-system')->table('companys')->get();
-       return $getData;
-   }
+        'company_desc'
+    ];
+    public function getCompany()
+    {
+        $getData = \DB::connection('portal-itsa')->table('companys')->get();
+        return $getData;
+    }
 }

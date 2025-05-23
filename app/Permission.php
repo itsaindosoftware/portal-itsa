@@ -6,7 +6,7 @@ use Laratrust\Models\LaratrustPermission;
 use App\RolePermission;
 class Permission extends LaratrustPermission
 {
-     protected $fillable = [
+    protected $fillable = [
         'name',
         'display_name',
         'description'
@@ -29,7 +29,7 @@ class Permission extends LaratrustPermission
     }
     public function getModuleAttribute()
     {
-        $getData = \DB::connection('dar-system')->table('modules')->get();
+        $getData = \DB::connection('portal-itsa')->table('modules')->get();
         return $getData;
     }
 }

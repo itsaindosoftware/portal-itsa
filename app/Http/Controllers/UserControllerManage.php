@@ -21,7 +21,7 @@ class UserControllerManage extends Controller
     {
         if (Auth::user()->hasPermission('manage-user')) {
             if ($request->ajax()) {
-                $user = DB::connection('dar-system')->table('role_user')
+                $user = DB::connection('portal-itsa')->table('role_user')
                     ->leftJoin('users', 'role_user.user_id', '=', 'users.id')
                     ->leftJoin('roles', 'role_user.role_id', '=', 'roles.id')
                     ->leftJoin('companys', 'users.company_id', '=', 'companys.id')
@@ -152,7 +152,7 @@ class UserControllerManage extends Controller
     public function show($id)
     {
         if (Auth::user()->hasPermission(['manage-user', 'show-user'])) {
-            $user = DB::connection('dar-system')->table('role_user')
+            $user = DB::connection('portal-itsa')->table('role_user')
                 ->leftJoin('users', 'role_user.user_id', '=', 'users.id')
                 ->leftJoin('roles', 'role_user.role_id', '=', 'roles.id')
                 ->leftJoin('companys', 'users.company_id', '=', 'companys.id')
@@ -250,7 +250,7 @@ class UserControllerManage extends Controller
             $user->save();
 
 
-            DB::connection('dar-system')->table('role_user')->where('user_id', '=', $id)
+            DB::connection('portal-itsa')->table('role_user')->where('user_id', '=', $id)
                 ->update(['role_id' => $request->role_id]);
 
             return redirect()->route('user.index')->with('success', __('User successfully updated'));

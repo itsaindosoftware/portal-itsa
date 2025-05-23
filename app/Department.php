@@ -12,11 +12,11 @@ class Department extends Model
     protected $table = 'departments';
 
     protected $fillable = [
-       'description'
-   ];
-   public function getDepartment()
-   {
-       $getData = \DB::connection('dar-system')->table('departments')->get();
-       return $getData;
-   }
+        'description'
+    ];
+    public function getDepartment()
+    {
+        $getData = \DB::connection('portal-tsa')->table('departments')->get();
+        return $getData;
+    }
 }

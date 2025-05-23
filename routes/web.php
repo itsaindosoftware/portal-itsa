@@ -19,15 +19,12 @@ use App\Http\Controllers\fe\NewsController;
 */
 
 Route::get('/', function () {
-    return view('layouts.front-end.front-end-layouts');
+    return view('layouts.front-end.beranda.beranda');
 });
 
 Route::get('/login-digitalassets', function () {
     return view('auth.login-da');
 });
-
-Auth::routes();
-
 
 // :: FRONT END :: //
 Route::get('/beranda', [BerandaController::class, 'index'])->name('beranda');
@@ -38,6 +35,7 @@ Route::get('/news', [NewsController::class, 'index'])->name('news');
 
 Route::get('/home_', 'HomeController@home_')->name('dashboard');
 
+Auth::routes();
 
 Route::group(['middleware' => ['auth']], function () {
     Route::get('/home', 'HomeController@index')->name('home');

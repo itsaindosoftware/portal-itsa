@@ -74,7 +74,7 @@ class HomeController extends Controller
             }
 
             // Department distribution data
-            $departmentDistribution = DB::connection('dar-system')
+            $departmentDistribution = DB::connection('portal-itsa')
                 ->table('request_dar')
                 ->join('users', 'request_dar.nik_req', '=', 'users.nik')
                 ->join('departments', 'users.department_id', '=', 'departments.id')
@@ -108,7 +108,7 @@ class HomeController extends Controller
             $getData = Requestdar::where('nik_req', \Auth::user()->nik)->count();
 
             // Get user information
-            $usersInfo = DB::connection('dar-system')
+            $usersInfo = DB::connection('portal-itsa')
                 ->table('users')
                 ->leftJoin('companys', 'users.company_id', '=', 'companys.id')
                 ->leftJoin('departments', 'users.department_id', '=', 'departments.id')
@@ -129,7 +129,7 @@ class HomeController extends Controller
             ]);
 
         } elseif (\Auth::user()->hasRole('manager')) {
-            $usersInfo = DB::connection('dar-system')
+            $usersInfo = DB::connection('portal-itsa')
                 ->table('users')
                 ->leftJoin('companys', 'users.company_id', '=', 'companys.id')
                 ->leftJoin('departments', 'users.department_id', '=', 'departments.id')
@@ -170,7 +170,7 @@ class HomeController extends Controller
             }
 
             // Get department distribution data
-            $departmentDistribution = DB::connection('dar-system')
+            $departmentDistribution = DB::connection('portal-itsa')
                 ->table('request_dar')
                 ->join('users', 'request_dar.nik_req', '=', 'users.nik')
                 ->join('departments', 'users.department_id', '=', 'departments.id')
@@ -180,7 +180,7 @@ class HomeController extends Controller
                 ->limit(10)
                 ->get();
 
-            $pendingRequestsList = DB::connection('dar-system')
+            $pendingRequestsList = DB::connection('portal-itsa')
                 ->table('request_dar')
                 ->join('users as requester', 'request_dar.nik_req', '=', 'requester.nik')
                 ->join('departments', 'requester.department_id', '=', 'departments.id')
@@ -232,7 +232,7 @@ class HomeController extends Controller
             }
 
             // Get department distribution data
-            $departmentDistribution = DB::connection('dar-system')
+            $departmentDistribution = DB::connection('portal-itsa')
                 ->table('request_dar')
                 ->join('users', 'request_dar.nik_req', '=', 'users.nik')
                 ->join('departments', 'users.department_id', '=', 'departments.id')
@@ -242,7 +242,7 @@ class HomeController extends Controller
                 ->limit(10)
                 ->get();
 
-            $pendingRequestsList = DB::connection('dar-system')
+            $pendingRequestsList = DB::connection('portal-itsa')
                 ->table('request_dar')
                 ->join('users as requester', 'request_dar.nik_req', '=', 'requester.nik')
                 ->join('departments', 'requester.department_id', '=', 'departments.id')

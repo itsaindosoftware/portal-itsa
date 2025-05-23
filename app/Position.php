@@ -12,12 +12,12 @@ class Position extends Model
     protected $table = 'positions';
 
     protected $fillable = [
-       'position_desc'
-   ];
+        'position_desc'
+    ];
 
-   public function getPosition()
-   {
-       $getData = \DB::connection('dar-system')->table('positions')->get();
-       return $getData;
-   }
+    public function getPosition()
+    {
+        $getData = \DB::connection('portal-itsa')->table('positions')->get();
+        return $getData;
+    }
 }

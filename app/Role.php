@@ -6,8 +6,8 @@ use Laratrust\Models\LaratrustRole;
 
 class Role extends LaratrustRole
 {
-     protected $fillable = [
-     	'name',
+    protected $fillable = [
+        'name',
         'display_name',
         'description'
     ];
@@ -18,7 +18,7 @@ class Role extends LaratrustRole
     }
     public function getRoles()
     {
-    	$getData = \DB::connection('dar-system')->table('roles')->get();
-    	return $getData;
+        $getData = \DB::connection('portal-itsa')->table('roles')->get();
+        return $getData;
     }
 }

@@ -88,7 +88,7 @@ class RequestdarController extends Controller
                     }
 
                 } elseif (Auth::user()->hasRole('user-employee')) {
-                    $data = DB::connection('dar-system')->table('request_dar')->leftJoin('users', 'request_dar.user_id', '=', 'users.id')
+                    $data = DB::connection('portal-itsa')->table('request_dar')->leftJoin('users', 'request_dar.user_id', '=', 'users.id')
                         ->leftJoin('departments', 'request_dar.dept_id', '=', 'departments.id')
                         ->leftJoin('companys', 'request_dar.company_id', '=', 'companys.id')
                         ->leftJoin('positions', 'request_dar.position_id', '=', 'positions.id')
@@ -107,7 +107,7 @@ class RequestdarController extends Controller
                         ->where('request_dar.nik_req', Auth::user()->nik)->get();
                 } elseif (Auth::user()->hasRole('manager')) {
 
-                    $data = DB::connection('dar-system')->table('request_dar')->leftJoin('users', 'request_dar.user_id', '=', 'users.id')
+                    $data = DB::connection('portal-itsa')->table('request_dar')->leftJoin('users', 'request_dar.user_id', '=', 'users.id')
                         ->leftJoin('departments', 'request_dar.dept_id', '=', 'departments.id')
                         ->leftJoin('companys', 'request_dar.company_id', '=', 'companys.id')
                         ->leftJoin('positions', 'request_dar.position_id', '=', 'positions.id')
@@ -158,7 +158,7 @@ class RequestdarController extends Controller
 
                     $data = $data->get();
                 } elseif (Auth::user()->hasRole('sysdev')) {
-                    $data = DB::connection('dar-system')->table('request_dar')->leftJoin('users', 'request_dar.user_id', '=', 'users.id')
+                    $data = DB::connection('portal-itsa')->table('request_dar')->leftJoin('users', 'request_dar.user_id', '=', 'users.id')
                         ->leftJoin('departments', 'request_dar.dept_id', '=', 'departments.id')
                         ->leftJoin('companys', 'request_dar.company_id', '=', 'companys.id')
                         ->leftJoin('positions', 'request_dar.position_id', '=', 'positions.id')
@@ -217,7 +217,7 @@ class RequestdarController extends Controller
 
                     $data = $data->get();
                 } elseif (Auth::user()->hasRole('manager-it')) {
-                    $data = DB::connection('dar-system')->table('request_dar')->leftJoin('users', 'request_dar.user_id', '=', 'users.id')
+                    $data = DB::connection('portal-itsa')->table('request_dar')->leftJoin('users', 'request_dar.user_id', '=', 'users.id')
                         ->leftJoin('departments', 'request_dar.dept_id', '=', 'departments.id')
                         ->leftJoin('companys', 'request_dar.company_id', '=', 'companys.id')
                         ->leftJoin('positions', 'request_dar.position_id', '=', 'positions.id')
@@ -357,30 +357,30 @@ class RequestdarController extends Controller
             }
         }
         // request type
-        $reqTypes = DB::connection('dar-system')
+        $reqTypes = DB::connection('portal-itsa')
             ->table('type_of_reqforms')
             ->select('id', 'request_type')
             ->get();
         // request desc
-        $requestDesc = DB::connection('dar-system')
+        $requestDesc = DB::connection('portal-itsa')
             ->table('request_desc')
             ->select('id', 'request_descript')
             ->get();
 
         // department
-        $department = DB::connection('dar-system')
+        $department = DB::connection('portal-itsa')
             ->table('departments')
             ->select('id', 'description')
             ->get();
 
         // companys
-        $company = DB::connection('dar-system')
+        $company = DB::connection('portal-itsa')
             ->table('companys')
             ->select('id', 'company_desc as company')
             ->get();
 
         // companys
-        $position = DB::connection('dar-system')
+        $position = DB::connection('portal-itsa')
             ->table('positions')
             ->select('id', 'position_desc as position')
             ->get();
@@ -410,7 +410,7 @@ class RequestdarController extends Controller
                 abort(403);
             }
 
-            $reqTypes = DB::connection('dar-system')
+            $reqTypes = DB::connection('portal-itsa')
                 ->table('type_of_reqforms')
                 ->select('id', 'request_type')
                 ->get();
@@ -535,7 +535,7 @@ class RequestdarController extends Controller
     public function show($id)
     {
         if (Auth::user()->hasPermission('show-dar')) {
-            $data = DB::connection('dar-system')->table('request_dar')->leftJoin('users', 'request_dar.user_id', '=', 'users.id')
+            $data = DB::connection('portal-itsa')->table('request_dar')->leftJoin('users', 'request_dar.user_id', '=', 'users.id')
                 ->leftJoin('departments', 'request_dar.dept_id', '=', 'departments.id')
                 ->leftJoin('companys', 'request_dar.company_id', '=', 'companys.id')
                 ->leftJoin('positions', 'request_dar.position_id', '=', 'positions.id')
@@ -569,7 +569,7 @@ class RequestdarController extends Controller
     public function edit($id)
     {
         if (Auth::user()->hasPermission('edit-dar')) {
-            $data = DB::connection('dar-system')->table('request_dar')->leftJoin('users', 'request_dar.user_id', '=', 'users.id')
+            $data = DB::connection('portal-itsa')->table('request_dar')->leftJoin('users', 'request_dar.user_id', '=', 'users.id')
                 ->leftJoin('departments', 'request_dar.dept_id', '=', 'departments.id')
                 ->leftJoin('companys', 'request_dar.company_id', '=', 'companys.id')
                 ->leftJoin('positions', 'request_dar.position_id', '=', 'positions.id')
@@ -697,7 +697,7 @@ class RequestdarController extends Controller
     public function destroy($id)
     {
         if (Auth::user()->hasPermission(['manager-dar-system', 'delete-dar'])) {
-            DB::connection('dar-system')->table('request_dar')->where('id', $id)->delete();
+            DB::connection('portal-itsa')->table('request_dar')->where('id', $id)->delete();
 
             return response()->json([
                 'status' => true
@@ -735,7 +735,7 @@ class RequestdarController extends Controller
     public function approvedBy1(Request $request, $id)
     {
         if (Auth::user()->hasPermission(['manager-dar-system', 'approved-by1'])) {
-            DB::connection('dar-system')->table('request_dar')->where('id', $id)->update([
+            DB::connection('portal-itsa')->table('request_dar')->where('id', $id)->update([
                 'approval_date1' => date('Y-m-d H:i:s'),
                 'approval_status1' => '1',
                 'remark_approval_by1' => $request->input('remarks', '')
@@ -749,7 +749,7 @@ class RequestdarController extends Controller
     public function rejectedAppr1(Request $request, $id)
     {
         if (Auth::user()->hasPermission(['manager-dar-system', 'approved-by1', 'rejected-appr1'])) {
-            DB::connection('dar-system')->table('request_dar')->where('id', $id)->update([
+            DB::connection('portal-itsa')->table('request_dar')->where('id', $id)->update([
                 'approval_date1' => date('Y-m-d H:i:s'),
                 'approval_status1' => '2',
                 'remark_approval_by1' => $request->reject_reason
@@ -763,7 +763,7 @@ class RequestdarController extends Controller
     public function approvedBy2(Request $request, $id)
     {
         if (Auth::user()->hasPermission(['manager-dar-system', 'approved-by2'])) {
-            DB::connection('dar-system')->table('request_dar')->where('id', $id)->update([
+            DB::connection('portal-itsa')->table('request_dar')->where('id', $id)->update([
                 'approval_date2' => date('Y-m-d H:i:s'),
                 'approval_status2' => '1',
                 'remark_approval_by2' => $request->input('remarks', '')
@@ -777,7 +777,7 @@ class RequestdarController extends Controller
     public function rejectedAppr2(Request $request, $id)
     {
         if (Auth::user()->hasPermission(['manager-dar-system', 'approved-by2', 'rejected-appr2'])) {
-            DB::connection('dar-system')->table('request_dar')->where('id', $id)->update([
+            DB::connection('portal-itsa')->table('request_dar')->where('id', $id)->update([
                 'approval_date2' => date('Y-m-d H:i:s'),
                 'approval_status2' => '2',
                 'remark_approval_by2' => $request->reject_reason
@@ -793,7 +793,7 @@ class RequestdarController extends Controller
         \Log::info('Request data for approval:', $request->all());
 
         if (Auth::user()->hasPermission(['manager-dar-system', 'approved-by3'])) {
-            DB::connection('dar-system')->table('request_dar')->where('id', $id)->update([
+            DB::connection('portal-itsa')->table('request_dar')->where('id', $id)->update([
                 'approval_date3' => date('Y-m-d H:i:s'),
                 'approval_status3' => '1',
                 'remark_approval_by3' => $request->input('remarks', '')
@@ -807,7 +807,7 @@ class RequestdarController extends Controller
     public function rejectedAppr3(Request $request, $id)
     {
         if (Auth::user()->hasPermission(['manager-dar-system', 'approved-by3', 'rejected-appr3'])) {
-            DB::connection('dar-system')->table('request_dar')->where('id', $id)->update([
+            DB::connection('portal-itsa')->table('request_dar')->where('id', $id)->update([
                 'approval_date3' => date('Y-m-d H:i:s'),
                 'approval_status3' => '2',
                 'remark_approval_by3' => $request->reject_reason
