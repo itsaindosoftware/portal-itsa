@@ -9,6 +9,7 @@ class ServiceController extends Controller
 {
     public function index()
     {
-        return view('layouts.front-end.service.service');
+        $service = \DB::connection('portal-itsa')->table('service')->get();
+        return view('layouts.front-end.service.service', compact('service'));
     }
 }

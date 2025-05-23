@@ -14,25 +14,38 @@
       <div class="row g-4 justify-content-center">
 
         <!-- DARS -->
+         @foreach ($service as $item)
         <div class="col-md-6 col-lg-4">
           <div class="feature-card h-100">
             <div class="feature-img text-center my-4">
-              <img src="{{ asset('assets/assets-itsaportal/img/dar.png') }}" alt="Document Action Request System" style="height: 80px;">
+              @if ($loop->index == '0')
+                 <img src="{{ asset('assets/assets-itsaportal/img/dar.png') }}" alt="Document Action Request System" style="height: 80px;">
+              @elseif ($loop->index == '1')
+                 <img src="{{ asset('assets/assets-itsaportal/img/da.png') }}" alt="Digital Asset Management" style="height: 80px;">
+              @endif
+             
             </div>
             <div class="feature-content">
-              <h3 class="h5 text-center fw-bold">Document Action Request System</h3>
-              <p class="text-center">An efficient and structured system for submitting, approving and tracking company documents.</p>
+              <h3 class="h5 text-center fw-bold">{{ $item->title }}</h3>
+              <p class="text-center">{{ $item->description }}</p>
               <div class="text-center">
-                <a href="{{ url('login') }}" class="btn btn-primary mt-3" target="_blank">
-                  <i class="fas fa-external-link-alt me-2"></i>Access
-                </a>
+                   @if ($loop->index == '0')
+                      <a href="{{ url('login') }}" class="btn btn-primary mt-3" target="_blank">
+                        <i class="fas fa-external-link-alt me-2"></i>Access
+                      </a>
+                   @elseif ($loop->index == '1')
+                      <a href="{{ url('/login-digitalassets') }}" class="btn btn-primary mt-3" target="_blank">
+                        <i class="fas fa-external-link-alt me-2"></i>Access
+                      </a>
+                   @endif
               </div>
             </div>
           </div>
         </div>
+        @endforeach
 
         <!-- DAM -->
-        <div class="col-md-6 col-lg-4">
+        {{-- <div class="col-md-6 col-lg-4">
           <div class="feature-card h-100">
             <div class="feature-img text-center my-4">
               <img src="{{ asset('assets/assets-itsaportal/img/da.png') }}" alt="Digital Asset Management" style="height: 80px;">
@@ -47,5 +60,5 @@
               </div>
             </div>
           </div>
-        </div>
+        </div> --}}
         @endsection

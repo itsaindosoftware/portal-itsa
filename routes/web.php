@@ -58,5 +58,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('rejected2/requestdar/{id}', 'RequestDarController@rejectedAppr2')->name('requestdar.rejectedAppr2');
     Route::post('approved3/requestdar/{id}', 'RequestDarController@approvedBy3')->name('requestdar.approvedby3');
     Route::post('rejected3/requestdar/{id}', 'RequestDarController@rejectedAppr3')->name('requestdar.rejectedAppr3');
+    Route::resource('newsbe', 'NewsbeController');
+    Route::resource('servicebe', 'ServicebeController');
 
 });

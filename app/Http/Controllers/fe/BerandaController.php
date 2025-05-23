@@ -9,6 +9,7 @@ class BerandaController extends Controller
 {
     public function index()
     {
-        return view('layouts.front-end.beranda.beranda');
+        $service = \DB::connection('portal-itsa')->table('service')->get();
+        return view('layouts.front-end.beranda.beranda', compact('service'));
     }
 }
