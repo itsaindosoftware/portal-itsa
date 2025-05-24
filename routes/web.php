@@ -18,9 +18,8 @@ use App\Http\Controllers\fe\NewsController;
 |
 */
 
-Route::get('/', function () {
-    return view('layouts.front-end.beranda.beranda');
-});
+
+Route::get('/', [BerandaController::class, 'index'])->name('home');
 
 Route::get('/login-digitalassets', function () {
     return view('auth.login-da');
@@ -32,6 +31,7 @@ Route::get('/about', [AboutController::class, 'index'])->name('about');
 Route::get('/service', [ServiceController::class, 'index'])->name('service');
 Route::get('/contact', [ContactController::class, 'index'])->name('contact');
 Route::get('/news', [NewsController::class, 'index'])->name('news');
+Route::get('/news/{id}', [NewsController::class, 'show'])->name('news.show');
 
 Route::get('/home_', 'HomeController@home_')->name('dashboard');
 

@@ -9,7 +9,7 @@
 
 	<div class="section-header">
 		@permission('create-portalitsa-news')
-		<a href="{{ route('newsbe.create') }}" class="btn btn-icon icon-left btn-primary"><i class="fas fa-plus"></i> Add Service</a>
+		<a href="{{ route('newsbe.create') }}" class="btn btn-icon icon-left btn-primary"><i class="fas fa-plus"></i> Add News</a>
 		@endpermission
 		<div class="section-header-breadcrumb">
 			<div class="breadcrumb-item active"><a href="#">Dashboard</a></div>
@@ -165,7 +165,7 @@ $(document).on('click','#show-data-news', function(e){
             method: 'GET',
             dataType: 'json',
             success: function(data) {
-                console.log(data)
+                // console.log(data)
                 let html = `
                     <div class="table-responsive">
                     <table class="table table-bordered table-sm">
@@ -174,6 +174,9 @@ $(document).on('click','#show-data-news', function(e){
                         <tr><th>Description</th><td>${data.description}</td></tr>
                         <tr><th>Created By</th><td>${data.created_by}</td></tr>
                         <tr><th>Created Date</th><td>${data.created_at}</td></tr>
+                        <tr><th>Status</th><td>${data.status}</td></tr>
+                        <tr><th>Slug</th><td>${data.slug}</td></tr>
+                        <tr><th>Category</th><td>${data.category}</td></tr>
                          <tr>
                             <th>Picture</th>
                             <td><img src="/storage/news/${data.pic}" alt="News Picture" style="max-width: 200px; max-height: 150px;"></td>

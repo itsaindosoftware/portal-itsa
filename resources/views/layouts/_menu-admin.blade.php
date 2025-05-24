@@ -72,15 +72,16 @@
 </li>
 @endpermission
 
-@permission(['manage-portalitsa-news','manager-portalitsa-service'])
-<li class="menu-header">Management PORTAL-ITSA</li>
 
+<li class="menu-header">Management PORTAL-ITSA</li>
+@permission('manage-portalitsa-news')
 <li>
   <a class="nav-link" href="{{ route('newsbe.index') }}">
     <i class="fas fa-newspaper"></i> <span>News</span>
   </a>
 </li>
-
+@endpermission
+@permission('manage-portalitsa-service')
 <li>
   <a class="nav-link" href="{{ route('servicebe.index') }}">
     <i class="fas fa-user-check"></i> <span>Service</span>
