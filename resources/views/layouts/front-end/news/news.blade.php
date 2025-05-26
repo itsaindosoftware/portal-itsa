@@ -73,7 +73,7 @@
                   </div>
                   <h3 class="fw-bold mb-3" style="color: #333; line-height: 1.3;">{{ $featuredNews->title }}</h3>
                   <p style="color: #666; line-height: 1.6; margin-bottom: 20px;">{{ Str::limit(strip_tags($featuredNews->description), 150) }}</p>
-                  <a href="{{ route('news.show', $featuredNews->id) }}" class="btn" style="background: linear-gradient(135deg, #007bff, #0056b3); color: white; border: none; padding: 12px 25px; border-radius: 25px; text-decoration: none; font-weight: 600; transition: transform 0.3s ease;">Read More <i class="fas fa-arrow-right ms-2"></i></a>
+                  <a href="{{ route('news.show', base64_encode($featuredNews->id)) }}" class="btn" style="background: linear-gradient(135deg, #007bff, #0056b3); color: white; border: none; padding: 12px 25px; border-radius: 25px; text-decoration: none; font-weight: 600; transition: transform 0.3s ease;">Read More <i class="fas fa-arrow-right ms-2"></i></a>
                 </div>
               </div>
             </div>
@@ -128,7 +128,8 @@
               </div>
               <h5 class="fw-bold mb-3" style="color: #333; line-height: 1.3;">{{ $item->title }}</h5>
               <p style="color: #666; line-height: 1.6; font-size: 0.95rem;">{{ Str::limit(strip_tags($item->description), 100) }}</p>
-              <a href="{{ route('news.show', $item->id) }}" style="color: #007bff; text-decoration: none; font-weight: 600; font-size: 0.9rem;">Read More <i class="fas fa-chevron-right ms-1"></i></a>
+              @[]
+              <a href="{{ route('news.show', base64_encode($item->id)) }}" style="color: #007bff; text-decoration: none; font-weight: 600; font-size: 0.9rem;">Read More <i class="fas fa-chevron-right ms-1"></i></a>
             </div>
           </div>
         </div>
@@ -163,90 +164,8 @@
     </div>
   </section>
 
-  <style>
-    .news-card:hover {
-      transform: translateY(-10px);
-      box-shadow: 0 20px 40px rgba(0,0,0,0.15) !important;
-    }
+  {{-- <style>
 
-    .news-card:hover .news-image img {
-      transform: scale(1.05);
-    }
-
-    .featured-news:hover {
-      transform: translateY(-5px);
-    }
-
-    .btn:hover {
-      transform: translateY(-2px);
-    }
-
-    .search-box input:focus {
-      border-color: #007bff;
-      box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-    }
-
-    .form-select:focus {
-      border-color: #007bff;
-      box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-    }
-
-    /* Custom pagination styles */
-    .pagination {
-      justify-content: center;
-      margin: 0;
-    }
-
-    .page-link {
-      border: 1px solid #dee2e6;
-      background: white;
-      color: #007bff;
-      padding: 12px 16px;
-      border-radius: 8px;
-      margin: 0 5px;
-      text-decoration: none;
-    }
-
-    .page-link:hover {
-      background: linear-gradient(135deg, #007bff, #0056b3) !important;
-      color: white !important;
-      border-color: transparent !important;
-    }
-
-    .page-item.active .page-link {
-      background: linear-gradient(135deg, #007bff, #0056b3);
-      border: none;
-      color: white;
-    }
-
-    .page-item.disabled .page-link {
-      background: transparent;
-      color: #6c757d;
-      border: none;
-    }
-
-    @media (max-width: 768px) {
-      .hero-news {
-        height: 50vh !important;
-        margin-top: 60px !important;
-      }
-
-      .featured-news .row > div:first-child {
-        order: 2;
-      }
-
-      .featured-news .row > div:last-child {
-        order: 1;
-      }
-
-      .search-filter-section .row > div {
-        margin-bottom: 15px !important;
-      }
-
-      .search-filter-section .btn {
-        margin-top: 10px;
-      }
-    }
-  </style>
+  </style> --}}
 
 @endsection

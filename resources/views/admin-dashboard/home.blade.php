@@ -121,15 +121,15 @@
 </div>
 
 <!-- DAR Statistics Section -->
-<div class="row">
+{{-- <div class="row">
     <div class="col-12">
         <h4 class="text-dark font-weight-bold mt-4 mb-3">Statistik Permintaan DAR</h4>
     </div>
-</div>
+</div> --}}
 
 <div class="row">
     <!-- DAR Request Overview -->
-    <div class="col-lg-8">
+    {{-- <div class="col-lg-8">
         <div class="card shadow-sm">
             <div class="card-header pb-0">
                 <h4>Permintaan DAR Bulanan</h4>
@@ -140,15 +140,15 @@
                         <button class="btn btn-primary btn-sm" onclick="filterChart('year')">Tahun Ini</button>
                     </div>
                 </div> --}}
-            </div>
+            {{-- </div>
             <div class="card-body">
                 <canvas id="darRequestChart" height="280"></canvas>
             </div>
         </div>
-    </div>
+    </div> --}}
     
     <!-- DAR Status Summary -->
- <div class="col-lg-4">
+ {{-- <div class="col-lg-4">
     <div class="card shadow-sm">
         <div class="card-header">
             <h4>Status Permintaan</h4>
@@ -174,10 +174,10 @@
         </div>
     </div>
 </div>
-</div>
+</div> --}}
 
 <!-- Department Distribution and System Health -->
-<div class="row">
+{{-- <div class="row">
     <!-- Department Distribution -->
     <div class="col-lg-12">
         <div class="card shadow-sm">
@@ -188,7 +188,7 @@
                 <canvas id="departmentDistributionChart" height="300"></canvas>
             </div>
         </div>
-    </div>
+    </div> --}}
 </div>
 
 @endsection

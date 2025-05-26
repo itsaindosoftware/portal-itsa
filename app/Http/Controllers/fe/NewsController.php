@@ -35,9 +35,9 @@ class NewsController extends Controller
 
         // Add search functionality
         if ($search) {
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('news.title', 'LIKE', "%{$search}%")
-                  ->orWhere('news.description', 'LIKE', "%{$search}%");
+                    ->orWhere('news.description', 'LIKE', "%{$search}%");
             });
         }
 
@@ -81,6 +81,8 @@ class NewsController extends Controller
     }
     public function show($id)
     {
+        // dd($id);
+        $id = base64_decode($id);
         $news = DB::connection('portal-itsa')->table('news')
             ->leftJoin('users', 'news.users_id', '=', 'users.id')
             ->leftJoin('roles', 'news.role_id', '=', 'roles.id')

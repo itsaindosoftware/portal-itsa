@@ -164,7 +164,7 @@
                   </div>
                   <h3 class="fw-bold mb-3" style="color: #333; line-height: 1.3;">{{ $featuredNews->title }}</h3>
                   <p style="color: #666; line-height: 1.6; margin-bottom: 20px;">{{ Str::limit(strip_tags($featuredNews->description), 150) }}</p>
-                  <a href="{{ route('news.show', $featuredNews->id) }}" class="btn" style="background: linear-gradient(135deg, #007bff, #0056b3); color: white; border: none; padding: 12px 25px; border-radius: 25px; text-decoration: none; font-weight: 600; transition: transform 0.3s ease;">Read More <i class="fas fa-arrow-right ms-2"></i></a>
+                  <a href="{{ route('news.show', base64_encode($featuredNews->id)) }}" class="btn" style="background: linear-gradient(135deg, #007bff, #0056b3); color: white; border: none; padding: 12px 25px; border-radius: 25px; text-decoration: none; font-weight: 600; transition: transform 0.3s ease;">Read More <i class="fas fa-arrow-right ms-2"></i></a>
                 </div>
               </div>
             </div>
@@ -219,7 +219,7 @@
               </div>
               <h5 class="fw-bold mb-3" style="color: #333; line-height: 1.3;">{{ $item->title }}</h5>
               <p style="color: #666; line-height: 1.6; font-size: 0.95rem;">{{ Str::limit(strip_tags($item->description), 100) }}</p>
-              <a href="{{ route('news.show', $item->id) }}" style="color: #007bff; text-decoration: none; font-weight: 600; font-size: 0.9rem;">Read More <i class="fas fa-chevron-right ms-1"></i></a>
+              <a href="{{ route('news.show', base64_encode($item->id)) }}" style="color: #007bff; text-decoration: none; font-weight: 600; font-size: 0.9rem;">Read More <i class="fas fa-chevron-right ms-1"></i></a>
             </div>
           </div>
         </div>
