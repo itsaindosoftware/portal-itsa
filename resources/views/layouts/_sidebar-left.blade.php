@@ -1,10 +1,10 @@
 <div class="main-sidebar sidebar-style-2">
   <aside id="sidebar-wrapper">
     <div class="sidebar-brand">
-      <a href="index.html">DAR SYSTEM </a>
+      <a href="{{ route('beranda') }}">PORTAL ITSA</a>
     </div>
     <div class="sidebar-brand sidebar-brand-sm">
-      <a href="index.html">St</a>
+      <a href="{{ route('beranda') }}">St</a>
     </div>
     <ul class="sidebar-menu">
       {{-- @permission('manage-user|manage-module|manage-role|manage-permission') --}}
