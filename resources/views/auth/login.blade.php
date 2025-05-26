@@ -3,12 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no" name="viewport">
-  <title>DAR SYSTEM</title>
+  <title>PORTALITSA</title>
 
   <!-- General CSS Files -->
-  <link rel="stylesheet" href="{{ asset("bootstrap5/css/bootstrap.min.css") }}">
-  <link rel="stylesheet" href="{{ asset("bootstrap5/css/all.min.css") }} ">
-  <link rel="shortcut icon" href="{{ asset('assets/img/ts.png') }}">
+  <link href="{{ asset('assets/assets-itsaportal/css/bootstrap.min.css') }}" rel="stylesheet">
+  <link href="{{ asset('assets/assets-itsaportal/css/all.min.css') }}" rel="stylesheet">
 
   <style>
     :root {
@@ -22,10 +21,48 @@
     }
 
     body {
-      background-color: var(--light-bg);
-      min-height: 100vh;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       color: var(--text-color);
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Grid Layout */
+    .login-grid {
+      display: grid;
+      grid-template-columns: 1fr 400px;
+      height: 100vh;
+    }
+
+    /* Left side - Landscape Background */
+    .landscape-section {
+      background-image: url('{{ asset('assets/assets-itsaportal/img/bg.jpg') }}');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .landscape-content {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(74, 222, 128, 0.1) 50%, rgba(125, 216, 125, 0.1) 100%);
+    }
+
+    /* Right side - Login Form Container */
+    .login-section {
+      background-color: var(--light-bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
     }
 
     .login-container {
@@ -103,7 +140,21 @@
       font-size: 0.85rem;
     }
 
-    @media (max-width: 576px) {
+    /* Responsive */
+    @media (max-width: 768px) {
+      .login-grid {
+        grid-template-columns: 1fr;
+        grid-template-rows: 200px 1fr;
+      }
+      
+      .landscape-section {
+        height: 200px;
+      }
+      
+      .login-section {
+        box-shadow: none;
+      }
+      
       .login-container {
         margin: 1rem;
       }
@@ -112,61 +163,69 @@
 </head>
 
 <body>
-  <div class="container d-flex align-items-center justify-content-center" style="min-height: 100vh;">
-    <div class="login-container">
-      <div class="brand-section">
-        <img src="assets/img/doc.png" alt="Document Icon" height="45">
-        <h3>Document Action Request</h3>
-        <p>Sign in to access your account</p>
-      </div>
+  <div class="login-grid">
+    <!-- Left Side - Landscape -->
+    <div class="landscape-section">
+      <div class="landscape-content"></div>
+    </div>
 
-      <div class="form-section">
-        <form method="POST" action="{{ route('login') }}" class="needs-validation" novalidate>
-          @csrf
+    <!-- Right Side - Original Login Form -->
+    <div class="login-section">
+      <div class="login-container">
+        <div class="brand-section">
+          <img src="assets/img/ts.png" alt="Document Icon" height="45">
+          <h3>Portal ITSA</h3>
+          <p>Sign in to access your account</p>
+        </div>
 
-          <div class="form-floating mb-3">
-            <input type="text" class="form-control @error('nik') is-invalid @enderror"
-              id="nik" name="nik" value="{{ old('nik') }}"
-              placeholder="NIK" required autocomplete="off" autofocus>
-            <label for="nik">NIK</label>
-            @error('nik')
-            <div class="invalid-feedback">
-              {{ $message }}
+        <div class="form-section">
+          <form method="POST" action="{{ route('login') }}" class="needs-validation" novalidate>
+            @csrf
+
+            <div class="form-floating mb-3">
+              <input type="text" class="form-control @error('nik') is-invalid @enderror"
+                id="nik" name="nik" value="{{ old('nik') }}"
+                placeholder="NIK" required autocomplete="off" autofocus>
+              <label for="nik">NIK</label>
+              @error('nik')
+              <div class="invalid-feedback">
+                {{ $message }}
+              </div>
+              @enderror
             </div>
-            @enderror
-          </div>
 
-          <div class="form-floating mb-3">
-            <input type="password" class="form-control @error('password') is-invalid @enderror"
-              id="password" name="password" placeholder="Password" autocomplete="off" required>
-            <label for="password">Password</label>
-            @error('password')
-            <div class="invalid-feedback">
-              {{ $message }}
+            <div class="form-floating mb-3">
+              <input type="password" class="form-control @error('password') is-invalid @enderror"
+                id="password" name="password" placeholder="Password" autocomplete="off" required>
+              <label for="password">Password</label>
+              @error('password')
+              <div class="invalid-feedback">
+                {{ $message }}
+              </div>
+              @enderror
             </div>
-            @enderror
-          </div>
 
-          <div class="form-check mb-3">
-            <input class="form-check-input" type="checkbox" name="remember" id="remember-me">
-            <label class="form-check-label" for="remember-me">
-              Remember Me
-            </label>
-          </div>
+            <div class="form-check mb-3">
+              <input class="form-check-input" type="checkbox" name="remember" id="remember-me">
+              <label class="form-check-label" for="remember-me">
+                Remember Me
+              </label>
+            </div>
 
-          <button type="submit" class="btn btn-login">
-            Sign In
-          </button>
-        </form>
-      </div>
-      
-      <div class="footer">
-        <p>© 2025 SYS DEV & IT DEPT</p>
+            <button type="submit" class="btn btn-login">
+              Sign In
+            </button>
+          </form>
+        </div>
+        
+        <div class="footer">
+          <p>© 2025 SYS DEV & IT DEPT</p>
+        </div>
       </div>
     </div>
   </div>
 
   <!-- JS Files -->
-  <script src="{{ asset('bootstrap5/js/bootstrap.bundle.min.js') }}"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

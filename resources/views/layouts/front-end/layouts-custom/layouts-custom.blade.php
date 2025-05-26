@@ -313,14 +313,14 @@
       margin-top: 0;
       padding-top: 80px;
       padding-bottom: 40px;
-      background-color: #212529;
+      background-color: #161718;
       color: #fff;
       position: relative;
     }
 
     .footer:before {
       content: '';
-      position: absolute;
+      position:fixed;
       top: -50px;
       left: 0;
       width: 100%;
@@ -843,6 +843,25 @@ body {
       .search-filter-section .btn {
         margin-top: 10px;
       }
+    }
+    .slideshow-bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      background-size: cover;
+      background-position: center;
+      animation: slideShow 20s alternate;
+    }
+
+    @keyframes slideShow {
+      0% { background-image:linear-gradient(rgba(189, 182, 182, 0.7), rgba(56, 54, 54, 0.7)), url('{{ asset('assets/assets-itsaportal/img/bg.jpg') }}'); }
+      25% { background-image: linear-gradient(rgba(189, 182, 182, 0.7), rgba(56, 54, 54, 0.7)), url('{{ asset('assets/assets-itsaportal/img/slide2.jpeg') }}'); }
+      50% { background-image: linear-gradient(rgba(189, 182, 182, 0.7), rgba(56, 54, 54, 0.7)), url('{{ asset('storage/news/2.png') }}'); }
+      75% { background-image: linear-gradient(rgba(189, 182, 182, 0.7), rgba(56, 54, 54, 0.7)), url('{{ asset('assets/assets-itsaportal/img/bg.jpg') }}'); }
+      100% { background-image: linear-gradient(rgba(189, 182, 182, 0.7), rgba(56, 54, 54, 0.7)), url('{{ asset('assets/assets-itsaportal/img/slide2.jpeg') }}'); }
     }
   </style> 
 </head>

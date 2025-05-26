@@ -21,9 +21,9 @@ use App\Http\Controllers\fe\NewsController;
 
 Route::get('/', [BerandaController::class, 'index'])->name('home');
 
-Route::get('/login-digitalassets', function () {
-    return view('auth.login-da');
-});
+// Route::get('/login-digitalassets', function () {
+//     return view('auth.login-da');
+// });
 
 // :: FRONT END :: //
 Route::get('/beranda', [BerandaController::class, 'index'])->name('beranda');
