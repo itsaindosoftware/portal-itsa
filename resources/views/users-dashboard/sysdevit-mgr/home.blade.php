@@ -30,7 +30,7 @@
         <div class="row no-gutters align-items-center">
           <div class="col mr-2">
             <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-              Menunggu Approval</div>
+              Waiting Approval</div>
             <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $pending }}</div>
           </div>
           <div class="col-auto">
@@ -117,7 +117,7 @@
       <div class="card-header py-3 d-flex align-items-center justify-content-between">
         <div>
           <i class="fas fa-tasks mr-2"></i>
-          <h6 class="m-0 font-weight-bold text-primary d-inline">Request Menunggu Approval</h6>
+          <h6 class="m-0 font-weight-bold text-primary d-inline">Request Waiting Approval</h6>
         </div>
         <a href="{{ route('requestdar.index') }}" class="btn btn-sm btn-primary">Lihat Semua</a>
       </div>
@@ -146,7 +146,7 @@
               </tr>
               @empty
               <tr>
-                <td colspan="6" class="text-center">Tidak ada request yang menunggu approval</td>
+                <td colspan="6" class="text-center">No data available</td>
               </tr>
               @endforelse
             </tbody>

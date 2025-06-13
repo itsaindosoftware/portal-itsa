@@ -17,7 +17,7 @@
         <div class="col-md-6 col-lg-5">
           <div class="login-card h-100">
             <div class="text-center mb-4">
-              <h3 class="fw-bold">Login to ITSA Portal</h3>
+              <h3 class="fw-bold">Login to Portal ITSA</h3>
               <p class="text-muted">Access your integrated system services</p>
             </div>
 
