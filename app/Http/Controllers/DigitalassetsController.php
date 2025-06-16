@@ -1,0 +1,248 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
+use DB;
+use Illuminate\Support\Facades\Hash;
+use Symfony\Component\HttpFoundation\FileBag;
+use Yajra\DataTables\DataTables;
+use Carbon\Carbon;
+use Validator;
+use App\Digitalassets;
+
+class DigitalassetsController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function __construct()
+    {
+        Carbon::setLocale('id');
+    }
+    public function index(Request $request)
+    {
+
+        if (!Auth::check()) {
+            return redirect()->route('login');
+        }
+
+        if ($request->ajax()) {
+            if (!Auth::user()->hasRole('user-employee-digassets')) {
+                return response()->json(['error' => 'Unauthorized'], 403);
+            }
+            if (Auth::user()->hasPermission('manage-digital-assets')) {
+                if (Auth::user()->hasRole('user-employee-digassets')) {
+                    $data = Digitalassets::query()
+                        ->leftJoin('users', 'registration_fixed_assets.user_id', '=', 'users.id')
+                        ->leftJoin('departments', 'registration_fixed_assets.department_id', '=', 'departments.id')
+                        ->leftJoin('companys', 'registration_fixed_assets.company_id', '=', 'companys.id')
+                        ->leftJoin('master_asset_groups', 'registration_fixed_assets.asset_group_id', '=', 'master_asset_groups.id')
+                        ->leftJoin('master_asset_locations', 'registration_fixed_assets.asset_location_id', '=', 'master_asset_locations.id')
+                        ->leftJoin('master_asset_cost_centers', 'registration_fixed_assets.asset_cost_center_id', '=', 'master_asset_cost_centers.id');
+                    $data = $data->select(
+                        'registration_fixed_assets.id',
+                        'registration_fixed_assets.date',
+                        'registration_fixed_assets.rfa_number',
+                        'registration_fixed_assets.issue_fixed_asset_no',
+                        'registration_fixed_assets.production_code',
+                        'registration_fixed_assets.product_name',
+                        'registration_fixed_assets.grn_no',
+                        'registration_fixed_assets.requestor_name',
+                        'users.name as user_name',
+                        'departments.description as department_name',
+                        'companys.company_desc as company_name',
+                        'master_asset_groups.asset_group_name',
+                        'master_asset_locations.asset_location_name as name_location',
+                        'master_asset_cost_centers.cost_center_name as cost_cname',
+                        'registration_fixed_assets.remark',
+                        'registration_fixed_assets.approval_status1',
+                        'registration_fixed_assets.approval_status2',
+                        'registration_fixed_assets.approval_status3',
+                    );
+                    $data = $data->where('registration_fixed_assets.user_id', Auth::user()->id)->get();
+                }
+            }
+
+            return DataTables::of($data)
+                ->addColumn('action', function ($data) {
+                    if (Auth::user()->hasRole('user-employee-digassets')) {
+                        return view('datatables._action-user-digassets', [
+                            'model' => $data,
+                            'edit_url' => route('digitalassets.edit', $data->id),
+                            'show_url' => route('digitalassets.show', $data->id)
+                        ]);
+                    }
+                })
+                ->editColumn('approval_status1', function ($data) {
+                    return view('datatables._approval-status1-digassets', [
+                        'model' => $data
+                    ]);
+                })
+                ->editColumn('approval_status2', function ($data) {
+                    return view('datatables._approval-status2-digassets', [
+                        'model' => $data
+                    ]);
+                })
+                ->editColumn('approval_status3', function ($data) {
+                    return view('datatables._approval-status3-digassets', [
+                        'model' => $data
+                    ]);
+                })
+                ->make(true);
+        }
+
+        if (Auth::user()->hasRole('user-employee-digassets')) {
+            return view('digitalassets.user-dashboard.index');
+        }
+
+
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        if (!Auth::check()) {
+            return redirect()->route('login');
+        }
+        if (Auth::user()->hasPermission('create-digital-assets-reg')) {
+            $assetGroups = DB::connection('portal-itsa')->table('master_asset_groups')->get();
+            $assetLocations = DB::connection('portal-itsa')->table('master_asset_locations')->get();
+            $assetCostCenters = DB::connection('portal-itsa')->table('master_asset_cost_centers')->get();
+            $userId = Auth::user()->id;
+            $userData = DB::connection('portal-itsa')->table('users')->leftJoin('departments', 'departments.id', '=', 'users.department_id')->where('users.id', $userId)->first();
+            $companies = DB::connection('portal-itsa')->table('companys')->get();
+            return view('digitalassets.user-dashboard.create', compact(
+                'assetGroups',
+                'assetLocations',
+                'assetCostCenters',
+                'userData',
+                'companies'
+            ));
+        } else {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+        if (!Auth::check()) {
+            return redirect()->route('login');
+        }
+        if (Auth::user()->hasPermission('create-digital-assets-reg')) {
+            $request->validate([
+                'date' => 'required|date',
+                'rfa_number' => 'required|string|max:100',
+                'received_date' => 'required|date',
+                'requestor_name' => 'required|string|max:100',
+                'issue_fixed_asset_no' => 'required|string|max:100',
+                'io_no' => 'required|string|max:100',
+                'company_id' => 'required|string|max:100',
+                'product_code' => 'required|string|max:100',
+                'product_name' => 'required|string|max:100',
+                'grn_no' => 'required|string|max:100',
+                'asset_group' => 'required|exists:master_asset_groups,id',
+                'asset_location' => 'required|exists:master_asset_locations,id',
+                'asset_cost_center' => 'required|exists:master_asset_cost_centers,id',
+            ]);
+
+            // Simpan data ke tabel registration_fixed_assets
+            $insert = [
+                'date' => $request->date,
+                'rfa_number' => $request->rfa_number,
+                'received_date' => $request->received_date,
+                'requestor_name' => $request->requestor_name,
+                'issue_fixed_asset_no' => $request->issue_fixed_asset_no,
+                'io_no' => $request->io_no,
+                'company_id' => $request->company_id,
+                'production_code' => $request->product_code,
+                'product_name' => $request->product_name,
+                'grn_no' => $request->grn_no,
+                'asset_group_id' => $request->asset_group,
+                'asset_location_id' => $request->asset_location,
+                'asset_cost_center_id' => $request->asset_cost_center,
+                'created_by' => Auth::user()->name,
+                'user_id' => Auth::user()->id,
+                // 'department_id' => $request->department_id,
+                'created_at' => date('Y-m-d H:i:s'),
+                'approval_status1' => '0',
+                'approval_status2' => '0',
+                'approval_status3' => '0',
+            ];
+
+            $id = DB::connection('portal-itsa')->table('registration_fixed_assets')->insertGetId($insert);
+
+            // Jika request AJAX, balas JSON
+            if ($request->ajax()) {
+                return response()->json(['success' => true, 'message' => 'Digital Asset Succesfully registered!']);
+            }
+
+            // Jika bukan AJAX, redirect biasa
+            return redirect()->route('digitalassets.index')->with('success', 'Digital Asset Succesfully registered!');
+        } else {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function edit($id)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, $id)
+    {
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
+    {
+        //
+    }
+}

@@ -269,6 +269,99 @@ class HomeController extends Controller
                 'departmentDistribution' => $departmentDistribution,
                 'pendingRequest' => $pendingRequestsList
             ]);
+            // digital assets session
+        } elseif (Auth::user()->hasRole('user-employee-digassets')) {
+            $totalAssets = DB::connection('portal-itsa')
+                ->table('registration_fixed_assets')
+                ->count();
+
+            // Active Assets
+            $totalActiveAssets = DB::connection('portal-itsa')
+                ->table('registration_fixed_assets')
+                ->where('status', 'active')
+                ->count();
+
+            // Inactive Assets
+            $totalInactiveAssets = DB::connection('portal-itsa')
+                ->table('registration_fixed_assets')
+                ->where('status', 'inactive')
+                ->count();
+
+            // Approval statistics
+            $waitingApproval1 = DB::connection('portal-itsa')
+                ->table('registration_fixed_assets')
+                ->where('approval_status1', '0')
+                ->count();
+            $approvedAssets1 = DB::connection('portal-itsa')
+                ->table('registration_fixed_assets')
+                ->where('approval_status1', '1')
+                ->count();
+            $rejectedAssets1 = DB::connection('portal-itsa')
+                ->table('registration_fixed_assets')
+                ->where('approval_status1', '2')
+                ->count();
+
+            $waitingApproval2 = DB::connection('portal-itsa')
+                ->table('registration_fixed_assets')
+                ->where('approval_status2', '0')
+                ->count();
+            $approvedAssets2 = DB::connection('portal-itsa')
+                ->table('registration_fixed_assets')
+                ->where('approval_status2', '1')
+                ->count();
+            $rejectedAssets2 = DB::connection('portal-itsa')
+                ->table('registration_fixed_assets')
+                ->where('approval_status2', '2')
+                ->count();
+
+            $waitingApproval3 = DB::connection('portal-itsa')
+                ->table('registration_fixed_assets')
+                ->where('approval_status3', '0')
+                ->count();
+            $approvedAssets3 = DB::connection('portal-itsa')
+                ->table('registration_fixed_assets')
+                ->where('approval_status3', '1')
+                ->count();
+            $rejectedAssets3 = DB::connection('portal-itsa')
+                ->table('registration_fixed_assets')
+                ->where('approval_status3', '2')
+                ->count();
+
+            // Asset Group Distribution
+            $assetGroups = DB::connection('portal-itsa')
+                ->table('registration_fixed_assets')
+                ->join('master_asset_groups', 'registration_fixed_assets.asset_group_id', '=', 'master_asset_groups.id')
+                ->select('master_asset_groups.asset_group_name', DB::raw('count(*) as total'))
+                ->groupBy('master_asset_groups.asset_group_name')
+                ->orderBy('total', 'desc')
+                ->get();
+
+            // Recent Activity (last 5 assets)
+            $recentAssets = DB::connection('portal-itsa')
+                ->table('registration_fixed_assets')
+                ->orderBy('created_at', 'desc')
+                ->limit(5)
+                ->get();
+
+            return view('users-dashboard.digassets.user-employee-digassets.home', [
+                'totalAssets' => $totalAssets,
+                'totalActiveAssets' => $totalActiveAssets,
+                'totalInactiveAssets' => $totalInactiveAssets,
+                'assetGroups' => $assetGroups,
+                'recentAssets' => $recentAssets,
+                // Approval 1
+                'waitingApproval1' => $waitingApproval1,
+                'approvedAssets1' => $approvedAssets1,
+                'rejectedAssets1' => $rejectedAssets1,
+                // Approval 2
+                'waitingApproval2' => $waitingApproval2,
+                'approvedAssets2' => $approvedAssets2,
+                'rejectedAssets2' => $rejectedAssets2,
+                // Approval 3
+                'waitingApproval3' => $waitingApproval3,
+                'approvedAssets3' => $approvedAssets3,
+                'rejectedAssets3' => $rejectedAssets3,
+            ]);
         } else {
             return view('error.403');
         }

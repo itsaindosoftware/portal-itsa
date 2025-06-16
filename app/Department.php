@@ -16,7 +16,7 @@ class Department extends Model
     ];
     public function getDepartment()
     {
-        $getData = \DB::connection('portal-tsa')->table('departments')->get();
+        $getData = \DB::connection('portal-itsa')->table('departments')->get();
         return $getData;
     }
 }

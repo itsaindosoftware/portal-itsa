@@ -15,6 +15,8 @@
         @role('admin')
              @include('layouts._menu-admin')
         @endrole
+
+        {{-- Request DAR --}}
         @role('user-employee')
              @include('layouts._menu-users')
         @endrole
@@ -26,6 +28,11 @@
         @endrole
         @role('manager-it')
              @include('layouts._menu-users-sysdev-mgrit')
+        @endrole
+
+        {{-- Digital Assets Menu --}}
+        @role('user-employee-digassets')
+             @include('layouts._menu-users-digitalassets')
         @endrole
 
       </ul>

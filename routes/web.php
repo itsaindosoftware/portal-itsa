@@ -60,5 +60,6 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('rejected3/requestdar/{id}', 'RequestDarController@rejectedAppr3')->name('requestdar.rejectedAppr3');
     Route::resource('newsbe', 'NewsbeController');
     Route::resource('servicebe', 'ServicebeController');
+    Route::resource('digitalassets', 'DigitalassetsController');
 
 });
