@@ -40,9 +40,9 @@ CREATE TABLE IF NOT EXISTS `departments` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table portal-itsa.departments: ~17 rows (approximately)
+-- Dumping data for table portal-itsa.departments: ~20 rows (approximately)
 REPLACE INTO `departments` (`id`, `description`, `created_at`, `updated_at`) VALUES
 	(1, 'Accounting/Finance/CIC', '2025-05-06 02:55:22', NULL),
 	(2, 'HQ Office', '2025-05-06 02:55:23', NULL),
@@ -60,7 +60,10 @@ REPLACE INTO `departments` (`id`, `description`, `created_at`, `updated_at`) VAL
 	(14, 'Production Engineering', '2025-05-06 02:55:32', NULL),
 	(15, 'Personal Assistant', '2025-05-06 02:55:33', NULL),
 	(16, 'Warehouse', '2025-05-06 02:55:33', NULL),
-	(17, 'PPIC', '2025-05-06 02:55:34', NULL);
+	(17, 'PPIC', '2025-05-06 02:55:34', NULL),
+	(18, 'Manager Directure ITSP', '2025-06-17 09:11:59', NULL),
+	(19, 'Manager Directure ITSA', '2025-06-17 09:14:59', NULL),
+	(20, 'Personal Assisten Manager', '2025-06-17 09:15:11', NULL);
 
 -- Dumping structure for table portal-itsa.failed_jobs
 CREATE TABLE IF NOT EXISTS `failed_jobs` (
@@ -89,7 +92,7 @@ CREATE TABLE IF NOT EXISTS `master_asset_cost_centers` (
   UNIQUE KEY `master_asset_cost_centers_cost_center_code_unique` (`cost_center_code`)
 ) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table portal-itsa.master_asset_cost_centers: ~32 rows (approximately)
+-- Dumping data for table portal-itsa.master_asset_cost_centers: ~29 rows (approximately)
 REPLACE INTO `master_asset_cost_centers` (`id`, `cost_center_name`, `cost_center_code`, `created_by`, `updated_by`, `created_at`, `updated_at`) VALUES
 	(1, 'MD', '6001000', 'admin', NULL, '2025-06-16 06:52:59', NULL),
 	(2, 'Sales & Mkt', '6003005', 'admin', NULL, '2025-06-16 06:53:35', NULL),
@@ -182,7 +185,7 @@ CREATE TABLE IF NOT EXISTS `migrations` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table portal-itsa.migrations: ~21 rows (approximately)
+-- Dumping data for table portal-itsa.migrations: ~18 rows (approximately)
 REPLACE INTO `migrations` (`id`, `migration`, `batch`) VALUES
 	(1, '2014_10_12_000000_create_users_table', 1),
 	(2, '2014_10_12_100000_create_password_resets_table', 1),
@@ -216,7 +219,7 @@ CREATE TABLE IF NOT EXISTS `modules` (
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `modules_name_unique` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Dumping data for table portal-itsa.modules: ~11 rows (approximately)
 REPLACE INTO `modules` (`id`, `name`, `created_at`, `updated_at`) VALUES
@@ -283,7 +286,7 @@ CREATE TABLE IF NOT EXISTS `permissions` (
   UNIQUE KEY `permissions_name_unique` (`name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=102 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table portal-itsa.permissions: ~62 rows (approximately)
+-- Dumping data for table portal-itsa.permissions: ~57 rows (approximately)
 REPLACE INTO `permissions` (`id`, `name`, `display_name`, `description`, `module_id`, `created_at`, `updated_at`) VALUES
 	(1, 'manage-setting', 'Manage Setting', 'Bisa Memanage Setting', 1, '2022-05-17 00:26:49', '2022-05-17 00:26:49'),
 	(2, 'create-setting', 'Create Setting', 'Bisa Membuat Setting', 1, '2022-05-17 00:26:49', '2022-05-17 00:26:49'),
@@ -358,7 +361,7 @@ CREATE TABLE IF NOT EXISTS `permission_role` (
   CONSTRAINT `permission_role_role_id_foreign` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table portal-itsa.permission_role: ~76 rows (approximately)
+-- Dumping data for table portal-itsa.permission_role: ~75 rows (approximately)
 REPLACE INTO `permission_role` (`permission_id`, `role_id`) VALUES
 	(1, 1),
 	(2, 1),
@@ -435,7 +438,11 @@ REPLACE INTO `permission_role` (`permission_id`, `role_id`) VALUES
 	(98, 7),
 	(99, 7),
 	(100, 7),
-	(101, 7);
+	(101, 7),
+	(97, 8),
+	(99, 8),
+	(97, 9),
+	(99, 9);
 
 -- Dumping structure for table portal-itsa.permission_user
 CREATE TABLE IF NOT EXISTS `permission_user` (
@@ -483,7 +490,7 @@ REPLACE INTO `positions` (`id`, `position_desc`, `created_at`, `updated_at`) VAL
 -- Dumping structure for table portal-itsa.registration_fixed_assets
 CREATE TABLE IF NOT EXISTS `registration_fixed_assets` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `date` datetime NOT NULL,
+  `date` date NOT NULL,
   `rfa_number` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
   `requestor_name` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
   `issue_fixed_asset_no` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -499,10 +506,11 @@ CREATE TABLE IF NOT EXISTS `registration_fixed_assets` (
   `remark` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `status` enum('active','inactive') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'active',
   `io_no` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'IO Number',
-  `received_date` datetime DEFAULT NULL,
+  `received_date` date DEFAULT NULL,
   `approval_by1` varchar(40) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `approval_date1` datetime DEFAULT NULL,
   `approval_status1` enum('0','1','2') COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `remark_approval_by1` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `approval_by2` varchar(40) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `approval_date2` datetime DEFAULT NULL,
   `approval_status2` enum('0','1','2') COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -521,8 +529,8 @@ CREATE TABLE IF NOT EXISTS `registration_fixed_assets` (
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Dumping data for table portal-itsa.registration_fixed_assets: ~1 rows (approximately)
-REPLACE INTO `registration_fixed_assets` (`id`, `date`, `rfa_number`, `requestor_name`, `issue_fixed_asset_no`, `production_code`, `product_name`, `grn_no`, `user_id`, `department_id`, `company_id`, `asset_group_id`, `asset_location_id`, `asset_cost_center_id`, `remark`, `status`, `io_no`, `received_date`, `approval_by1`, `approval_date1`, `approval_status1`, `approval_by2`, `approval_date2`, `approval_status2`, `remark_approval_by2`, `approval_by3`, `approval_date3`, `approval_status3`, `remark_approval_by3`, `created_at`, `updated_at`, `created_by`, `updated_by`) VALUES
-	(2, '2025-06-16 00:00:00', 'testing', 'ramdhan (Maintenance Dies)', '838943', '99934', 'Mouse', 'IP/99/88934', 9, NULL, 2, 11, 1, 6, NULL, 'active', '8894394', '2025-06-19 00:00:00', NULL, NULL, '0', NULL, NULL, '0', NULL, NULL, NULL, '0', NULL, '2025-06-16 02:18:54', NULL, 'ramdhan', NULL);
+REPLACE INTO `registration_fixed_assets` (`id`, `date`, `rfa_number`, `requestor_name`, `issue_fixed_asset_no`, `production_code`, `product_name`, `grn_no`, `user_id`, `department_id`, `company_id`, `asset_group_id`, `asset_location_id`, `asset_cost_center_id`, `remark`, `status`, `io_no`, `received_date`, `approval_by1`, `approval_date1`, `approval_status1`, `remark_approval_by1`, `approval_by2`, `approval_date2`, `approval_status2`, `remark_approval_by2`, `approval_by3`, `approval_date3`, `approval_status3`, `remark_approval_by3`, `created_at`, `updated_at`, `created_by`, `updated_by`) VALUES
+	(2, '2022-04-14', 'RFA11043', 'ramdhan (Maintenance Dies)', 'IP/IF/22/APR0002', '6014012986', 'ADDITIONAL M & E AIR COMPRESSOR', 'IP/RPO/22/MAR/3354', 9, 4, 2, 4, 4, 14, NULL, 'active', 'ITSP-IO-UP-20.125', '2021-04-06', 'ramdhan', '2025-06-17 04:42:04', '1', 'tolong registerkan', 'pristine', '2025-06-17 08:43:43', '1', 'done registered', NULL, NULL, '0', NULL, '2025-06-16 02:18:54', '2025-06-17 01:43:43', 'ramdhan', 'ramdhan');
 
 -- Dumping structure for table portal-itsa.request_dar
 CREATE TABLE IF NOT EXISTS `request_dar` (
@@ -565,7 +573,7 @@ CREATE TABLE IF NOT EXISTS `request_dar` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table portal-itsa.request_dar: ~0 rows (approximately)
+-- Dumping data for table portal-itsa.request_dar: ~1 rows (approximately)
 REPLACE INTO `request_dar` (`id`, `number_dar`, `nik_req`, `nik_atasan`, `dept_id`, `company_id`, `position_id`, `typereqform_id`, `user_id`, `request_desc_id`, `name_doc`, `no_doc`, `qty_pages`, `reason`, `created_by`, `created_date`, `file_doc`, `storage_type`, `rev_no`, `approval_by1`, `approval_date1`, `approval_status1`, `remark_approval_by1`, `approval_by2`, `approval_date2`, `approval_status2`, `remark_approval_by2`, `approval_by3`, `approval_date3`, `approval_status3`, `remark_approval_by3`, `updated_by_1`, `updated_bydate_1`, `updated_by_2`, `updated_bydate_2`, `status`) VALUES
 	(18, '05/001', '999.99.99', '966.96.96', 6, 1, 11, 8, 3, 3, 'Form Scrap Calculation', 'FG-HHJD-HI', 1, 'ubah document', '999.99.99', '2025-05-20 07:46:14', 'public/dar_documents/2025-05/1747727174_Summary Computer Checking Result.pdf', 'year', '1', 'Manager', NULL, '0', NULL, 'Sys Dev', NULL, '0', NULL, 'Manager SysDev & IT', NULL, '0', NULL, NULL, NULL, NULL, NULL, '1');
 
@@ -594,16 +602,18 @@ CREATE TABLE IF NOT EXISTS `roles` (
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `roles_name_unique` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table portal-itsa.roles: ~6 rows (approximately)
+-- Dumping data for table portal-itsa.roles: ~8 rows (approximately)
 REPLACE INTO `roles` (`id`, `name`, `display_name`, `description`, `created_at`, `updated_at`) VALUES
 	(1, 'admin', 'Administrator', 'Ini adalah Role Admin', '2022-05-17 00:26:49', '2022-05-17 00:26:49'),
 	(3, 'user-employee', 'user employee', 'pengguna system dar', '2025-05-06 20:39:18', '2025-05-06 20:39:18'),
 	(4, 'manager', 'manager', 'approved 1', '2025-05-17 09:09:42', '2025-05-17 09:09:42'),
 	(5, 'sysdev', 'sysdev', 'sysdev pengecekan', '2025-05-19 02:56:24', '2025-05-19 02:56:24'),
 	(6, 'manager-it', 'manager it', 'approved terakhir dari dar system', '2025-05-19 18:33:49', '2025-05-19 18:33:49'),
-	(7, 'user-employee-digassets', 'user employee digassets', 'user employee digassets', '2025-06-15 19:23:27', '2025-06-15 19:23:27');
+	(7, 'user-employee-digassets', 'user employee digassets', 'user employee digassets', '2025-06-15 19:23:27', '2025-06-15 19:23:27'),
+	(8, 'user-acct-digassets', 'user acct digassets', 'user acct digassets', '2025-06-16 21:55:40', '2025-06-16 21:55:40'),
+	(9, 'user-md-digasset-itsp', 'user md digasset itsp', 'user md digasset itsp', '2025-06-16 21:56:36', '2025-06-16 21:56:36');
 
 -- Dumping structure for table portal-itsa.role_user
 CREATE TABLE IF NOT EXISTS `role_user` (
@@ -615,7 +625,7 @@ CREATE TABLE IF NOT EXISTS `role_user` (
   CONSTRAINT `role_user_role_id_foreign` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table portal-itsa.role_user: ~7 rows (approximately)
+-- Dumping data for table portal-itsa.role_user: ~6 rows (approximately)
 REPLACE INTO `role_user` (`role_id`, `user_id`, `user_type`) VALUES
 	(1, 1, 'App\\User'),
 	(1, 8, 'App\\User'),
@@ -624,7 +634,9 @@ REPLACE INTO `role_user` (`role_id`, `user_id`, `user_type`) VALUES
 	(4, 4, 'App\\User'),
 	(5, 5, 'App\\User'),
 	(6, 7, 'App\\User'),
-	(7, 9, 'App\\User');
+	(7, 9, 'App\\User'),
+	(8, 10, 'App\\User'),
+	(9, 11, 'App\\User');
 
 -- Dumping structure for table portal-itsa.service
 CREATE TABLE IF NOT EXISTS `service` (
@@ -682,11 +694,11 @@ CREATE TABLE IF NOT EXISTS `users` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `users_email_unique` (`email`),
   UNIQUE KEY `users_username_unique` (`username`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table portal-itsa.users: ~9 rows (approximately)
+-- Dumping data for table portal-itsa.users: ~11 rows (approximately)
 REPLACE INTO `users` (`id`, `name`, `email`, `username`, `nik`, `department_id`, `position_id`, `company_id`, `email_verified_at`, `password`, `remember_token`, `created_at`, `updated_at`) VALUES
-	(1, 'admin-itsa', 'admin@gmail.com', 'admin', '111.11.11', 0, 0, 0, NULL, '$2y$10$tTyzV0K8C7vi/LrpYIznduJU8oDrSechvHm5AgO5S0MsBKT9e1.Mm', '08Xiy2NJHhqetfUhewOvI1deyMdjwI3bV7LCcNIxpMqi99Hf0MvZV2zXFu9k', '2022-05-17 00:26:49', '2023-11-14 21:25:23'),
+	(1, 'admin-itsa', 'admin@gmail.com', 'admin', '111.11.11', 0, 0, 0, NULL, '$2y$10$tTyzV0K8C7vi/LrpYIznduJU8oDrSechvHm5AgO5S0MsBKT9e1.Mm', '9UrN6oaucz4oqH31qvPeIRTHSnmsG13PzdbGeFCD9DIk18FHcYU9ncNwG94a', '2022-05-17 00:26:49', '2023-11-14 21:25:23'),
 	(2, 'Wildan Fathur Rohman', 'it-03@thaisummit.co.id', 'wildanfr', '943.04.25', 10, 11, 1, NULL, '$2y$10$erCl0A6vAO9m4jvBAr5bhOTY4b5Au1lv1BVi/blcMsr1ZAGopVjUK', NULL, '2025-05-05 20:30:05', '2025-05-05 21:07:00'),
 	(3, 'user1', 'user1@gmail.com', 'user1', '999.99.99', 6, 11, 1, NULL, '$2y$10$uQnjMQuQtcMnVMsDv1pxRuOCKl/SeRdi6iaVi9Pqg13LtVvSIaQ0O', NULL, '2025-05-06 20:59:02', '2025-05-06 20:59:02'),
 	(4, 'user2-manager', 'user2@thaisummit.co.id', 'user2-manager', '966.96.96', 6, 9, 1, NULL, '$2y$10$rGv5v8aPHb9Ie2B3X7g7Oeb3jWwG0irAiIVrFiCg0CaRU2ZH6zWfO', NULL, '2025-05-17 09:17:08', '2025-05-17 09:17:08'),
@@ -694,7 +706,9 @@ REPLACE INTO `users` (`id`, `name`, `email`, `username`, `nik`, `department_id`,
 	(6, 'user4', 'user4@thaisummit.co.id', 'user4', '777.77.77', 9, 11, 1, NULL, '$2y$10$lFDzjEMnW7dtxXa3MaR/Geqpg7Cw2Clcuw11fPyimyMiFgC2NeY3e', NULL, '2025-05-19 03:02:53', '2025-05-19 03:02:53'),
 	(7, 'Wida Mustika Sari', 'wida.mus@thaisummit.co.id', 'widamus', '115.08.08', 10, 9, 1, NULL, '$2y$10$f94sn0uQvqrbmV.hzrW/eeoJxNTif4FWZl88r3Gktq.2VfP1k7OWK', NULL, '2025-05-19 18:37:03', '2025-05-19 18:37:03'),
 	(8, 'Didin Jahrudin', 'it-01@thaisummit.co.id', 'didinjah', '630.07.14', 10, 13, 1, NULL, '$2y$10$jvHx15BfyhCOFws5kRPGVuZHyEGJzKBAdMw7ATd5bbRDFK55NQZR2', NULL, '2025-05-20 18:22:36', '2025-05-20 18:26:19'),
-	(9, 'ramdhan', 'ramdhan@itsp.co.id', 'ramdhan', '555.55.55', 13, 11, 2, NULL, '$2y$10$5yVx/j7nNQrzgoRHkhMmruhBHEnC4gBcDqCIUx4QtNOGY74xfg7e6', NULL, '2025-06-15 19:35:00', '2025-06-15 19:35:00');
+	(9, 'ramdhan', 'ramdhan@itsp.co.id', 'ramdhan', '555.55.55', 13, 11, 2, NULL, '$2y$10$5yVx/j7nNQrzgoRHkhMmruhBHEnC4gBcDqCIUx4QtNOGY74xfg7e6', NULL, '2025-06-15 19:35:00', '2025-06-15 19:35:00'),
+	(10, 'pristine', 'pristine@itsp.co.id', 'pristine', '655.55.55', 1, 11, 2, NULL, '$2y$10$jIfZrQrgxEO0oTK.ALOj.up5N6fNuZxR8sntf7cx2Csikcs/8f2yW', NULL, '2025-06-16 23:22:49', '2025-06-16 23:22:49'),
+	(11, 'Mr. Wuddhikrai', 'wudhikrai@itsa.co.id', 'wuddikrai', '444.44.44', 18, 10, 2, NULL, '$2y$10$sc7zLNlE91b4H.4Qu7RPgekvzUnQNcJ0A47XftVs4S80SOM/KqPgG', NULL, '2025-06-17 02:16:06', '2025-06-17 02:16:06');
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
