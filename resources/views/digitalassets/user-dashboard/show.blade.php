@@ -33,7 +33,7 @@
             <div class="approval-timeline">
                 <div class="row">
                     <!-- Approval 1 -->
-                    <div class="col-md-4">
+                    {{-- <div class="col-md-4">
                         <div class="approval-step {{ $digitalAsset->approval_status1 == 1 ? 'approved' : ($digitalAsset->approval_status1 == 2 ? 'rejected' : 'pending') }}">
                             <div class="approval-icon">
                                   <span>
@@ -71,10 +71,10 @@
                                 @endif
                             </div>
                         </div>
-                    </div>
+                    </div> --}}
 
                     <!-- Approval 2 -->
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <div class="approval-step {{ $digitalAsset->approval_status2 == 1 ? 'approved' : ($digitalAsset->approval_status2 == 2 ? 'rejected' : 'pending') }}">
                             <div class="approval-icon">
                                 @if($digitalAsset->approval_status2 == 1)
@@ -86,7 +86,7 @@
                                 @endif
                             </div>
                             <div class="approval-content">
-                                <h6 class="approval-title">Approval 2</h6>
+                                <h6 class="approval-title">Approval 1</h6>
                                 <p class="approval-role">Acounting (Registered)</p>
                                 <div class="approval-details">
                                     @if($digitalAsset->approval_by2)
@@ -114,7 +114,7 @@
                     </div>
 
                     <!-- Approval 3 -->
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <div class="approval-step {{ $digitalAsset->approval_status3 == 1 ? 'approved' : ($digitalAsset->approval_status3 == 2 ? 'rejected' : 'pending') }}">
                             <div class="approval-icon">
                                 @if($digitalAsset->approval_status3 == 1)
@@ -126,7 +126,7 @@
                                 @endif
                             </div>
                             <div class="approval-content">
-                                <h6 class="approval-title">Approval 3</h6>
+                                <h6 class="approval-title">Approval 2</h6>
                                 <p class="approval-role">MD</p>
                                 <div class="approval-details">
                                     @if($digitalAsset->approvalby3)

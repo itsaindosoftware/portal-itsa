@@ -34,6 +34,9 @@
         @role('user-employee-digassets')
              @include('layouts._menu-users-digitalassets')
         @endrole
+        @role('user-acct-digassets')
+              @include('layouts._menu-users-digitalassets-acct')
+        @endrole
 
       </ul>
     </li>

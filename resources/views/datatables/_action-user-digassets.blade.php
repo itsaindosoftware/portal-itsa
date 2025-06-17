@@ -1,5 +1,5 @@
 @permission(['manage-digital-assets'])
-@if ($model->approval_status1 != '0')
+@if ($model->approval_status2 != '0')
   <a href="#" id="edit-data-notif" class="btn btn-sm btn-outline-warning rounded-circle" title="Edit">
     <i class="fas fa-edit"></i>
   </a>
@@ -22,7 +22,7 @@
 </a>
 @endpermission
 
-@permission(['manage-digital-assets'])
+{{-- @permission(['manage-digital-assets'])
 <a href="{{ $approve_url1 }}" data-href="{{ $approve_url1 }}" 
 data-id="{{ $model->id }}" 
 id="approved-1" 
@@ -32,4 +32,4 @@ row-approve3="{{ $model->approval_date3 }}"
 class="btn btn-sm btn-outline-success rounded-circle" title="Approved1">
   <i class="fas fa-check"></i>
 </a>
-@endpermission
+@endpermission --}}

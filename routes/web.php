@@ -63,5 +63,6 @@ Route::group(['middleware' => ['auth']], function () {
     Route::resource('servicebe', 'ServicebeController');
     Route::resource('digitalassets', 'DigitalassetsController');
     Route::post('digitalassets/approved1/{id}', 'DigitalassetsController@approvedBy1')->name('digitalassets.approvedby1');
+    Route::post('digitalassets/approved2/{id}', 'DigitalassetsController@approvedBy2')->name('digitalassets.approvedby2');
 
 });

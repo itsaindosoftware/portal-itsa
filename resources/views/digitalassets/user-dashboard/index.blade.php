@@ -53,7 +53,6 @@
 								        <th class="text-center">RFA Number</th>
                                         <th class="text-center">ApprovalBy1</th>
                                         <th class="text-center">ApprovalBy2</th>
-                                        <th class="text-center">ApprovalBy3</th>
 										<th class="text-center" width="15%">Action</th>
 									</tr>
 								</thead>
@@ -114,7 +113,7 @@ $(document).ready(function(){
 			},
 			{ data: 'date', name: 'date', className: 'text-center' },
 			{ data: 'rfa_number', name: 'rfa_number', className:'text-center' },
-            { data: 'approval_status1', name: 'approval_status1',className: 'text-center' },
+            // { data: 'approval_status1', name: 'approval_status1',className: 'text-center' },
             { data: 'approval_status2', name: 'approval_status2',className: 'text-center' },
             { data: 'approval_status3', name: 'approval_status3',className: 'text-center' },
 			{ data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-center' }
