@@ -39,6 +39,7 @@ Auth::routes();
 
 Route::group(['middleware' => ['auth']], function () {
     Route::get('/home', 'HomeController@index')->name('home');
+    Route::get('profile', 'HomeController@profile')->name('profile');
     Route::resource('user', 'UserControllerManage');
     Route::resource('permission', 'PermissionController');
     Route::post('detach-permission/{role_id}', 'PermissionController@detachPermission')->name('permission.detach');
@@ -61,5 +62,6 @@ Route::group(['middleware' => ['auth']], function () {
     Route::resource('newsbe', 'NewsbeController');
     Route::resource('servicebe', 'ServicebeController');
     Route::resource('digitalassets', 'DigitalassetsController');
+    Route::post('digitalassets/approved1/{id}', 'DigitalassetsController@approvedBy1')->name('digitalassets.approvedby1');
 
 });

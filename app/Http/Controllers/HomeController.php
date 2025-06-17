@@ -372,4 +372,9 @@ class HomeController extends Controller
     {
         return view('layouts.dashboard');
     }
+    public function profile()
+    {
+        $user = Auth::user();
+        return view('profile.index', compact('user'));
+    }
 }

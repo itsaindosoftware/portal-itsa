@@ -70,14 +70,20 @@
 
 @endsection
 @push('js')
-{{-- @include('request-dar.user-dashboard.create')
-@include('request-dar.user-dashboard.show')
-@include('request-dar.user-dashboard.edit')
-@include('request-dar.user-dashboard.view-docs.view-docs-edit')
-@include('request-dar.user-dashboard.view-docs.view-docs-view') --}}
 <script src="{{ asset('assets/Datatables/jquery.dataTables.min.js') }}"></script>
 <script src="{{ asset('assets/Datatables/dataTables.bootstrap4.min.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
+
+$(document).on('click', '#edit-data-notif', function(e) {
+    e.preventDefault();
+		Swal.fire({
+			icon: 'info',
+			title: 'Edit Not Allowed',
+			text: 'You cannot edit this digital asset as it has already been approved.',
+			confirmButtonText: 'OK'
+		});
+});
 $(document).ready(function(){
         // $('.addrm').prop('disabled', true);
 
@@ -116,199 +122,124 @@ $(document).ready(function(){
 	//
 });
 
-// $(document).on('click','#show-create-dar', function(e){
-//         e.preventDefault();
-//         resetForm();
-//         $('#create-reqdar').modal('show');
-//     })
-//     $('#reqdarForm input, #reqdarForm textarea, #reqdarForm select').on('change keyup', function() {
-//         validateForm();
-//     });
+$(document).on('click','#approved-1', function(e) {
+	e.preventDefault();
+	var id = $(this).data('id');
+	var href = $(this).data('href');
+	if (!id|| !href) {
+		Swal.fire({
+			title: 'Error!',
+			text: 'Invalid request data.',
+			icon: 'error'
+		});
+		return;
+	}
 
-//     // Radio button change handler
-//     $('#reqdarForm input[type="radio"]').on('change', function() {
-//         validateForm();
-//     });
+	var approvalDate1 = $(this).attr('row-approve1');
+	if (approvalDate1) {
+		Swal.fire({
+			title: 'Already Approved',
+			text: 'This request has already been approved by the first approver.',
+			icon: 'info'
+		});
+		return;
+	}
+	Swal.fire({
+		title: 'Are you sure?',
+		text: "You want to approve this request?",
+		icon: 'warning',
+		confirmButtonColor: '#3085d6',
+		cancelButtonColor: '#d33',
+		confirmButtonText: 'Yes, approve it!',
+		input: 'textarea',
+		inputLabel: 'Remarks',
+		inputPlaceholder: 'Please enter your remarks here (optional)',
+		inputAttributes: {
+			'aria-label': 'Remarks',
+			'maxlength': 500
+		},
+		showCancelButton: true,
+		cancelButtonText: 'Cancel',
+		inputValidator: (value) => {
+		}
+	}).then((result) => {
+		$.ajaxSetup({
+			headers: {
+				'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+			}
+		});
+		if (result.value || result.value == '') {
+			let remarks = result.value || '-'; // Get remarks value, empty string if nothing entered
+			$.ajax({
+				url: href,
+				type: "POST",
+				data: {
+					'_method': 'POST',
+					'remarks': remarks // Send remarks to the server
+				},
+				success: function(data) {
+					Swal.fire(
+						'Approved!',
+						data.message,
+						'success'
+					);
+					// table.ajax.reload();
+					$('#table-request-manage').DataTable().ajax.reload();
 
-//     // validasi file_doc
-//     $('#file_doc').on('change', function() {
-//         var fileInput = this;
-//         var fileName = fileInput.files[0] ? fileInput.files[0].name : 'Pilih file PDF';
-//         $(this).next('.custom-file-label').text(fileName);
+				},
+				error: function(xhr) {
+						Swal.fire(
+							'Error!',
+							xhr.responseJSON.message,
+							'error'
+						);
+				}
+			});
+		} else {
+			console.log(`data was canceled`);
+		}
+	});
 
-//         // Validate file type and size
-//         if (fileInput.files.length > 0) {
-//             var file = fileInput.files[0];
-
-//             // Check file type (must be PDF)
-//             if (file.type !== 'application/pdf') {
-//                 showNotification('error', 'Hanya file PDF yang diperbolehkan');
-//                 $(this).val(''); // Clear file input
-//                 $(this).next('.custom-file-label').text('Pilih file PDF');
-//                 return false;
-//             }
-
-//             // Check file size (max 5MB)
-//             if (file.size > 5 * 1024 * 1024) {
-//                 showNotification('error', 'Ukuran file maksimal 5MB');
-//                 $(this).val(''); // Clear file input
-//                 $(this).next('.custom-file-label').text('Pilih file PDF');
-//                 return false;
-//             }
-//         }
-
-//         // Re-validate the form
-//         validateForm();
-//     });
-
-//     function validateForm() {
-//         var isValid = true;
-
-//         // Check if request type is selected
-//         if ($('input[name="typereqform_id"]:checked').length === 0) {
-//             isValid = false;
-//         }
-
-
-//         if ($('input[name="request_desc_id"]:checked').length === 0) {
-//             isValid = false;
-//         }
-
-
-//         // Check required text inputs and textareas
-//         $('#reqdarForm input[type="text"], #reqdarForm input[type="number"], #reqdarForm textarea').each(function() {
-//             if ($(this).prop('required') && !$(this).val().trim()) {
-//                 isValid = false;
-//                 return false; // break the loop
-//             }
-//         });
-
-//         // Check if a storage type is selected
-//         if ($('input[name="storage_type"]:checked').length === 0) {
-//             isValid = false;
-//         }
-
-//         // Check specific fields
-//         if (!$('#dept-id').val() ||
-//             !$('#name-doc').val().trim() ||
-//             !$('#no-doc').val().trim() ||
-//             !$('#qty-pages').val() ||
-//             !$('#reason').val().trim() ||
-//             !$('#rev_no').val()) {
-//             isValid = false;
-//         }
-
-//                 // Check file input
-//         if ($('#file_doc').prop('required') && $('#file_doc').val() === '') {
-//             isValid = false;
-//         }
+	// Swal.fire({
+	// 	title: 'Are you sure?',
+	// 	text: "You want to approve this request?",
+	// 	icon: 'warning',
+	// 	showCancelButton: true,
+	// 	confirmButtonColor: '#3085d6',
+	// 	cancelButtonColor: '#d33',
+	// 	confirmButtonText: 'Yes, approve it!'
+	// }).then((result) => {
+	// 	if (result) {
+	// 		$.ajax({
+	// 			url: href,
+	// 			type: 'POST',
+	// 			data: {
+	// 				_method: 'POST',
+	// 				_token: '{{ csrf_token() }}'
+	// 			},
+	// 			success: function(response) {
+	// 				Swal.fire(
+	// 					'Approved!',
+	// 					response.message,
+	// 					'success'
+	// 				);
+	// 				table.ajax.reload();
+	// 			},
+	// 			error: function(xhr) {
+	// 				Swal.fire(
+	// 					'Error!',
+	// 					xhr.responseJSON.message,
+	// 					'error'
+	// 				);
+	// 			}
+	// 		});
+	// 	}
+	// });
+});
 
 
-//         // Enable or disable submit button based on validation
 
-//         $('.addrm').prop('disabled', !isValid);
-//         // alert(isValid);
-//         return isValid;
-//     }
-//      // Reset form function
-//      function resetForm() {
-//        $('#reqdarForm')[0].reset();
-//         $('input[name="typereqform_id"]').prop('checked', false);
-//         $('input[name="storage_type"]').prop('checked', false);
-//         $('input[name="request_desc_id"]').prop('checked', false);
-//         $('.custom-file-label').text('Pilih file PDF');
-//         $('#reqdarForm input, #reqdarForm textarea, #reqdarForm select').prop('disabled', false);
-//     }
-//     function showNotification(type, message) {
-//         if(type == 'success'){
-//             Swal.fire({
-//                 position: 'top-end',
-//                 icon: 'success',
-//                 title: 'Successfully',
-//                 text: message,
-//                 showConfirmButton: false,
-//                 timer: 1500
-//             })
-//         } else if(type=='warning') {
-//             Swal.fire({
-//                 icon: 'warning',
-//                 title: 'Warning!',
-//                 text: message,
-//             })
-//         } else {
-//             Swal.fire({
-//                 icon: 'error',
-//                 title: 'Error!',
-//                 text: message,
-//             })
-//         }
 
-//     }
-//     $('.addrm').on('click', function() {
-//         // console.log(validateForm())
-//         if (!validateForm()) {
-//             showNotification('warning', 'Lengkapi semua field yang diperlukan');
-//             return false;
-//         }
-
-//         // Create FormData object to handle file uploads
-//         var formData = new FormData($('#reqdarForm')[0]);
-//         // Submit form via AJAX
-//         $.ajax({
-//             url: $('#reqdarForm').attr('action'),
-//             type: 'POST',
-//             data: formData,
-//             dataType: 'json',
-//             contentType: false,
-//             processData: false,
-//             cache: false,
-//             beforeSend: function() {
-//                 $('.addrm').prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Submit...');
-//                  $('#reqdarForm input, #reqdarForm textarea, #reqdarForm select').prop('disabled', true);
-//             },
-//             success: function(response) {
-//                 if (response.success) {
-//                     $('#create-reqdar').modal('hide');
-
-//                     showNotification('success', response.message);
-
-//                     resetForm();
-//                     $('#reqdarForm input, #reqdarForm textarea, #reqdarForm select').prop('disabled', false);
-
-//                     if (typeof refreshDataTable === 'function') {
-//                         refreshDataTable();
-//                     }
-
-//                 } else {
-//                     showNotification('error', response.message);
-//                      $('.addrm').prop('disabled', false).html('<i class="ti-check"></i> Submit');
-//                 }
-//                 // resetForm()
-//             },
-//             error: function(xhr) {
-//                 var errorMessage = 'Terjadi kesalahan saat upload';
-
-//                 if (xhr.responseJSON && xhr.responseJSON.errors) {
-//                     var errors = xhr.responseJSON.errors;
-//                     errorMessage = '';
-
-//                     // Format validation errors
-//                     $.each(errors, function(key, value) {
-//                         errorMessage += value + '<br>';
-//                     });
-//                 }
-
-//                 showNotification('error', errorMessage);
-//             },
-//             complete: function() {
-//                 $('.addrm').prop('disabled', false).html('<i class="ti-check"></i> Submit');
-//                   $('#reqdarForm input, #reqdarForm textarea, #reqdarForm select').prop('disabled', false);
-//             }
-//         });
-//         function refreshDataTable() {
-//             $('#table-request-manage').DataTable().ajax.reload();
-//         }
-//     });
 
 
 

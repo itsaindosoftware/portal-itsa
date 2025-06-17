@@ -5,7 +5,15 @@
 @section('title-head', 'Digital Assets - Dashboard')
 
 @section('content')
+
 <div class="container-fluid px-4">
+    <div class="alert alert-primary mb-4">
+        <h5 class="mb-1"><i class="fas fa-info-circle me-2"></i> Welcome to the Digital Assets Dashboard</h5>
+        <p class="mb-0">
+            Here, you can submit new fixed asset registration requests and monitor the status of your submissions.<br>
+            Please ensure all required information is filled in accurately to support a smooth approval process.<br>
+        </p>
+    </div>
     <!-- Statistics Cards -->
     <div class="row g-4 mb-5">
         <div class="col-lg-3 col-md-6">
@@ -87,15 +95,15 @@
                             <i class="fas fa-chart-pie text-primary me-2"></i>
                             Asset Group Distribution
                         </h5>
-                        <div class="dropdown">
+                        {{-- <div class="dropdown">
                             <button class="btn btn-outline-secondary btn-sm dropdown-toggle border-0" type="button" data-bs-toggle="dropdown">
                                 <i class="fas fa-ellipsis-v"></i>
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-end shadow">
+                            </button> --}}
+                            {{-- <ul class="dropdown-menu dropdown-menu-end shadow">
                                 <li><a class="dropdown-item" href="#"><i class="fas fa-download me-2"></i>Export</a></li>
                                 <li><a class="dropdown-item" href="#"><i class="fas fa-refresh me-2"></i>Refresh</a></li>
-                            </ul>
-                        </div>
+                            </ul> --}}
+                        {{-- </div> --}}
                     </div>
                 </div>
                 <div class="card-body p-4">
@@ -146,7 +154,7 @@
                             <i class="fas fa-clock text-primary me-2"></i>
                             Recent Activity
                         </h5>
-                        <a href="#" class="btn btn-outline-primary btn-sm border-0">
+                        <a href="{{ route('digitalassets.index') }}" class="btn btn-outline-primary btn-sm border-0">
                             View All <i class="fas fa-arrow-right ms-1"></i>
                         </a>
                     </div>
