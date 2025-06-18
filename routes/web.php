@@ -64,5 +64,9 @@ Route::group(['middleware' => ['auth']], function () {
     Route::resource('digitalassets', 'DigitalassetsController');
     Route::post('digitalassets/approved1/{id}', 'DigitalassetsController@approvedBy1')->name('digitalassets.approvedby1');
     Route::post('digitalassets/approved2/{id}', 'DigitalassetsController@approvedBy2')->name('digitalassets.approvedby2');
+    Route::post('digitalassets/rejected2/{id}', 'DigitalassetsController@rejectedAppr2')->name('digitalassets.rejectedAppr2');
+    Route::post('digitalassets/approved3/{id}', 'DigitalassetsController@approvedBy3')->name('digitalassets.approvedby3');
+    Route::post('digitalassets/rejected3/{id}', 'DigitalassetsController@rejectedAppr3')->name('digitalassets.rejectedAppr3');
 
+    Route::get('/apps', [App\Http\Controllers\AppController::class, 'index'])->name('apps.index');
 });

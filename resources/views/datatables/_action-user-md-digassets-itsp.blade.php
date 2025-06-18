@@ -6,18 +6,18 @@
 @endpermission
 
 @permission(['manage-digital-assets'])
-<a href="{{ $approve_url2 }}" data-href="{{ $approve_url2 }}" 
+<a href="#" data-href="{{ $approve_url3 }}" 
 data-id="{{ $model->id }}" 
-id="approved-2" 
+id="approved-3" 
 row-approve1="{{ $model->approval_date1 }}"
 row-approve2="{{ $model->approval_date2 }}"
 row-approve3="{{ $model->approval_date3 }}"
 class="btn btn-sm btn-outline-success rounded-circle" title="Approved1">
   <i class="fas fa-check"></i>
 </a>
-<a href="#" data-href="{{ $rejected_url2 }}" 
+<a href="#" data-href="{{ $rejected_url3 }}" 
 data-id="{{ $model->id }}" 
-id="rejected-2" 
+id="rejected-3" 
 row-approve1="{{ $model->approval_date1 }}"
 row-approve2="{{ $model->approval_date2 }}"
 row-approve3="{{ $model->approval_date3 }}"

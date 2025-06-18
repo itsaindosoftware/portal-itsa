@@ -26,6 +26,9 @@ class RequestdarController extends Controller
     }
     public function index(Request $request)
     {
+        if (!Auth::user()->hasPermission('manage-dar-system') && !Auth::user()->hasRole('admin') && !Auth::user()->hasRole('user-employee') && !Auth::user()->hasRole('manager') && !Auth::user()->hasRole('sysdev') && !Auth::user()->hasRole('manager-it')) {
+            return redirect()->route('apps.index')->with('error', 'You do not have access to this application yet. Please contact your IT Department.');
+        }
         if (!Auth::check()) {
             abort(403);
         }

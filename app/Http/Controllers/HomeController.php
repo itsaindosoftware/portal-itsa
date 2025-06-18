@@ -389,6 +389,31 @@ class HomeController extends Controller
                 'totalWaitingAssets' => $totalWaitingAssets,
                 'totalRejectedAssets' => $totalRejectedAssets,
             ]);
+        } elseif (Auth::user()->hasRole('user-md-digasset-itsp')) {
+            $totalAssets = DB::connection('portal-itsa')
+                ->table('registration_fixed_assets')
+                ->count();
+
+            $totalWaitingAssets = DB::connection('portal-itsa')
+                ->table('registration_fixed_assets')
+                ->where('approval_status3', '0')
+                ->count();
+
+            $totalApprovedAssets = DB::connection('portal-itsa')
+                ->table('registration_fixed_assets')
+                ->where('approval_status3', '1')
+                ->count();
+
+            $totalRejectedAssets = DB::connection('portal-itsa')
+                ->table('registration_fixed_assets')
+                ->where('approval_status3', '2')
+                ->count();
+            return view('users-dashboard.digassets.user-md-digasset-itsp.home', [
+                'totalAssets' => $totalAssets,
+                'totalWaitingAssets' => $totalWaitingAssets,
+                'totalApprovedAssets' => $totalApprovedAssets,
+                'totalRejectedAssets' => $totalRejectedAssets,
+            ]);
         } else {
             return view('error.403');
         }

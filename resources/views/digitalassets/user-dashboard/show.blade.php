@@ -1,8 +1,8 @@
 @extends('layouts.app_custom')
 @section('title-head','Digital Assets - Detail Registration Fixed Asset')
-@role('user-employee-digassets')
+{{-- @role('user-employee-digassets')
    @section('title','Detail Digital Assets Registration')
-@endrole
+@endrole --}}
 
 @section('css')
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/Datatables/dataTables.bootstrap4.min.css') }}">
@@ -129,12 +129,12 @@
                                 <h6 class="approval-title">Approval 2</h6>
                                 <p class="approval-role">MD</p>
                                 <div class="approval-details">
-                                    @if($digitalAsset->approvalby3)
+                                    @if($digitalAsset->approval_by3)
                                         <small class="text-muted">
-                                            <i class="fas fa-user mr-1"></i>{{ $digitalAsset->approvalby3 ?? 'N/A' }}
+                                            <i class="fas fa-user mr-1"></i>{{ $digitalAsset->approval_by3 ?? 'N/A' }}
                                         </small><br>
                                         <small class="text-muted">
-                                            <i class="fas fa-calendar mr-1"></i>{{ $digitalAsset->approval_data3 ? \Carbon\Carbon::parse($digitalAsset->approval_3_date)->format('d M Y H:i') : 'N/A' }}
+                                            <i class="fas fa-calendar mr-1"></i>{{ $digitalAsset->approval_date3 ? \Carbon\Carbon::parse($digitalAsset->approval_date3)->format('d M Y H:i') : 'N/A' }}
                                         </small>
                                         <br>
                                         <small class="text-muted">

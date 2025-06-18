@@ -7,17 +7,13 @@
 @section('content')
 
 <div class="container-fluid px-4">
- <div class="alert alert-primary mb-4">
-    <h5 class="mb-1"><i class="fas fa-info-circle me-2"></i>Welcome to the Digital Assets Accounting Dashboard {{ Auth::user()->name }}</h5>
+<div class="alert alert-primary mb-4">
+    <h5 class="mb-1"><i class="fas fa-info-circle me-2"></i>Welcome to the Digital Assets Management Dashboard {{ Auth::user()->name }}</h5>
     <p class="mb-0">
-        This dashboard allows you to register new fixed asset items and manage their accounting records efficiently.<br>
-        Please ensure all asset information is entered accurately to support proper tracking and compliance.<br>
-        You can also review the status of asset registrations and coordinate with other departments as needed.<br>
-        For any assistance, please contact the IT support team.<br>
-        Thank you for your attention to detail and support in maintaining accurate asset records.
+        This dashboard provides you with a comprehensive overview of all fixed asset registration requests and their approval statuses.<br>
+        You can review, approve, or reject asset submissions.
     </p>
 </div>
-
     <!-- Statistics Cards -->
     <div class="row g-4 mb-5">
         <div class="col-lg-3 col-md-6">
