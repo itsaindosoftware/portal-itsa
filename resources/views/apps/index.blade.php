@@ -15,7 +15,8 @@
         <!-- Digital Assets App -->
         <div class="col-lg-4 col-md-6">
             <div class="app-box app-box-primary">
-                <a href="{{ route('home') }}" class="text-decoration-none">
+                @if (auth()->user()->hasPermission('manage-digital-assets'))
+                    <a href="{{ route('home') }}" class="text-decoration-none">
                     <div class="app-content">
                         <div class="app-icon-wrapper">
                             <div class="app-icon">
@@ -29,12 +30,30 @@
                         </div>
                     </div>
                 </a>
+                @else
+                    <a href="#" class="text-decoration-none" id="digassets-app-link">
+                    <div class="app-content">
+                        <div class="app-icon-wrapper">
+                            <div class="app-icon">
+                                <i class="fas fa-database"></i>
+                            </div>
+                        </div>
+                        <h4 class="app-title">Digital Assets</h4>
+                        <p class="app-description">Manage your digital assets and resources efficiently</p>
+                        <div class="app-arrow">
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                    </div>
+                </a>
+                @endif
+                
             </div>
         </div>
 
         <!-- DAR App -->
         <div class="col-lg-4 col-md-6">
             <div class="app-box app-box-success">
+                @if (auth()->user()->hasPermission('manage-dar-system'))
                 <a href="{{ route('home') }}" class="text-decoration-none">
                     <div class="app-content">
                         <div class="app-icon-wrapper">
@@ -49,6 +68,23 @@
                         </div>
                     </div>
                 </a>
+                @else
+                  <a href="#" class="text-decoration-none" id="dar-app-link">
+                    <div class="app-content">
+                        <div class="app-icon-wrapper">
+                            <div class="app-icon">
+                                <i class="fas fa-cogs"></i>
+                            </div>
+                        </div>
+                        <h4 class="app-title">DAR Application</h4>
+                        <p class="app-description">Handle DAR requests and workflow management</p>
+                        <div class="app-arrow">
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                    </div>
+                </a>
+                @endif
+              
             </div>
         </div>
 
@@ -93,6 +129,4 @@
         -->
     </div>
 </div>
-
-
 @endsection

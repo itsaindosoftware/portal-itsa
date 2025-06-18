@@ -22,6 +22,7 @@ class HomeController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
+
     }
 
     /**
@@ -31,6 +32,20 @@ class HomeController extends Controller
      */
     public function index()
     {
+
+        $userPermissions = DB::connection('portal-itsa')
+            ->table('users')
+            ->leftJoin('role_user', 'users.id', '=', 'role_user.user_id')
+            ->leftJoin('roles', 'role_user.role_id', '=', 'roles.id')
+            ->leftJoin('permission_role', 'roles.id', '=', 'permission_role.role_id')
+            ->leftJoin('permissions', 'permission_role.permission_id', '=', 'permissions.id')
+            ->where('users.id', Auth::user()->id)
+            ->pluck('permissions.name')
+            ->toArray();
+
+        // if (!Auth::user()->hasPermission('manage-dar-system')) {
+
+        // }
         if (\Auth::user()->hasRole('admin')) {
             $role = Role::count();
             $permission = Permission::count();
@@ -390,6 +405,7 @@ class HomeController extends Controller
                 'totalRejectedAssets' => $totalRejectedAssets,
             ]);
         } elseif (Auth::user()->hasRole('user-md-digasset-itsp')) {
+
             $totalAssets = DB::connection('portal-itsa')
                 ->table('registration_fixed_assets')
                 ->count();

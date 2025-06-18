@@ -303,15 +303,38 @@
 </body>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-@if(session('error'))
+<script src="{{ asset('assets/modules/jquery.min.js') }}"></script>
+{{-- @if(session('error'))
     <script>
-        Swal.fire({
-            icon: 'error',
-            title: 'Access Denied',
-            text: '{{ session('error') }}',
-            timer: 2500,
-            showConfirmButton: false
-        });
+
     </script>
-@endif
+@endif --}}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const darAppLink = document.getElementById('dar-app-link');
+        darAppLink.addEventListener('click', function(event) {
+            event.preventDefault();
+            Swal.fire({
+                icon: 'error',
+                title: 'Access Denied',
+                text: 'Access to DAR Application is restricted. Please contact your administrator for permissions.',
+                timer: 2500,
+                showConfirmButton: false
+            });
+        });
+    });
+    document.addEventListener('DOMContentLoaded', function() {
+        const digassetsAppLink = document.getElementById('digassets-app-link');
+        digassetsAppLink.addEventListener('click', function(event) {
+            event.preventDefault();
+            Swal.fire({
+                icon: 'error',
+                title: 'Access Denied',
+                text: 'Access to Digital Assets Application is restricted. Please contact your administrator for permissions.',
+                timer: 2500,
+                showConfirmButton: false
+            });
+        });
+    });
+</script>
 </html>
