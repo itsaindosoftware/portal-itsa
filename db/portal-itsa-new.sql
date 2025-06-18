@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS `departments` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table portal-itsa.departments: ~20 rows (approximately)
+-- Dumping data for table portal-itsa.departments: ~17 rows (approximately)
 REPLACE INTO `departments` (`id`, `description`, `created_at`, `updated_at`) VALUES
 	(1, 'Accounting/Finance/CIC', '2025-05-06 02:55:22', NULL),
 	(2, 'HQ Office', '2025-05-06 02:55:23', NULL),
@@ -286,7 +286,7 @@ CREATE TABLE IF NOT EXISTS `permissions` (
   UNIQUE KEY `permissions_name_unique` (`name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=102 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table portal-itsa.permissions: ~57 rows (approximately)
+-- Dumping data for table portal-itsa.permissions: ~62 rows (approximately)
 REPLACE INTO `permissions` (`id`, `name`, `display_name`, `description`, `module_id`, `created_at`, `updated_at`) VALUES
 	(1, 'manage-setting', 'Manage Setting', 'Bisa Memanage Setting', 1, '2022-05-17 00:26:49', '2022-05-17 00:26:49'),
 	(2, 'create-setting', 'Create Setting', 'Bisa Membuat Setting', 1, '2022-05-17 00:26:49', '2022-05-17 00:26:49'),
@@ -361,7 +361,7 @@ CREATE TABLE IF NOT EXISTS `permission_role` (
   CONSTRAINT `permission_role_role_id_foreign` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table portal-itsa.permission_role: ~75 rows (approximately)
+-- Dumping data for table portal-itsa.permission_role: ~80 rows (approximately)
 REPLACE INTO `permission_role` (`permission_id`, `role_id`) VALUES
 	(1, 1),
 	(2, 1),
@@ -528,9 +528,7 @@ CREATE TABLE IF NOT EXISTS `registration_fixed_assets` (
   UNIQUE KEY `registration_fixed_assets_issue_fixed_asset_no_unique` (`issue_fixed_asset_no`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table portal-itsa.registration_fixed_assets: ~1 rows (approximately)
-REPLACE INTO `registration_fixed_assets` (`id`, `date`, `rfa_number`, `requestor_name`, `issue_fixed_asset_no`, `production_code`, `product_name`, `grn_no`, `user_id`, `department_id`, `company_id`, `asset_group_id`, `asset_location_id`, `asset_cost_center_id`, `remark`, `status`, `io_no`, `received_date`, `approval_by1`, `approval_date1`, `approval_status1`, `remark_approval_by1`, `approval_by2`, `approval_date2`, `approval_status2`, `remark_approval_by2`, `approval_by3`, `approval_date3`, `approval_status3`, `remark_approval_by3`, `created_at`, `updated_at`, `created_by`, `updated_by`) VALUES
-	(2, '2022-04-14', 'RFA11043', 'ramdhan (Maintenance Dies)', 'IP/IF/22/APR0002', '6014012986', 'ADDITIONAL M & E AIR COMPRESSOR', 'IP/RPO/22/MAR/3354', 9, 4, 2, 4, 4, 14, NULL, 'active', 'ITSP-IO-UP-20.125', '2021-04-06', 'ramdhan', '2025-06-17 04:42:04', '1', 'tolong registerkan', 'pristine', '2025-06-17 08:43:43', '1', 'done registered', NULL, NULL, '0', NULL, '2025-06-16 02:18:54', '2025-06-17 01:43:43', 'ramdhan', 'ramdhan');
+-- Dumping data for table portal-itsa.registration_fixed_assets: ~0 rows (approximately)
 
 -- Dumping structure for table portal-itsa.request_dar
 CREATE TABLE IF NOT EXISTS `request_dar` (
@@ -573,7 +571,7 @@ CREATE TABLE IF NOT EXISTS `request_dar` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table portal-itsa.request_dar: ~1 rows (approximately)
+-- Dumping data for table portal-itsa.request_dar: ~0 rows (approximately)
 REPLACE INTO `request_dar` (`id`, `number_dar`, `nik_req`, `nik_atasan`, `dept_id`, `company_id`, `position_id`, `typereqform_id`, `user_id`, `request_desc_id`, `name_doc`, `no_doc`, `qty_pages`, `reason`, `created_by`, `created_date`, `file_doc`, `storage_type`, `rev_no`, `approval_by1`, `approval_date1`, `approval_status1`, `remark_approval_by1`, `approval_by2`, `approval_date2`, `approval_status2`, `remark_approval_by2`, `approval_by3`, `approval_date3`, `approval_status3`, `remark_approval_by3`, `updated_by_1`, `updated_bydate_1`, `updated_by_2`, `updated_bydate_2`, `status`) VALUES
 	(18, '05/001', '999.99.99', '966.96.96', 6, 1, 11, 8, 3, 3, 'Form Scrap Calculation', 'FG-HHJD-HI', 1, 'ubah document', '999.99.99', '2025-05-20 07:46:14', 'public/dar_documents/2025-05/1747727174_Summary Computer Checking Result.pdf', 'year', '1', 'Manager', NULL, '0', NULL, 'Sys Dev', NULL, '0', NULL, 'Manager SysDev & IT', NULL, '0', NULL, NULL, NULL, NULL, NULL, '1');
 
@@ -625,7 +623,7 @@ CREATE TABLE IF NOT EXISTS `role_user` (
   CONSTRAINT `role_user_role_id_foreign` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table portal-itsa.role_user: ~6 rows (approximately)
+-- Dumping data for table portal-itsa.role_user: ~10 rows (approximately)
 REPLACE INTO `role_user` (`role_id`, `user_id`, `user_type`) VALUES
 	(1, 1, 'App\\User'),
 	(1, 8, 'App\\User'),
@@ -698,7 +696,7 @@ CREATE TABLE IF NOT EXISTS `users` (
 
 -- Dumping data for table portal-itsa.users: ~11 rows (approximately)
 REPLACE INTO `users` (`id`, `name`, `email`, `username`, `nik`, `department_id`, `position_id`, `company_id`, `email_verified_at`, `password`, `remember_token`, `created_at`, `updated_at`) VALUES
-	(1, 'admin-itsa', 'admin@gmail.com', 'admin', '111.11.11', 0, 0, 0, NULL, '$2y$10$tTyzV0K8C7vi/LrpYIznduJU8oDrSechvHm5AgO5S0MsBKT9e1.Mm', '9UrN6oaucz4oqH31qvPeIRTHSnmsG13PzdbGeFCD9DIk18FHcYU9ncNwG94a', '2022-05-17 00:26:49', '2023-11-14 21:25:23'),
+	(1, 'admin-itsa', 'admin@gmail.com', 'admin', '111.11.11', 0, 0, 0, NULL, '$2y$10$tTyzV0K8C7vi/LrpYIznduJU8oDrSechvHm5AgO5S0MsBKT9e1.Mm', 'r9GaHuu1FWvSDG4gH5tkrAScmHikxC6AMEvbAHWfSo3BKfvobS7jg4gf3Bys', '2022-05-17 00:26:49', '2023-11-14 21:25:23'),
 	(2, 'Wildan Fathur Rohman', 'it-03@thaisummit.co.id', 'wildanfr', '943.04.25', 10, 11, 1, NULL, '$2y$10$erCl0A6vAO9m4jvBAr5bhOTY4b5Au1lv1BVi/blcMsr1ZAGopVjUK', NULL, '2025-05-05 20:30:05', '2025-05-05 21:07:00'),
 	(3, 'user1', 'user1@gmail.com', 'user1', '999.99.99', 6, 11, 1, NULL, '$2y$10$uQnjMQuQtcMnVMsDv1pxRuOCKl/SeRdi6iaVi9Pqg13LtVvSIaQ0O', NULL, '2025-05-06 20:59:02', '2025-05-06 20:59:02'),
 	(4, 'user2-manager', 'user2@thaisummit.co.id', 'user2-manager', '966.96.96', 6, 9, 1, NULL, '$2y$10$rGv5v8aPHb9Ie2B3X7g7Oeb3jWwG0irAiIVrFiCg0CaRU2ZH6zWfO', NULL, '2025-05-17 09:17:08', '2025-05-17 09:17:08'),
