@@ -51,15 +51,15 @@
               <h3 class="h5 text-center fw-bold">{{ $item->title }}</h3>
               <p class="text-center">{{ $item->description }}</p>
               <div class="text-center">
-                   {{-- @if ($loop->index == '0')
-                      <a href="{{ url('login') }}" class="btn btn-primary mt-3" target="_blank">
+                   @if ($loop->index == '0')
+                      <a href="{{ url('/service') }}" class="btn btn-primary mt-3" target="_blank">
                         <i class="fas fa-external-link-alt me-2"></i>Access
                       </a>
                    @elseif ($loop->index == '1')
-                      <a href="{{ url('/login-digitalassets') }}" class="btn btn-primary mt-3" target="_blank">
+                      <a href="{{ url('/service') }}" class="btn btn-primary mt-3" target="_blank">
                         <i class="fas fa-external-link-alt me-2"></i>Access
                       </a>
-                   @endif --}}
+                   @endif
               </div>
             </div>
           </div>
