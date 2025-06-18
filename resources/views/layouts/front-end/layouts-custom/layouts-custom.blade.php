@@ -881,9 +881,9 @@ body {
         <nav class="nav-links d-none d-lg-flex align-items-center" id="nav-links">
           <a href="{{ route('beranda') }}" class="nav-item {{ request()->routeIs('beranda') ? 'active' : '' }}">Beranda</a>
           <a href="{{ route('about') }}" class="nav-item {{ request()->routeIs('about') ? 'active' : '' }}">About us</a>
-          <a href="{{ route('service') }}" class="nav-item {{ request()->routeIs('service') ? 'active' : '' }}">Service</a>
            <a href="{{ route('news') }}" class="nav-item {{ request()->routeIs('news') ? 'active' : '' }}">News</a>
           <a href="{{ route('contact') }}" class="nav-item {{ request()->routeIs('contact') ? 'active' : '' }}">Contact</a>
+           <a href="{{ route('service') }}" class="nav-item {{ request()->routeIs('service') ? 'active' : '' }}">Service</a>
         </nav>
       </div>
     </div>
