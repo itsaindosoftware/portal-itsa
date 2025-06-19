@@ -1508,7 +1508,7 @@ h6 .badge {
   z-index: 890;
   background-color: transparent; }
   .navbar.active {
-    background-color: #6777ef;
+    background-color: #2d41da;
     box-shadow: rgba(103, 119, 239, 0.2) rgba(0, 0, 0, 0.03); }
 
 .navbar-bg {
@@ -1518,8 +1518,7 @@ h6 .badge {
   left: 0;
   width: 100%;
   height: 115px;
-  background-color: #3abaf4;
-   /* background-color: #6777ef; */
+  background-color: #fff;
   z-index: -1; }
 
 .navbar {
@@ -2318,12 +2317,12 @@ pre {
     width: 100%; } }
 /* 4.4 Layout */
 .main-sidebar {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.03);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
   position: fixed;
   top: 0;
   height: 100%;
   width: 250px;
-  background-color: #fff;
+  background-color: #343a40;
   z-index: 880;
   left: 0; }
 
@@ -2347,7 +2346,8 @@ body.sidebar-mini .main-sidebar {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.03);
     content: ' ';
     position: fixed;
-    background-color: #fff;
+    /* background-color: #fff; */
+    background-color: #343a40;
     width: 65px;
     height: 100%;
     left: 0;
@@ -2391,26 +2391,76 @@ body.sidebar-mini .main-sidebar {
       body.sidebar-mini .main-sidebar .sidebar-menu > li > a.has-dropdown:after {
         content: initial; }
     body.sidebar-mini .main-sidebar .sidebar-menu > li.active > a {
-      box-shadow: 0 4px 8px #acb5f6;
+      /* box-shadow: 0 4px 8px #acb5f6;
       background-color: #6777ef;
-      color: #fff; }
+      color: #fff;  */
+        box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+        background-color: #007bff;
+        color: #fff;
+    }
     body.sidebar-mini .main-sidebar .sidebar-menu > li ul.dropdown-menu {
       position: absolute;
-      background-color: #fff;
+      /* background-color: #fff; */
       left: 65px;
       top: 10px;
       width: 200px;
       display: none;
-      box-shadow: 0 0 30px rgba(0, 0, 0, 0.03); }
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.03);
+      /* new property */
+      background-color: #343a40;
+      border: 1px solid #495057;
+     }
       body.sidebar-mini .main-sidebar .sidebar-menu > li ul.dropdown-menu li > a:focus,
       body.sidebar-mini .main-sidebar .sidebar-menu > li ul.dropdown-menu li.active > a,
       body.sidebar-mini .main-sidebar .sidebar-menu > li ul.dropdown-menu li.active > a:hover {
+        /* color: #fff;
+        background-color: #6777ef !important;  */
+         color: #fff;
+         background-color: #007bff !important;
+      }
+
+      /* :: NEW PROPERTY ::  */
+      /* Scrollbar styling for dark theme */
+      .main-sidebar::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      .main-sidebar::-webkit-scrollbar-track {
+        background: #2c3136;
+      }
+
+      .main-sidebar::-webkit-scrollbar-thumb {
+        background: #495057;
+        border-radius: 3px;
+      }
+
+      .main-sidebar::-webkit-scrollbar-thumb:hover {
+        background: #6c757d;
+      }
+
+      /* Badge styling in dark theme */
+      .main-sidebar .sidebar-menu li a .badge {
+        background-color: #dc3545;
         color: #fff;
-        background-color: #6777ef !important; }
+      }
+
+      /* User section if exists */
+      .main-sidebar .sidebar-user {
+        background-color: #2c3136;
+        border-bottom: 1px solid #495057;
+        color: #c2c7d0;
+      }
+      /*  */
+
+
       body.sidebar-mini .main-sidebar .sidebar-menu > li ul.dropdown-menu li a {
         height: 40px;
         padding: 0 20px;
-        background-color: #fff; }
+        /* background-color: #fff; */
+        /* new property */
+         background-color: #343a40;
+        color: #c2c7d0;
+       }
         body.sidebar-mini .main-sidebar .sidebar-menu > li ul.dropdown-menu li a.has-dropdown:after {
           content: "";
           font-family: 'Font Awesome 5 Free';
@@ -2581,10 +2631,9 @@ body.layout-3 .main-footer {
   text-align: center;
   height: 70px;
   line-height: 60px; 
-   background-color: #30a9e1;
-   padding: 0 20px;
-  position: relative; 
-  }
+  background-color: #212529; /* Darker header */
+  border-bottom: 1px solid #495057;
+}
   .main-sidebar .sidebar-brand.sidebar-brand-sm {
     display: none; }
   .main-sidebar .sidebar-brand a {
@@ -2592,17 +2641,19 @@ body.layout-3 .main-footer {
     text-transform: uppercase;
     letter-spacing: 1.5px;
     font-weight: 700;
-    color: #ffffff; 
-    /* color: #000; */
+    color: #ffffff;
+    /* color: #000;  */
   }
 .main-sidebar .sidebar-user {
   display: inline-block;
   width: 100%;
   padding: 10px;
-  margin-bottom: 10px; }
+  margin-bottom: 10px;
+ }
   .main-sidebar .sidebar-user .sidebar-user-picture {
     float: left;
-    margin-right: 10px; }
+    margin-right: 10px; 
+  }
     .main-sidebar .sidebar-user .sidebar-user-picture img {
       width: 50px;
       border-radius: 50%; }
@@ -2613,10 +2664,8 @@ body.layout-3 .main-footer {
     display: block; }
     .main-sidebar .sidebar-menu li.menu-header {
       padding: 3px 15px;
-      color: #000000;
+      color: #bcc1c6;
       font-size: 10px;
-      font-weight: bold;
-          /* color: #bcc1c6; */
       text-transform: uppercase;
       letter-spacing: 1.3px;
       font-weight: 600; }
@@ -2630,30 +2679,51 @@ body.layout-3 .main-footer {
       padding: 0 20px;
       width: 100%;
       letter-spacing: .3px;
-      color: #030303;
       /* color: #868e96; */
-      text-decoration: none; }
+      color: #a8adb6; /* Light text */
+      text-decoration: none; 
+      transition: all 0.3s ease;
+    }
       .main-sidebar .sidebar-menu li a .badge {
         float: right;
         padding: 5px 10px;
-        margin-top: 2px; }
+        margin-top: 2px;
+       }
       .main-sidebar .sidebar-menu li a i {
         width: 28px;
         margin-right: 20px;
-        text-align: center; }
+        text-align: center; 
+        color: #8a95a5; /* Lighter icon color */
+      }
       .main-sidebar .sidebar-menu li a span {
         margin-top: 3px;
         width: 100%; }
       .main-sidebar .sidebar-menu li a:hover {
-        background-color: #fcfcfd; }
+        /* background-color: #fcfcfd;  */
+        background-color: #495057; /* Hover background */
+        color: #ffffff;
+      }
+      .main-sidebar .sidebar-menu li a:hover i {
+        color: #ffffff; /* White icons on hover */
+      }
     .main-sidebar .sidebar-menu li.active a {
-      color: #6777ef;
+      /* color: #6777ef;
       font-weight: 600;
-      background-color: #fcfcfd; }
+      background-color: #fcfcfd;  */
+        color: #ffffff;
+        font-weight: 600;
+        background-color: #007bff;
+    
+    }
     .main-sidebar .sidebar-menu li.active ul.dropdown-menu {
-      background-color: #fcfcfd; }
+      /* background-color: #fcfcfd;  */
+      background-color: #2c3136;
+      display: block;
+
+    }
     .main-sidebar .sidebar-menu li a.has-dropdown:after {
-      content: "";
+      /* content: ""; */
+      content: "\f0d7"; /* Font Awesome chevron down icon */
       font-family: 'Font Awesome 5 Free';
       font-weight: 900;
       position: absolute;
@@ -2661,7 +2731,17 @@ body.layout-3 .main-footer {
       right: 20px;
       -webkit-transform: translate(0, -50%);
       transform: translate(0, -50%);
-      font-size: 12px; }
+      font-size: 12px; 
+      /* new property */
+      color: #8a95a5;
+      transition: transform 0.3s ease;
+    }
+    /* new property */
+  .main-sidebar .sidebar-menu li.active > a.has-dropdown:after {
+      transform: translate(0, -50%) rotate(180deg);
+      color: #ffffff;
+    }
+    /*  */
     .main-sidebar .sidebar-menu li.active > ul.dropdown-menu {
       display: block; }
       .main-sidebar .sidebar-menu li.active > ul.dropdown-menu li a:hover {
@@ -2674,15 +2754,26 @@ body.layout-3 .main-footer {
       float: none;
       width: 100%;
       box-shadow: none;
-      background-color: transparent; }
+      /* background-color: transparent;  */
+       background-color: #2c3136;
+    }
       .main-sidebar .sidebar-menu li ul.dropdown-menu li a {
-        color: #868e96;
-        height: 35px;
+        /* color: #868e96; */
+        color: #adb5bd;
+        /* height: 35px; */
+        height: 40px;
         padding-left: 65px;
-        font-weight: 400; }
+        font-weight: 400; 
+        /* new */
+         border-left: 3px solid transparent;
+      }
         .main-sidebar .sidebar-menu li ul.dropdown-menu li a:hover {
-          color: #6777ef;
-          background-color: inherit; }
+          /* color: #6777ef; */
+          color: #ffffff;
+          /* background-color: inherit;  */
+            background-color: #007bff;
+            border-left-color: #0056b3;
+        }
       .main-sidebar .sidebar-menu li ul.dropdown-menu li.active > a {
         color: #6777ef;
         font-weight: 600; }
@@ -2813,65 +2904,5 @@ body:not(.sidebar-mini) .sidebar-style-2 .sidebar-menu li.active ul.dropdown-men
   100% {
     -webkit-transform: scale(1.2, 1.2);
     opacity: 0.0; } }
-
-
-    /* Background penanda khusus untuk Dashboard saja */
-.sidebar-menu li#dashboard-link {
-    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-    border-radius: 8px;
-    margin: 4px 12px;
-    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
-}
-
-.sidebar-menu li#dashboard-link a {
-    color: white !important;
-    background: transparent;
-    border-radius: 8px;
-}
-
-/* .sidebar-menu li#dashboard-link a i {
-    color: white !important;
-} */
- .sidebar-menu li.active {
-    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-    border-radius: 8px;
-    margin: 4px 12px;
-    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
-}
-
-.sidebar-menu li.active a {
-    color: white !important;
-}
-
-.sidebar-menu li.active a i {
-    color: white !important;
-}
-
-.main-sidebar .sidebar-brand .brand-link {
-  display: flex;
-  align-items: center;
-  text-decoration: none;
-  color: #000000;
-  width: 100%;
-  justify-content: left;
-}
-
-.main-sidebar .sidebar-brand .brand-image {
-  width: 35px;
-  height: 35px;
-  margin-right: 10px;
-  border-radius: 50%; /* Membuat logo bulat */
-  object-fit: cover;
-  background-color: #ffffff; /* Background putih untuk logo */
-  padding: 2px;
-}
-
-.main-sidebar .sidebar-brand .brand-text {
-  font-size: 16px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1.2px;
-  color: #f7f7f7;
-}
 
 /*# sourceMappingURL=style.css.map */

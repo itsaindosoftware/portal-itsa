@@ -23,7 +23,7 @@
                                 <i class="fas fa-database"></i>
                             </div>
                         </div>
-                        <h4 class="app-title">Digital Assets</h4>
+                        <h4 class="app-title">Digital Assets Registration</h4>
                         <p class="app-description">Manage your digital assets and resources efficiently</p>
                         <div class="app-arrow">
                             <i class="fas fa-arrow-right"></i>
@@ -38,7 +38,7 @@
                                 <i class="fas fa-database"></i>
                             </div>
                         </div>
-                        <h4 class="app-title">Digital Assets</h4>
+                        <h4 class="app-title">Digital Assets Registration</h4>
                         <p class="app-description">Manage your digital assets and resources efficiently</p>
                         <div class="app-arrow">
                             <i class="fas fa-arrow-right"></i>
@@ -61,7 +61,7 @@
                                 <i class="fas fa-cogs"></i>
                             </div>
                         </div>
-                        <h4 class="app-title">DAR Application</h4>
+                        <h4 class="app-title">Document Action Request Application</h4>
                         <p class="app-description">Handle DAR requests and workflow management</p>
                         <div class="app-arrow">
                             <i class="fas fa-arrow-right"></i>
@@ -76,7 +76,7 @@
                                 <i class="fas fa-cogs"></i>
                             </div>
                         </div>
-                        <h4 class="app-title">DAR Application</h4>
+                        <h4 class="app-title">>Document Action Request Application</h4>
                         <p class="app-description">Handle DAR requests and workflow management</p>
                         <div class="app-arrow">
                             <i class="fas fa-arrow-right"></i>

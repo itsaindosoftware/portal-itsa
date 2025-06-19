@@ -52,11 +52,11 @@
               <p class="text-center">{{ $item->description }}</p>
               <div class="text-center">
                    @if ($loop->index == '0')
-                      <a href="{{ url('/service') }}" class="btn btn-primary mt-3" target="_blank">
+                      <a href="{{ route('service') }}" class="btn btn-primary mt-3" target="_blank">
                         <i class="fas fa-external-link-alt me-2"></i>Access
                       </a>
                    @elseif ($loop->index == '1')
-                      <a href="{{ url('/service') }}" class="btn btn-primary mt-3" target="_blank">
+                      <a href="{{ route('service') }}" class="btn btn-primary mt-3" target="_blank">
                         <i class="fas fa-external-link-alt me-2"></i>Access
                       </a>
                    @endif

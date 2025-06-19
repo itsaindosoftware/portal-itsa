@@ -33,11 +33,12 @@
 @endsection
 
 @section('content')
-<div class="row mb-4">
-    <div class="col-12">
-        <h4 class="text-dark font-weight-bold">Ringkasan Sistem</h4>
-        <p class="text-muted">Berikut ini adalah data statistik pengguna dan sistem module DAR System.</p>
-    </div>
+<div class="alert alert-info mb-4">
+    <h5 class="mb-1"><i class="fas fa-info-circle me-2"></i>Welcome to the Admin Dashboard</h5>
+    <p class="mb-0">
+        This dashboard provides you with full access to manage users, roles, permissions, and system configurations.<br>
+        Use the available features to monitor activities, maintain data integrity, and ensure smooth operation of all applications.<br>
+    </p>
 </div>
 
 <!-- Summary Cards -->

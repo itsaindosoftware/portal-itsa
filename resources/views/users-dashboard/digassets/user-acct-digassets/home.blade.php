@@ -7,7 +7,7 @@
 @section('content')
 
 <div class="container-fluid px-4">
- <div class="alert alert-primary mb-4">
+ <div class="alert alert-info mb-4">
     <h5 class="mb-1"><i class="fas fa-info-circle me-2"></i>Welcome to the Digital Assets Accounting Dashboard {{ Auth::user()->name }}</h5>
     <p class="mb-0">
         This dashboard allows you to register new fixed asset items and manage their accounting records efficiently.<br>

@@ -7,7 +7,7 @@
 @section('content')
 
 <div class="container-fluid px-4">
-    <div class="alert alert-primary mb-4">
+    <div class="alert alert-info mb-4">
         <h5 class="mb-1"><i class="fas fa-info-circle me-2"></i> Welcome to the Digital Assets Dashboard</h5>
         <p class="mb-0">
             Here, you can submit new fixed asset registration requests and monitor the status of your submissions.<br>
