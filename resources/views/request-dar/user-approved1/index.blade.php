@@ -34,14 +34,14 @@
 														<i class="fas fa-calendar"></i>
 													</div>
 												</div>
-												<input type="text" class="form-control daterange-picker" name="date_range" id="date_range">
+												<input type="text" placeholder="Select date range" class="form-control daterange-picker" name="date_range" id="date_range">
 											</div>
 										</div>
 									</div>
 									<div class="col-md-4">
 										<div class="form-group">
 											<label>NIK/Name</label>
-											<input type="text" class="form-control" name="nik_name" id="nik_name">
+											<input type="text" class="form-control" name="nik_name" placeholder="Enter NIK or Name" id="nik_name">
 										</div>
 									</div>
 									<div class="col-md-4">

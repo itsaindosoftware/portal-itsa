@@ -76,7 +76,7 @@
                                 <i class="fas fa-cogs"></i>
                             </div>
                         </div>
-                        <h4 class="app-title">>Document Action Request Application</h4>
+                        <h4 class="app-title">Document Action Request Application</h4>
                         <p class="app-description">Handle DAR requests and workflow management</p>
                         <div class="app-arrow">
                             <i class="fas fa-arrow-right"></i>

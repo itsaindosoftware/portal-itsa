@@ -29,7 +29,6 @@
 						</div>
 					</div>
 					<div class="collapse show" id="filter-collapse">
-				
 						<div class="card-body">
 							<form id="filter-form">
 								<div class="row">
@@ -42,7 +41,7 @@
 														<i class="fas fa-calendar"></i>
 													</div>
 												</div>
-												<input type="text" placeholder="Select Date Range" class="form-control daterange-picker" name="date_range" id="date_range">
+												<input type="text" class="form-control daterange-picker" placeholder="Select Date Range" name="date_range" id="date_range">
 											</div>
 										</div>
 									</div>
@@ -165,7 +164,7 @@
 									<tr>
 										<th width="7%">No.</th>
 										<th class="text-center">Date</th>
-								        <th class="text-center">RFA Number</th>
+								        <th class="text-center">RFA Number</th>                                        
                                         <th class="text-center">ApprovalBy1</th>
                                         <th class="text-center">ApprovalBy2</th>
 										<th class="text-center" width="15%">Action</th>
@@ -282,7 +281,7 @@ $(document).ready(function() {
     });
 });
 
-$(document).on('click','#approved-2', function(e) {
+$(document).on('click','#approved-3', function(e) {
 	e.preventDefault();
 	var id = $(this).data('id');
 	var href = $(this).data('href');
@@ -295,8 +294,8 @@ $(document).on('click','#approved-2', function(e) {
 		return;
 	}
 
-	var approvalDate2 = $(this).attr('row-approve2');
-	if (approvalDate2) {
+	var approvalDate3 = $(this).attr('row-approve3');
+	if (approvalDate3) {
 		Swal.fire({
 			title: 'Already Approved',
 			text: 'This request has already been approved by the first approver.',
@@ -304,6 +303,16 @@ $(document).on('click','#approved-2', function(e) {
 		});
 		return;
 	}
+    var approvalDate2 = $(this).attr('row-approve2');
+    if (!approvalDate2) {
+        Swal.fire({
+            title: 'Approval Required',
+            text: 'This request must be approved by the second approver before you can approve it.',
+            icon: 'info'
+        });
+        return;
+    }
+
 	Swal.fire({
 		title: 'Are you sure?',
 		text: "You want to approve this request?",
@@ -365,7 +374,7 @@ $(document).on('click','#approved-2', function(e) {
 
 });
 
-$(document).on('click','#rejected-2', function(e) {
+$(document).on('click','#rejected-3', function(e) {
 	e.preventDefault();
 	var id = $(this).data('id');
 	var href = $(this).data('href');
@@ -378,8 +387,8 @@ $(document).on('click','#rejected-2', function(e) {
 		return;
 	}
 
-	var approvalDate2 = $(this).attr('row-approve2');
-	if (approvalDate2) {
+	var approvalDate3 = $(this).attr('row-approve3');
+	if (approvalDate3) {
 		Swal.fire({
 			title: 'Already Approved',
 			text: 'This request has already been approved by the first approver.',
@@ -387,6 +396,15 @@ $(document).on('click','#rejected-2', function(e) {
 		});
 		return;
 	}
+    var approvalDate2 = $(this).attr('row-approve2');
+    if (!approvalDate2) {
+        Swal.fire({
+            title: 'Approval Required',
+            text: 'This request must be approved by the second approver before you can approve it.',
+            icon: 'info'
+        });
+        return
+    }
 	Swal.fire({
 		title: 'Are you sure?',
 		text: "You want to reject this request?",

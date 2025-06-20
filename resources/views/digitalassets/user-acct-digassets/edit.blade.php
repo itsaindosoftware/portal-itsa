@@ -1,7 +1,7 @@
 @extends('layouts.app_custom')
-@section('title-head','Digital Assets - Registration Fixed Asset')
+@section('title-head','Digital Assets - Edit Fixed Asset')
 @role('user-employee-digassets')
-   @section('title','Create Request Digital Assets')
+   @section('title','Edit Request Digital Assets')
 @endrole
 
 @section('css')
@@ -16,19 +16,20 @@
             <div class="d-flex justify-content-between align-items-center">
                 <div>
                     <h4 class="card-title mb-1">
-                        <i class="fas fa-file-alt text-primary mr-2"></i>
-                        REGISTRATION FIXED ASSET (RFA)
+                        <i class="fas fa-edit text-primary mr-2"></i>
+                        EDIT REGISTRATION FIXED ASSET (RFA)
                     </h4>
-                    <small class="text-primary">Please fill all required information carefully</small>
+                    <small class="text-muted">Please update the required information carefully</small>
                 </div>
-                {{-- <div class="text-right">
-                    <span class="badge badge-info">IP/FAW/22/APR/0002</span>
-                </div> --}}
+                <div class="text-right">
+                    <span class="badge badge-warning">RFA Number: #{{ $asset->rfa_number }}</span>
+                </div>
             </div>
         </div>
         <div class="card-body enhanced-body">
-            <form action="{{ route('digitalassets.store') }}" method="POST">
+            <form action="{{ route('digitalassets.update', $asset->id) }}" method="POST">
                 @csrf
+                @method('PUT')
                 
                 <!-- Basic Information Section -->
                 <div class="section-divider">
@@ -45,7 +46,8 @@
                                 <i class="fas fa-calendar text-muted mr-1"></i>
                                 Date <span class="text-danger">*</span>
                             </label>
-                            <input type="date" class="form-control enhanced-input" id="date" placeholder="DATE" name="date" readonly>
+                            <input type="date" class="form-control enhanced-input" id="date" name="date" 
+                                value="{{ old('date', $asset->date) }}" required>
                             <small class="form-text text-muted">
                                 <i class="fas fa-user-tie mr-1"></i>(Fill by Accounting)
                             </small>
@@ -57,7 +59,8 @@
                                 <i class="fas fa-hashtag text-muted mr-1"></i>
                                 RFA Number <span class="text-danger">*</span>
                             </label>
-                            <input type="text" class="form-control enhanced-input" id="rfa_number" placeholder="RFA Number" name="rfa_number" readonly>
+                            <input type="text" class="form-control enhanced-input" id="rfa_number" name="rfa_number" 
+                                value="{{ old('rfa_number', $asset->rfa_number) }}" required>
                             <small class="form-text text-muted">
                                 <i class="fas fa-user-tie mr-1"></i>(Fill by Accounting)
                             </small>
@@ -72,7 +75,8 @@
                                 <i class="fas fa-inbox text-muted mr-1"></i>
                                 Received Date <span class="text-danger">*</span>
                             </label>
-                            <input type="date" class="form-control enhanced-input" id="received_date" name="received_date" required>
+                            <input type="date" class="form-control enhanced-input" id="received_date" readonly name="received_date" 
+                                value="{{ old('received_date', $asset->received_date) }}" required>
                             <small class="form-text text-muted">
                                 <i class="fas fa-info-circle mr-1"></i>(Please fill with received date that asset come in ITSP)
                             </small>
@@ -84,7 +88,9 @@
                                 <i class="fas fa-user text-muted mr-1"></i>
                                 Requestor Name & Dept. <span class="text-danger">*</span>
                             </label>
-                            <input type="text" class="form-control enhanced-input" id="requestor_name" name="requestor_name" placeholder="Enter requestor name and department" value="{{ $userData->name ?? '' }} ({{ $userData->description ?? '' }})" readonly required>
+                            <input type="text" class="form-control enhanced-input" id="requestor_name" name="requestor_name" 
+                                placeholder="Enter requestor name and department" 
+                                value="{{ old('requestor_name', $asset->requestor_name) }}" readonly required>
                             <small class="form-text text-muted">
                                 <i class="fas fa-info-circle mr-1"></i>(Please fill with PIC Name requestor & Dept. Requestor)
                             </small>
@@ -99,7 +105,9 @@
                                 <i class="fas fa-barcode text-muted mr-1"></i>
                                 Issue Fixed Asset No. <span class="text-danger">*</span>
                             </label>
-                            <input type="text" class="form-control enhanced-input" id="issue_fixed_asset_no" name="issue_fixed_asset_no" placeholder="Enter issue fixed asset number" required>
+                            <input type="text" class="form-control enhanced-input" readonly id="issue_fixed_asset_no" name="issue_fixed_asset_no" 
+                                placeholder="Enter issue fixed asset number" 
+                                value="{{ old('issue_fixed_asset_no', $asset->issue_fixed_asset_no) }}" required>
                             <small class="form-text text-muted">
                                 <i class="fas fa-info-circle mr-1"></i>(Please fill with no. of Issue Fixed Asset)
                             </small>
@@ -111,7 +119,9 @@
                                 <i class="fas fa-file-invoice text-muted mr-1"></i>
                                 IO No <span class="text-danger">*</span>
                             </label>
-                            <input type="text" class="form-control enhanced-input" id="io_no" name="io_no" placeholder="Enter IO number" required>
+                            <input type="text" class="form-control enhanced-input" readonly id="io_no" name="io_no" 
+                                placeholder="Enter IO number" 
+                                value="{{ old('io_no', $asset->io_no) }}" required>
                             <small class="form-text text-muted">
                                 <i class="fas fa-info-circle mr-1"></i>(Please fill with IO No. of asset)
                             </small>
@@ -126,10 +136,13 @@
                                 <i class="fas fa-building text-muted mr-1"></i>
                                 Company Name <span class="text-danger">*</span>
                             </label>
-                            <select class="form-control enhanced-input" id="company_id" name="company_id" required>
+                            <select class="form-control enhanced-input" id="company_id" disabled name="company_id" required>
                                 <option value="">Select Company</option>
                                 @foreach($companies as $company)
-                                    <option value="{{ $company->id }}">{{ $company->company_desc }}</option>
+                                    <option value="{{ $company->id }}" 
+                                        {{ old('company_id', $asset->company_id) == $company->id ? 'selected' : '' }}>
+                                        {{ $company->company_desc }}
+                                    </option>
                                 @endforeach
                             </select>
                             <small class="form-text text-muted">
@@ -143,7 +156,9 @@
                                 <i class="fas fa-qrcode text-muted mr-1"></i>
                                 Product Code <span class="text-danger">*</span>
                             </label>
-                            <input type="text" class="form-control enhanced-input" id="product_code" name="product_code" placeholder="Enter product code" required>
+                            <input type="text" class="form-control enhanced-input" disabled id="product_code" name="product_code" 
+                                placeholder="Enter product code" 
+                                value="{{ old('product_code', $asset->production_code) }}" required>
                             <small class="form-text text-muted">
                                 <i class="fas fa-info-circle mr-1"></i>(Please fill with product code asset. If have many product code can mention as attached)
                             </small>
@@ -158,7 +173,9 @@
                                 <i class="fas fa-box text-muted mr-1"></i>
                                 Product Name <span class="text-danger">*</span>
                             </label>
-                            <input type="text" class="form-control enhanced-input" id="product_name" name="product_name" placeholder="ADDITIONAL M&E AIR COMPRESSOR" required>
+                            <input type="text" class="form-control enhanced-input" id="product_name" disabled name="product_name" 
+                                placeholder="ADDITIONAL M&E AIR COMPRESSOR" 
+                                value="{{ old('product_name', $asset->product_name) }}" required>
                             <small class="form-text text-muted">
                                 <i class="fas fa-info-circle mr-1"></i>(Please fill with product name asset. If have many product code can mention as attached)
                             </small>
@@ -170,7 +187,9 @@
                                 <i class="fas fa-receipt text-muted mr-1"></i>
                                 GRN No <span class="text-danger">*</span>
                             </label>
-                            <input type="text" class="form-control enhanced-input" id="grn_no" name="grn_no" placeholder="IP/RPO/22/MAR/3354" required>
+                            <input type="text" class="form-control enhanced-input" disabled id="grn_no" name="grn_no" 
+                                placeholder="IP/RPO/22/MAR/3354" 
+                                value="{{ old('grn_no', $asset->grn_no) }}" required>
                             <small class="form-text text-muted">
                                 <i class="fas fa-info-circle mr-1"></i>(Please fill with GRN No.)
                             </small>
@@ -202,7 +221,8 @@
                                         <input class="form-check-input" type="radio" 
                                             id="asset_group_{{ $group->id }}" 
                                             name="asset_group" 
-                                            value="{{ $group->id }}">
+                                            value="{{ $group->id }}"
+                                            {{ old('asset_group', $asset->asset_group_id) == $group->id ? 'checked' : '' }} disabled>
                                         <label class="form-check-label" for="asset_group_{{ $group->id }}">
                                             <i class="fas fa-circle-dot mr-2"></i>
                                             {{ $group->asset_group_name }}
@@ -234,7 +254,8 @@
                                         <input class="form-check-input" type="radio"
                                             id="asset_location_{{ $location->id }}"
                                             name="asset_location"
-                                            value="{{ $location->id }}">
+                                            value="{{ $location->id }}"
+                                            {{ old('asset_location', $asset->asset_location_id) == $location->id ? 'checked' : '' }} disabled>
                                         <label class="form-check-label" for="asset_location_{{ $location->id }}">
                                             <i class="fas fa-location-dot mr-2"></i>
                                             {{ $location->asset_location_name }}
@@ -266,7 +287,8 @@
                                         <input class="form-check-input" type="radio"
                                             id="cc_{{ $costCenter->id }}"
                                             name="asset_cost_center"
-                                            value="{{ $costCenter->id }}">
+                                            value="{{ $costCenter->id }}"
+                                            {{ old('asset_cost_center', $asset->asset_cost_center_id) == $costCenter->id ? 'checked' : '' }} disabled>
                                         <label class="form-check-label" for="cc_{{ $costCenter->id }}">
                                             <i class="fas fa-money-bill-wave mr-2"></i>
                                             {{ $costCenter->cost_center_code }} - {{ $costCenter->cost_center_name }}
@@ -290,7 +312,7 @@
                                     <i class="fas fa-times mr-2"></i>Cancel
                                 </a>
                                 <button type="submit" class="btn btn-primary btn-enhanced">
-                                    <i class="fas fa-paper-plane mr-2"></i>Submit Registration
+                                    <i class="fas fa-save mr-2"></i>Update Registration
                                 </button>
                             </div>
                         </div>
@@ -366,7 +388,7 @@
     left: 0;
     width: 50px;
     height: 2px;
-    background: linear-gradient(90deg, #667eea, #764ba2);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
 /* Enhanced Form Groups */
@@ -392,9 +414,9 @@
 }
 
 .enhanced-input:focus {
-    border-color: #667eea;
+    border-color: #f4f4f4;
     background: white;
-    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.15);
+    box-shadow: 0 0 0 0.2rem rgba(243, 156, 18, 0.15);
     transform: translateY(-1px);
 }
 
@@ -481,7 +503,7 @@
 }
 
 .btn-primary.btn-enhanced {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     border: none;
 }
 
@@ -504,8 +526,8 @@
 }
 
 /* Badge Styling */
-.badge-info {
-    background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+.badge-warning {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
     padding: 8px 15px;
     border-radius: 20px;
@@ -549,7 +571,7 @@
 }
 
 .text-primary {
-    color: #f5f5f5 !important;
+    color: #f8f8f8 !important;
 }
 
 .text-info {
@@ -578,7 +600,10 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 $(document).ready(function() {
+
+   
     $('form').on('submit', function(e) {
+
         e.preventDefault();
 
         var form = $(this);
@@ -589,13 +614,21 @@ $(document).ready(function() {
             method: form.attr('method'),
             data: formData,
             beforeSend: function() {
-                // Optional: show loading indicator
+                // Show loading indicator
+                Swal.fire({
+                    title: 'Updating...',
+                    text: 'Please wait while we update your digital asset.',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
             },
             success: function(response) {
                 Swal.fire({
                     icon: 'success',
-                    title: 'Success',
-                    text: 'Digital Asset successfully registered!',
+                    title: 'Updated Successfully!',
+                    text: 'Digital Asset has been updated successfully!',
                     timer: 2000,
                     showConfirmButton: false
                 }).then(() => {
@@ -607,14 +640,35 @@ $(document).ready(function() {
                 if (xhr.status === 422) {
                     let errors = xhr.responseJSON.errors;
                     msg = Object.values(errors).map(e => e.join('<br>')).join('<br>');
+                } else if (xhr.status === 404) {
+                    msg = 'Digital Asset not found.';
+                } else if (xhr.status === 403) {
+                    msg = 'You are not authorized to perform this action.';
                 }
                 Swal.fire({
                     icon: 'error',
-                    title: 'Error',
+                    title: 'Update Failed',
                     html: msg
                 });
             }
         });
+    });
+
+    // Add confirmation before leaving the page if form has changes
+    var formChanged = false;
+    $('input, select, textarea').on('change', function() {
+        formChanged = true;
+    });
+
+    $(window).on('beforeunload', function() {
+        if (formChanged) {
+            return 'You have unsaved changes. Are you sure you want to leave?';
+        }
+    });
+
+    // Reset form changed flag on successful submit
+    $('form').on('submit', function() {
+        formChanged = false;
     });
 });
 </script>
