@@ -9,19 +9,18 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class SendingnotifDigAssets extends Mailable
+class SendingnotifRejected extends Mailable
 {
     use Queueable, SerializesModels;
-
+    public $digitalAsset;
+    public $remarks;
+    public $approverName;
+    public $users;
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public $digitalAsset;
-    public $remarks;
-    public $approverName;
-    public $users;
     public function __construct($digitalAsset, $remarks, $approverName, $users)
     {
         $this->digitalAsset = $digitalAsset;
@@ -38,7 +37,7 @@ class SendingnotifDigAssets extends Mailable
     public function envelope()
     {
         return new Envelope(
-            subject: 'Digital Asset Approved - RFA #' . $this->digitalAsset->rfa_number,
+            subject: 'Digital Asset Rejected - RFA #' . $this->digitalAsset->rfa_number,
         );
     }
 
@@ -51,11 +50,11 @@ class SendingnotifDigAssets extends Mailable
     {
         if ($this->users === 'user-acct-digassets') {
             return new Content(
-                view: 'email.digital-assets-approved',
+                view: 'email.digital-assets-rejected',
             );
         } elseif ($this->users === 'user-md-digasset-itsp') {
             return new Content(
-                view: 'email.digital-assets-approved-mgr',
+                view: 'email.digital-assets-rejected-mgr',
             );
         }
 

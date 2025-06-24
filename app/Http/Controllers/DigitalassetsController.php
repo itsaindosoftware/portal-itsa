@@ -14,6 +14,7 @@ use Carbon\Carbon;
 use Validator;
 use App\Digitalassets;
 use App\Mail\SendingnotifDigAssets;
+use App\Mail\SendingnotifRejected;
 use Illuminate\Support\Facades\Mail;
 class DigitalassetsController extends Controller
 {
@@ -739,6 +740,9 @@ class DigitalassetsController extends Controller
         }
 
         if (Auth::user()->hasPermission('manage-digital-assets')) {
+            $userRole = 'user-acct-digassets';
+
+
             $digitalAsset = Digitalassets::find($id);
             if (!$digitalAsset) {
                 return redirect()->route('digitalassets.index')->with('error', 'Digital Asset not found!');
@@ -750,7 +754,13 @@ class DigitalassetsController extends Controller
             $digitalAsset->remark_approval_by2 = $request->remarks ?? '';
             $digitalAsset->save();
             try {
-                $this->sendApprovalEmail($digitalAsset, $request->remarks, Auth::user()->name);
+
+                $this->sendApprovalEmail(
+                    $digitalAsset,
+                    $request->remarks,
+                    Auth::user()->name,
+                    $userRole
+                );
                 return response()->json([
                     'success' => true,
                     'message' => 'Digital Asset approved and notification email sent!'
@@ -769,54 +779,21 @@ class DigitalassetsController extends Controller
             return response()->json(['error' => 'Unauthorized'], 403);
         }
     }
-    private function sendApprovalEmail($digitalAsset, $remarks, $approverName)
+    private function sendApprovalEmail($digitalAsset, $remarks, $approverName, $userRole)
     {
-        $recipients = [];
 
-        // Add requestor email if available
-        // if (isset($digitalAsset->requestor_email) && !empty($digitalAsset->requestor_email)) {
-        //     $recipients[] = $digitalAsset->requestor_email;
-        // }
+        Mail::to('it-03@thaisummit.co.id')->send(new SendingnotifDigAssets($digitalAsset, $remarks, $approverName, $userRole));
+        return "email successfully sending.";
 
-        // Add other stakeholders
-        $recipients[] = 'it-03@thaisummit.co.id'; // Admin email
-
-        // You can add more recipients based on your business logic
-        // $recipients[] = 'it-03@thaisummit.co.id';    // IT email
-        // $recipients[] = 'hr@thaisummit.co.id';       // HR email
-
-        // Remove duplicates and empty emails
-        $recipients = array_unique(array_filter($recipients));
-
-        // Send email to each recipient
-        $emailsSent = 0;
-        $errors = [];
-
-        foreach ($recipients as $email) {
-            if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                try {
-                    Mail::to($email)->send(new SendingnotifDigAssets($digitalAsset, $remarks, $approverName));
-                    $emailsSent++;
-                    \Log::info("Approval email sent successfully to: " . $email);
-                } catch (\Exception $e) {
-                    $errors[] = "Failed to send email to {$email}: " . $e->getMessage();
-                    \Log::error("Failed to send email to {$email}: " . $e->getMessage());
-                }
-            } else {
-                $errors[] = "Invalid email address: {$email}";
-                \Log::warning("Invalid email address: {$email}");
-            }
-        }
-
-        if ($emailsSent === 0) {
-            throw new \Exception("No emails were sent successfully. Errors: " . implode(', ', $errors));
-        }
-
-        if (!empty($errors)) {
-            Log::warning("Some emails failed to send: " . implode(', ', $errors));
-        }
-
-        return $emailsSent;
+    }
+    private function sendRejectedEmail($digitalAsset, $remarks, $approverName, $userRole)
+    {
+        Mail::to('it-03@thaisummit.co.id')->send(new SendingnotifRejected(
+            $digitalAsset,
+            $remarks,
+            $approverName,
+            $userRole
+        ));
     }
     public function rejectedAppr2(Request $request, $id)
     {
@@ -825,6 +802,7 @@ class DigitalassetsController extends Controller
         }
 
         if (Auth::user()->hasPermission('manage-digital-assets')) {
+            $userRole = 'user-acct-digassets';
             $digitalAsset = Digitalassets::find($id);
             if (!$digitalAsset) {
                 return redirect()->route('digitalassets.index')->with('error', 'Digital Asset not found!');
@@ -836,7 +814,26 @@ class DigitalassetsController extends Controller
             $digitalAsset->remark_approval_by2 = $request->remarks ?? '';
             $digitalAsset->save();
 
-            return response()->json(['success' => true, 'message' => 'Digital Asset rejected by 2!']);
+            // return response()->json(['success' => true, 'message' => 'Digital Asset rejected by 2!']);
+            try {
+                $this->sendRejectedEmail(
+                    $digitalAsset,
+                    $request->remarks,
+                    Auth::user()->name,
+                    $userRole
+                );
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Digital Asset has been Rejected and notification email sent!'
+                ]);
+            } catch (\Exception $e) {
+                // Log error but don't fail the approval process
+                \Log::error('Failed to send approval email: ' . $e->getMessage());
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Digital Asset Rejected but email notification failed: ' . $e->getMessage()
+                ]);
+            }
         } else {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
@@ -848,6 +845,7 @@ class DigitalassetsController extends Controller
         }
 
         if (Auth::user()->hasPermission('manage-digital-assets')) {
+            $userRole = 'user-md-digasset-itsp';
             $digitalAsset = Digitalassets::find($id);
             if (!$digitalAsset) {
                 return redirect()->route('digitalassets.index')->with('error', 'Digital Asset not found!');
@@ -859,7 +857,27 @@ class DigitalassetsController extends Controller
             $digitalAsset->remark_approval_by3 = $request->remarks ?? '';
             $digitalAsset->save();
 
-            return response()->json(['success' => true, 'message' => 'Digital Asset approved by 3!']);
+            // return response()->json(['success' => true, 'message' => 'Digital Asset approved by 3!']);
+            try {
+
+                $this->sendApprovalEmail(
+                    $digitalAsset,
+                    $request->remarks,
+                    Auth::user()->name,
+                    $userRole
+                );
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Digital Asset approved and notification email sent!'
+                ]);
+            } catch (\Exception $e) {
+                // Log error but don't fail the approval process
+                \Log::error('Failed to send approval email: ' . $e->getMessage());
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Digital Asset approved but email notification failed: ' . $e->getMessage()
+                ]);
+            }
         } else {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
@@ -872,6 +890,7 @@ class DigitalassetsController extends Controller
         }
 
         if (Auth::user()->hasPermission('manage-digital-assets')) {
+            $userRole = 'user-md-digasset-itsp';
             $digitalAsset = Digitalassets::find($id);
             if (!$digitalAsset) {
                 return redirect()->route('digitalassets.index')->with('error', 'Digital Asset not found!');
@@ -883,7 +902,26 @@ class DigitalassetsController extends Controller
             $digitalAsset->remark_approval_by3 = $request->remarks ?? '';
             $digitalAsset->save();
 
-            return response()->json(['success' => true, 'message' => 'Digital Asset rejected by 3!']);
+            try {
+                $this->sendRejectedEmail(
+                    $digitalAsset,
+                    $request->remarks,
+                    Auth::user()->name,
+                    $userRole
+                );
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Digital Asset has been Rejected and notification email sent!'
+                ]);
+            } catch (\Exception $e) {
+                // Log error but don't fail the approval process
+                \Log::error('Failed to send approval email: ' . $e->getMessage());
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Digital Asset Rejected but email notification failed: ' . $e->getMessage()
+                ]);
+            }
+            // return response()->json(['success' => true, 'message' => 'Digital Asset rejected by 3!']);
         } else {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
