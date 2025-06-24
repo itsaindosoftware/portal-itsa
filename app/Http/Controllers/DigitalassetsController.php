@@ -27,419 +27,318 @@ class DigitalassetsController extends Controller
     {
         Carbon::setLocale('id');
     }
+
     public function index(Request $request)
     {
-
         if (!Auth::user()->hasPermission('manage-digital-assets')) {
             return redirect()->route('apps.index')->with('error', 'You do not have access to this application yet. Please contact your IT Department.');
         }
+
         if (!Auth::check()) {
             return redirect()->route('login');
         }
 
-
         if ($request->ajax()) {
             if (Auth::user()->hasPermission('manage-digital-assets')) {
-                if (Auth::user()->hasRole('user-employee-digassets')) {
-                    $data = Digitalassets::query()
-                        ->leftJoin('users', 'registration_fixed_assets.user_id', '=', 'users.id')
-                        ->leftJoin('departments', 'registration_fixed_assets.department_id', '=', 'departments.id')
-                        ->leftJoin('companys', 'registration_fixed_assets.company_id', '=', 'companys.id')
-                        ->leftJoin('master_asset_groups', 'registration_fixed_assets.asset_group_id', '=', 'master_asset_groups.id')
-                        ->leftJoin('master_asset_locations', 'registration_fixed_assets.asset_location_id', '=', 'master_asset_locations.id')
-                        ->leftJoin('master_asset_cost_centers', 'registration_fixed_assets.asset_cost_center_id', '=', 'master_asset_cost_centers.id');
-                    $data = $data->select(
-                        'registration_fixed_assets.id',
-                        'registration_fixed_assets.date',
-                        'registration_fixed_assets.rfa_number',
-                        'registration_fixed_assets.issue_fixed_asset_no',
-                        'registration_fixed_assets.production_code',
-                        'registration_fixed_assets.product_name',
-                        'registration_fixed_assets.grn_no',
-                        'registration_fixed_assets.requestor_name',
-                        'users.name as user_name',
-                        'departments.description as department_name',
-                        'companys.company_desc as company_name',
-                        'master_asset_groups.asset_group_name',
-                        'master_asset_locations.asset_location_name as name_location',
-                        'master_asset_cost_centers.cost_center_name as cost_cname',
-                        'registration_fixed_assets.remark',
-                        'registration_fixed_assets.approval_status1',
-                        'registration_fixed_assets.approval_status2',
-                        'registration_fixed_assets.approval_status3',
-                        'registration_fixed_assets.approval_date1',
-                        'registration_fixed_assets.approval_date2',
-                        'registration_fixed_assets.approval_date3',
-                    );
-                    $data = $data->where('registration_fixed_assets.user_id', Auth::user()->id)->get();
-                } elseif (Auth::user()->hasRole('user-acct-digassets')) {
-                    $data = Digitalassets::query()
-                        ->leftJoin('users', 'registration_fixed_assets.user_id', '=', 'users.id')
-                        ->leftJoin('departments', 'registration_fixed_assets.department_id', '=', 'departments.id')
-                        ->leftJoin('companys', 'registration_fixed_assets.company_id', '=', 'companys.id')
-                        ->leftJoin('master_asset_groups', 'registration_fixed_assets.asset_group_id', '=', 'master_asset_groups.id')
-                        ->leftJoin('master_asset_locations', 'registration_fixed_assets.asset_location_id', '=', 'master_asset_locations.id')
-                        ->leftJoin('master_asset_cost_centers', 'registration_fixed_assets.asset_cost_center_id', '=', 'master_asset_cost_centers.id');
-                    $data = $data->select(
-                        'registration_fixed_assets.id',
-                        'registration_fixed_assets.date',
-                        'registration_fixed_assets.rfa_number',
-                        'registration_fixed_assets.issue_fixed_asset_no',
-                        'registration_fixed_assets.production_code',
-                        'registration_fixed_assets.product_name',
-                        'registration_fixed_assets.grn_no',
-                        'registration_fixed_assets.requestor_name',
-                        'users.name as user_name',
-                        'users.nik as user_nik',
-                        'departments.description as department_name',
-                        'companys.company_desc as company_name',
-                        'master_asset_groups.asset_group_name',
-                        'master_asset_locations.asset_location_name as name_location',
-                        'master_asset_cost_centers.cost_center_name as cost_cname',
-                        'registration_fixed_assets.remark',
-                        'registration_fixed_assets.approval_status1',
-                        'registration_fixed_assets.approval_status2',
-                        'registration_fixed_assets.approval_status3',
-                        'registration_fixed_assets.approval_date1',
-                        'registration_fixed_assets.approval_date2',
-                        'registration_fixed_assets.approval_date3',
-                        'registration_fixed_assets.created_at',
-                    );
-                    // dd($request->all());
+                $data = $this->getDigitalAssetsData($request);
 
-                    if ($request->has('date_range') && !empty($request->date_range)) {
-                        $dateRange = explode(' - ', $request->date_range);
-                        if (count($dateRange) == 2) {
-                            $data->whereRaw('DATE_FORMAT(registration_fixed_assets.created_at, "%Y-%m-%d") BETWEEN ? AND ?', [$dateRange[0], $dateRange[1]]);
-                        }
-                    }
-
-                    if ($request->has('nik_name') && !empty($request->nik_name)) {
-                        $nikName = $request->nik_name;
-                        $data->where(function ($query) use ($nikName) {
-                            $query->where('users.user_name', 'like', '%' . $nikName . '%')
-                                ->orWhere('users.name', 'like', '%' . $nikName . '%');
-                        });
-                    }
-
-
-                    if ($request->has('company') && !empty($request->company)) {
-                        $data->where('registration_fixed_assets.company_id', $request->company);
-                    }
-                    if ($request->has('department') && !empty($request->department)) {
-                        $data->where('registration_fixed_assets.department_id', $request->department);
-                    }
-
-                    if ($request->has('status') && !empty($request->status)) {
-                        if ($request->status == 'Pending') {
-                            $data->where('registration_fixed_assets.approval_status2', '0');
-                        } elseif ($request->status == 'Approved') {
-                            $data->where('registration_fixed_assets.approval_status2', '1');
-                        } else {
-                            $data->where('registration_fixed_assets.approval_status2', '2');
-                        }
-
-                    }
-
-                    if ($request->has('asset_group') && !empty($request->asset_group)) {
-                        $data->where('registration_fixed_assets.asset_group_id', $request->asset_group);
-                    }
-                    if ($request->has('asset_location') && !empty($request->asset_location)) {
-                        $data->where('registration_fixed_assets.asset_location_id', $request->asset_location);
-                    }
-                    if ($request->has('asset_cost_center') && !empty($request->asset_cost_center)) {
-                        $data->where('registration_fixed_assets.asset_cost_center_id', $request->asset_cost_center);
-                    }
-                    $data = $data->get();
-                } elseif (Auth::user()->hasRole('user-md-digasset-itsp')) {
-                    $data = Digitalassets::query()
-                        ->leftJoin('users', 'registration_fixed_assets.user_id', '=', 'users.id')
-                        ->leftJoin('departments', 'registration_fixed_assets.department_id', '=', 'departments.id')
-                        ->leftJoin('companys', 'registration_fixed_assets.company_id', '=', 'companys.id')
-                        ->leftJoin('master_asset_groups', 'registration_fixed_assets.asset_group_id', '=', 'master_asset_groups.id')
-                        ->leftJoin('master_asset_locations', 'registration_fixed_assets.asset_location_id', '=', 'master_asset_locations.id')
-                        ->leftJoin('master_asset_cost_centers', 'registration_fixed_assets.asset_cost_center_id', '=', 'master_asset_cost_centers.id');
-                    $data = $data->select(
-                        'registration_fixed_assets.id',
-                        'registration_fixed_assets.date',
-                        'registration_fixed_assets.rfa_number',
-                        'registration_fixed_assets.issue_fixed_asset_no',
-                        'registration_fixed_assets.production_code',
-                        'registration_fixed_assets.product_name',
-                        'registration_fixed_assets.grn_no',
-                        'registration_fixed_assets.requestor_name',
-                        'users.name as user_name',
-                        'users.nik as user_nik',
-                        'departments.description as department_name',
-                        'companys.company_desc as company_name',
-                        'master_asset_groups.asset_group_name',
-                        'master_asset_locations.asset_location_name as name_location',
-                        'master_asset_cost_centers.cost_center_name as cost_cname',
-                        'registration_fixed_assets.remark',
-                        'registration_fixed_assets.approval_status1',
-                        'registration_fixed_assets.approval_status2',
-                        'registration_fixed_assets.approval_status3',
-                        'registration_fixed_assets.approval_date1',
-                        'registration_fixed_assets.approval_date2',
-                        'registration_fixed_assets.approval_date3',
-                        'registration_fixed_assets.created_at',
-                    );
-                    // dd($request->all());
-
-                    if ($request->has('date_range') && !empty($request->date_range)) {
-                        $dateRange = explode(' - ', $request->date_range);
-                        if (count($dateRange) == 2) {
-                            $data->whereRaw('DATE_FORMAT(registration_fixed_assets.created_at, "%Y-%m-%d") BETWEEN ? AND ?', [$dateRange[0], $dateRange[1]]);
-                        }
-                    }
-
-                    if ($request->has('nik_name') && !empty($request->nik_name)) {
-                        $nikName = $request->nik_name;
-                        $data->where(function ($query) use ($nikName) {
-                            $query->where('users.user_name', 'like', '%' . $nikName . '%')
-                                ->orWhere('users.name', 'like', '%' . $nikName . '%');
-                        });
-                    }
-
-
-                    if ($request->has('company') && !empty($request->company)) {
-                        $data->where('registration_fixed_assets.company_id', $request->company);
-                    }
-                    if ($request->has('department') && !empty($request->department)) {
-                        $data->where('registration_fixed_assets.department_id', $request->department);
-                    }
-
-                    if ($request->has('status') && !empty($request->status)) {
-                        if ($request->status == 'Pending') {
-                            $data->where('registration_fixed_assets.approval_status2', '0');
-                        } elseif ($request->status == 'Approved') {
-                            $data->where('registration_fixed_assets.approval_status2', '1');
-                        } else {
-                            $data->where('registration_fixed_assets.approval_status2', '2');
-                        }
-
-                    }
-
-                    if ($request->has('asset_group') && !empty($request->asset_group)) {
-                        $data->where('registration_fixed_assets.asset_group_id', $request->asset_group);
-                    }
-                    if ($request->has('asset_location') && !empty($request->asset_location)) {
-                        $data->where('registration_fixed_assets.asset_location_id', $request->asset_location);
-                    }
-                    if ($request->has('asset_cost_center') && !empty($request->asset_cost_center)) {
-                        $data->where('registration_fixed_assets.asset_cost_center_id', $request->asset_cost_center);
-                    }
-                    $data = $data->get();
-                } elseif (Auth::user()->hasRole('admin')) {
-                    $data = Digitalassets::query()
-                        ->leftJoin('users', 'registration_fixed_assets.user_id', '=', 'users.id')
-                        ->leftJoin('departments', 'registration_fixed_assets.department_id', '=', 'departments.id')
-                        ->leftJoin('companys', 'registration_fixed_assets.company_id', '=', 'companys.id')
-                        ->leftJoin('master_asset_groups', 'registration_fixed_assets.asset_group_id', '=', 'master_asset_groups.id')
-                        ->leftJoin('master_asset_locations', 'registration_fixed_assets.asset_location_id', '=', 'master_asset_locations.id')
-                        ->leftJoin('master_asset_cost_centers', 'registration_fixed_assets.asset_cost_center_id', '=', 'master_asset_cost_centers.id');
-                    $data = $data->select(
-                        'registration_fixed_assets.id',
-                        'registration_fixed_assets.date',
-                        'registration_fixed_assets.rfa_number',
-                        'registration_fixed_assets.issue_fixed_asset_no',
-                        'registration_fixed_assets.production_code',
-                        'registration_fixed_assets.product_name',
-                        'registration_fixed_assets.grn_no',
-                        'registration_fixed_assets.requestor_name',
-                        'users.name as user_name',
-                        'users.nik as user_nik',
-                        'departments.description as department_name',
-                        'companys.company_desc as company_name',
-                        'master_asset_groups.asset_group_name',
-                        'master_asset_locations.asset_location_name as name_location',
-                        'master_asset_cost_centers.cost_center_name as cost_cname',
-                        'registration_fixed_assets.remark',
-                        'registration_fixed_assets.approval_status1',
-                        'registration_fixed_assets.approval_status2',
-                        'registration_fixed_assets.approval_status3',
-                        'registration_fixed_assets.approval_date1',
-                        'registration_fixed_assets.approval_date2',
-                        'registration_fixed_assets.approval_date3',
-                        'registration_fixed_assets.created_at',
-                    );
-                    // dd($request->all());
-
-                    if ($request->has('date_range') && !empty($request->date_range)) {
-                        $dateRange = explode(' - ', $request->date_range);
-                        if (count($dateRange) == 2) {
-                            $data->whereRaw('DATE_FORMAT(registration_fixed_assets.created_at, "%Y-%m-%d") BETWEEN ? AND ?', [$dateRange[0], $dateRange[1]]);
-                        }
-                    }
-
-                    if ($request->has('nik_name') && !empty($request->nik_name)) {
-                        $nikName = $request->nik_name;
-                        $data->where(function ($query) use ($nikName) {
-                            $query->where('users.user_name', 'like', '%' . $nikName . '%')
-                                ->orWhere('users.name', 'like', '%' . $nikName . '%');
-                        });
-                    }
-
-
-                    if ($request->has('company') && !empty($request->company)) {
-                        $data->where('registration_fixed_assets.company_id', $request->company);
-                    }
-                    if ($request->has('department') && !empty($request->department)) {
-                        $data->where('registration_fixed_assets.department_id', $request->department);
-                    }
-
-                    if ($request->has('status') && !empty($request->status)) {
-                        if ($request->status == 'Pending') {
-                            $data->where('registration_fixed_assets.approval_status2', '0');
-                        } elseif ($request->status == 'Approved') {
-                            $data->where('registration_fixed_assets.approval_status2', '1');
-                        } else {
-                            $data->where('registration_fixed_assets.approval_status2', '2');
-                        }
-
-                    }
-
-                    if ($request->has('asset_group') && !empty($request->asset_group)) {
-                        $data->where('registration_fixed_assets.asset_group_id', $request->asset_group);
-                    }
-                    if ($request->has('asset_location') && !empty($request->asset_location)) {
-                        $data->where('registration_fixed_assets.asset_location_id', $request->asset_location);
-                    }
-                    if ($request->has('asset_cost_center') && !empty($request->asset_cost_center)) {
-                        $data->where('registration_fixed_assets.asset_cost_center_id', $request->asset_cost_center);
-                    }
-                    $data = $data->get();
-                } else {
+                if ($data === null) {
                     return response()->json(['error' => 'Unauthorized'], 403);
-
                 }
+
+                return $this->buildDataTablesResponse($data);
             }
-
-            return DataTables::of($data)
-                ->addColumn('action', function ($data) {
-                    if (Auth::user()->hasRole('user-employee-digassets')) {
-                        return view('datatables._action-user-digassets', [
-                            'model' => $data,
-                            'edit_url' => route('digitalassets.edit', base64_encode($data->id)),
-                            'show_url' => route('digitalassets.show', base64_encode($data->id)),
-                            'approve_url1' => route('digitalassets.approvedby1', $data->id),
-                        ]);
-                    } elseif (Auth::user()->hasRole('user-acct-digassets')) {
-                        return view('datatables._action-user-acct-digassets', [
-                            'model' => $data,
-                            'edit_url' => route('digitalassets.edit', base64_encode($data->id)),
-                            'show_url' => route('digitalassets.show', base64_encode($data->id)),
-                            'approve_url2' => route('digitalassets.approvedby2', $data->id),
-                            'rejected_url2' => route('digitalassets.rejectedAppr2', $data->id)
-                        ]);
-                    } elseif (Auth::user()->hasRole('user-md-digasset-itsp')) {
-                        return view('datatables._action-user-md-digassets-itsp', [
-                            'model' => $data,
-                            'show_url' => route('digitalassets.show', base64_encode($data->id)),
-                            'approve_url3' => route('digitalassets.approvedby3', $data->id),
-                            'rejected_url3' => route('digitalassets.rejectedAppr3', $data->id)
-                        ]);
-                    } elseif (Auth::user()->hasRole('admin')) {
-                        return view('datatables._action-admin-digassets', [
-                            'model' => $data,
-                            'edit_url' => route('digitalassets.edit', base64_encode($data->id)),
-                            'show_url' => route('digitalassets.show', base64_encode($data->id)),
-                            'destroy_url' => route('digitalassets.destroy', base64_encode($data->id)),
-                        ]);
-                    } else {
-                        return '';
-                    }
-                })
-                ->editColumn('approval_status2', function ($data) {
-                    return view('datatables._approval-status2-digassets', [
-                        'model' => $data
-                    ]);
-                })
-                ->editColumn('approval_status3', function ($data) {
-                    return view('datatables._approval-status3-digassets', [
-                        'model' => $data
-                    ]);
-                })
-                ->editColumn('rfa_number', function ($data) {
-                    $no = $data->rfa_number;
-                    if ($no == '-') {
-                        return '<i>(wait for accounting dept to fill in)</i>';
-                    } else {
-                        return $no;
-                    }
-                })
-                ->editColumn('date', function ($data) {
-                    $no = $data->date;
-                    if ($no == NULL) {
-                        return '<i>(wait for accounting dept to fill in)</i>';
-                    } else {
-                        return $no;
-                    }
-                })
-                ->rawColumns(['action', 'rfa_number', 'date'])
-                ->make(true);
-
         }
 
-        if (Auth::user()->hasRole('user-employee-digassets')) {
+        return $this->getViewByRole();
+    }
+
+    /**
+     * Get digital assets data based on user role and filters
+     */
+    private function getDigitalAssetsData(Request $request)
+    {
+        $user = Auth::user();
+
+        if ($user->hasRole('user-employee-digassets')) {
+            return $this->getEmployeeDigitalAssets();
+        } elseif ($user->hasRole('user-acct-digassets')) {
+            return $this->getAccountingDigitalAssets($request);
+        } elseif ($user->hasRole('user-md-digasset-itsp')) {
+            return $this->getMdDigitalAssets($request);
+        } elseif ($user->hasRole('admin')) {
+            return $this->getAdminDigitalAssets($request);
+        }
+
+        return null;
+    }
+
+    /**
+     * Get digital assets for employee role
+     */
+    private function getEmployeeDigitalAssets()
+    {
+        return $this->buildBaseQuery()
+            ->select($this->getBaseSelectFields())
+            ->where('registration_fixed_assets.user_id', Auth::user()->id)
+            ->get();
+    }
+
+    /**
+     * Get digital assets for accounting role with filters
+     */
+    private function getAccountingDigitalAssets(Request $request)
+    {
+        $query = $this->buildBaseQuery()
+            ->select($this->getExtendedSelectFields());
+
+        return $this->applyFilters($query, $request)->get();
+    }
+
+    /**
+     * Get digital assets for MD role with filters
+     */
+    private function getMdDigitalAssets(Request $request)
+    {
+        $query = $this->buildBaseQuery()
+            ->select($this->getExtendedSelectFields());
+
+        return $this->applyFilters($query, $request)->get();
+    }
+
+    /**
+     * Get digital assets for admin role with filters
+     */
+    private function getAdminDigitalAssets(Request $request)
+    {
+        $query = $this->buildBaseQuery()
+            ->select($this->getExtendedSelectFields());
+
+        return $this->applyFilters($query, $request)->get();
+    }
+
+    /**
+     * Build base query with all joins
+     */
+    private function buildBaseQuery()
+    {
+        return Digitalassets::query()
+            ->leftJoin('users', 'registration_fixed_assets.user_id', '=', 'users.id')
+            ->leftJoin('departments', 'registration_fixed_assets.department_id', '=', 'departments.id')
+            ->leftJoin('companys', 'registration_fixed_assets.company_id', '=', 'companys.id')
+            ->leftJoin('master_asset_groups', 'registration_fixed_assets.asset_group_id', '=', 'master_asset_groups.id')
+            ->leftJoin('master_asset_locations', 'registration_fixed_assets.asset_location_id', '=', 'master_asset_locations.id')
+            ->leftJoin('master_asset_cost_centers', 'registration_fixed_assets.asset_cost_center_id', '=', 'master_asset_cost_centers.id');
+    }
+
+    /**
+     * Get base select fields for employee role
+     */
+    private function getBaseSelectFields()
+    {
+        return [
+            'registration_fixed_assets.id',
+            'registration_fixed_assets.date',
+            'registration_fixed_assets.rfa_number',
+            'registration_fixed_assets.issue_fixed_asset_no',
+            'registration_fixed_assets.production_code',
+            'registration_fixed_assets.product_name',
+            'registration_fixed_assets.grn_no',
+            'registration_fixed_assets.requestor_name',
+            'users.name as user_name',
+            'departments.description as department_name',
+            'companys.company_desc as company_name',
+            'master_asset_groups.asset_group_name',
+            'master_asset_locations.asset_location_name as name_location',
+            'master_asset_cost_centers.cost_center_name as cost_cname',
+            'registration_fixed_assets.remark',
+            'registration_fixed_assets.approval_status1',
+            'registration_fixed_assets.approval_status2',
+            'registration_fixed_assets.approval_status3',
+            'registration_fixed_assets.approval_date1',
+            'registration_fixed_assets.approval_date2',
+            'registration_fixed_assets.approval_date3',
+        ];
+    }
+
+    /**
+     * Get extended select fields for other roles
+     */
+    private function getExtendedSelectFields()
+    {
+        $baseFields = $this->getBaseSelectFields();
+        $additionalFields = [
+            'users.nik as user_nik',
+            'registration_fixed_assets.created_at',
+        ];
+
+        return array_merge($baseFields, $additionalFields);
+    }
+
+    /**
+     * Apply filters to the query based on request parameters
+     */
+    private function applyFilters($query, Request $request)
+    {
+        // Date range filter
+        if ($request->has('date_range') && !empty($request->date_range)) {
+            $dateRange = explode(' - ', $request->date_range);
+            if (count($dateRange) == 2) {
+                $query->whereRaw('DATE_FORMAT(registration_fixed_assets.created_at, "%Y-%m-%d") BETWEEN ? AND ?', [$dateRange[0], $dateRange[1]]);
+            }
+        }
+
+        // NIK/Name filter
+        if ($request->has('nik_name') && !empty($request->nik_name)) {
+            $nikName = $request->nik_name;
+            $query->where(function ($q) use ($nikName) {
+                $q->where('users.user_name', 'like', '%' . $nikName . '%')
+                    ->orWhere('users.name', 'like', '%' . $nikName . '%');
+            });
+        }
+
+        // Company filter
+        if ($request->has('company') && !empty($request->company)) {
+            $query->where('registration_fixed_assets.company_id', $request->company);
+        }
+
+        // Department filter
+        if ($request->has('department') && !empty($request->department)) {
+            $query->where('registration_fixed_assets.department_id', $request->department);
+        }
+
+        // Status filter
+        if ($request->has('status') && !empty($request->status)) {
+            $statusValue = match ($request->status) {
+                'Pending' => '0',
+                'Approved' => '1',
+                default => '2'
+            };
+            $query->where('registration_fixed_assets.approval_status2', $statusValue);
+        }
+
+        // Asset group filter
+        if ($request->has('asset_group') && !empty($request->asset_group)) {
+            $query->where('registration_fixed_assets.asset_group_id', $request->asset_group);
+        }
+
+        // Asset location filter
+        if ($request->has('asset_location') && !empty($request->asset_location)) {
+            $query->where('registration_fixed_assets.asset_location_id', $request->asset_location);
+        }
+
+        // Asset cost center filter
+        if ($request->has('asset_cost_center') && !empty($request->asset_cost_center)) {
+            $query->where('registration_fixed_assets.asset_cost_center_id', $request->asset_cost_center);
+        }
+
+        return $query;
+    }
+
+    /**
+     * Build DataTables response
+     */
+    private function buildDataTablesResponse($data)
+    {
+        return DataTables::of($data)
+            ->addColumn('action', function ($data) {
+                return $this->getActionColumn($data);
+            })
+            ->editColumn('approval_status2', function ($data) {
+                return view('datatables._approval-status2-digassets', ['model' => $data]);
+            })
+            ->editColumn('approval_status3', function ($data) {
+                return view('datatables._approval-status3-digassets', ['model' => $data]);
+            })
+            ->editColumn('rfa_number', function ($data) {
+                return $data->rfa_number == '-' ? '<i>(wait for accounting dept to fill in)</i>' : $data->rfa_number;
+            })
+            ->editColumn('date', function ($data) {
+                return $data->date == NULL ? '<i>(wait for accounting dept to fill in)</i>' : $data->date;
+            })
+            ->rawColumns(['action', 'rfa_number', 'date'])
+            ->make(true);
+    }
+
+    /**
+     * Get action column based on user role
+     */
+    private function getActionColumn($data)
+    {
+        $user = Auth::user();
+
+        if ($user->hasRole('user-employee-digassets')) {
+            return view('datatables._action-user-digassets', [
+                'model' => $data,
+                'edit_url' => route('digitalassets.edit', base64_encode($data->id)),
+                'show_url' => route('digitalassets.show', base64_encode($data->id)),
+                'approve_url1' => route('digitalassets.approvedby1', $data->id),
+            ]);
+        } elseif ($user->hasRole('user-acct-digassets')) {
+            return view('datatables._action-user-acct-digassets', [
+                'model' => $data,
+                'edit_url' => route('digitalassets.edit', base64_encode($data->id)),
+                'show_url' => route('digitalassets.show', base64_encode($data->id)),
+                'approve_url2' => route('digitalassets.approvedby2', $data->id),
+                'rejected_url2' => route('digitalassets.rejectedAppr2', $data->id)
+            ]);
+        } elseif ($user->hasRole('user-md-digasset-itsp')) {
+            return view('datatables._action-user-md-digassets-itsp', [
+                'model' => $data,
+                'show_url' => route('digitalassets.show', base64_encode($data->id)),
+                'approve_url3' => route('digitalassets.approvedby3', $data->id),
+                'rejected_url3' => route('digitalassets.rejectedAppr3', $data->id)
+            ]);
+        } elseif ($user->hasRole('admin')) {
+            return view('datatables._action-admin-digassets', [
+                'model' => $data,
+                'edit_url' => route('digitalassets.edit', base64_encode($data->id)),
+                'show_url' => route('digitalassets.show', base64_encode($data->id)),
+                'destroy_url' => route('digitalassets.destroy', base64_encode($data->id)),
+            ]);
+        }
+
+        return '';
+    }
+
+    /**
+     * Get view based on user role
+     */
+    private function getViewByRole()
+    {
+        $user = Auth::user();
+
+        if ($user->hasRole('user-employee-digassets')) {
             return view('digitalassets.user-dashboard.index');
-        } elseif (Auth::user()->hasRole('user-acct-digassets')) {
-            $department = DB::connection('portal-itsa')->table('departments')
-                ->get();
-            $company = DB::connection('portal-itsa')->table('companys')
-                ->get();
-
-
-            $masterAssetGroups = DB::connection('portal-itsa')->table('master_asset_groups')->get();
-            $masterAssetLocations = DB::connection('portal-itsa')->table('master_asset_locations')->get();
-            $masterAssetCostCenters = DB::connection('portal-itsa')->table('master_asset_cost_centers')->get();
-
-
-            return view('digitalassets.user-acct-digassets.index', compact(
-                'department',
-                'company',
-                'masterAssetGroups',
-                'masterAssetLocations',
-                'masterAssetCostCenters'
-            ));
-        } elseif (Auth::user()->hasRole('user-md-digasset-itsp')) {
-            $department = DB::connection('portal-itsa')->table('departments')
-                ->get();
-            $company = DB::connection('portal-itsa')->table('companys')
-                ->get();
-
-
-            $masterAssetGroups = DB::connection('portal-itsa')->table('master_asset_groups')->get();
-            $masterAssetLocations = DB::connection('portal-itsa')->table('master_asset_locations')->get();
-            $masterAssetCostCenters = DB::connection('portal-itsa')->table('master_asset_cost_centers')->get();
-            return view('digitalassets.user-md-digassets-itsp.index', compact(
-                'department',
-                'company',
-                'masterAssetGroups',
-                'masterAssetLocations',
-                'masterAssetCostCenters'
-            ));
-
-        } elseif (Auth::user()->hasRole('admin')) {
-            $department = DB::connection('portal-itsa')->table('departments')
-                ->get();
-            $company = DB::connection('portal-itsa')->table('companys')
-                ->get();
-            $masterAssetGroups = DB::connection('portal-itsa')->table('master_asset_groups')->get();
-            $masterAssetLocations = DB::connection('portal-itsa')->table('master_asset_locations')->get();
-            $masterAssetCostCenters = DB::connection('portal-itsa')->table('master_asset_cost_centers')->get();
-            return view('digitalassets.admin.index', compact(
-                'department',
-                'company',
-                'masterAssetGroups',
-                'masterAssetLocations',
-                'masterAssetCostCenters'
-            ));
-        } else {
-            return response()->json(['error' => 'Unauthorized'], 403);
         }
 
+        if ($user->hasRole('user-acct-digassets')) {
+            return view('digitalassets.user-acct-digassets.index', $this->getMasterData());
+        }
 
+        if ($user->hasRole('user-md-digasset-itsp')) {
+            return view('digitalassets.user-md-digassets-itsp.index', $this->getMasterData());
+        }
+
+        if ($user->hasRole('admin')) {
+            return view('digitalassets.admin.index', $this->getMasterData());
+        }
+
+        return response()->json(['error' => 'Unauthorized'], 403);
+    }
+
+    /**
+     * Get master data for dropdowns
+     */
+    private function getMasterData()
+    {
+        return [
+            'department' => DB::connection('portal-itsa')->table('departments')->get(),
+            'company' => DB::connection('portal-itsa')->table('companys')->get(),
+            'masterAssetGroups' => DB::connection('portal-itsa')->table('master_asset_groups')->get(),
+            'masterAssetLocations' => DB::connection('portal-itsa')->table('master_asset_locations')->get(),
+            'masterAssetCostCenters' => DB::connection('portal-itsa')->table('master_asset_cost_centers')->get(),
+        ];
     }
 
     /**
@@ -927,3 +826,421 @@ class DigitalassetsController extends Controller
         }
     }
 }
+
+
+
+
+// public function index(Request $request)
+// {
+
+//     if (!Auth::user()->hasPermission('manage-digital-assets')) {
+//         return redirect()->route('apps.index')->with('error', 'You do not have access to this application yet. Please contact your IT Department.');
+//     }
+//     if (!Auth::check()) {
+//         return redirect()->route('login');
+//     }
+
+
+//     if ($request->ajax()) {
+//         if (Auth::user()->hasPermission('manage-digital-assets')) {
+//             if (Auth::user()->hasRole('user-employee-digassets')) {
+//                 $data = Digitalassets::query()
+//                     ->leftJoin('users', 'registration_fixed_assets.user_id', '=', 'users.id')
+//                     ->leftJoin('departments', 'registration_fixed_assets.department_id', '=', 'departments.id')
+//                     ->leftJoin('companys', 'registration_fixed_assets.company_id', '=', 'companys.id')
+//                     ->leftJoin('master_asset_groups', 'registration_fixed_assets.asset_group_id', '=', 'master_asset_groups.id')
+//                     ->leftJoin('master_asset_locations', 'registration_fixed_assets.asset_location_id', '=', 'master_asset_locations.id')
+//                     ->leftJoin('master_asset_cost_centers', 'registration_fixed_assets.asset_cost_center_id', '=', 'master_asset_cost_centers.id');
+//                 $data = $data->select(
+//                     'registration_fixed_assets.id',
+//                     'registration_fixed_assets.date',
+//                     'registration_fixed_assets.rfa_number',
+//                     'registration_fixed_assets.issue_fixed_asset_no',
+//                     'registration_fixed_assets.production_code',
+//                     'registration_fixed_assets.product_name',
+//                     'registration_fixed_assets.grn_no',
+//                     'registration_fixed_assets.requestor_name',
+//                     'users.name as user_name',
+//                     'departments.description as department_name',
+//                     'companys.company_desc as company_name',
+//                     'master_asset_groups.asset_group_name',
+//                     'master_asset_locations.asset_location_name as name_location',
+//                     'master_asset_cost_centers.cost_center_name as cost_cname',
+//                     'registration_fixed_assets.remark',
+//                     'registration_fixed_assets.approval_status1',
+//                     'registration_fixed_assets.approval_status2',
+//                     'registration_fixed_assets.approval_status3',
+//                     'registration_fixed_assets.approval_date1',
+//                     'registration_fixed_assets.approval_date2',
+//                     'registration_fixed_assets.approval_date3',
+//                 );
+//                 $data = $data->where('registration_fixed_assets.user_id', Auth::user()->id)->get();
+//             } elseif (Auth::user()->hasRole('user-acct-digassets')) {
+//                 $data = Digitalassets::query()
+//                     ->leftJoin('users', 'registration_fixed_assets.user_id', '=', 'users.id')
+//                     ->leftJoin('departments', 'registration_fixed_assets.department_id', '=', 'departments.id')
+//                     ->leftJoin('companys', 'registration_fixed_assets.company_id', '=', 'companys.id')
+//                     ->leftJoin('master_asset_groups', 'registration_fixed_assets.asset_group_id', '=', 'master_asset_groups.id')
+//                     ->leftJoin('master_asset_locations', 'registration_fixed_assets.asset_location_id', '=', 'master_asset_locations.id')
+//                     ->leftJoin('master_asset_cost_centers', 'registration_fixed_assets.asset_cost_center_id', '=', 'master_asset_cost_centers.id');
+//                 $data = $data->select(
+//                     'registration_fixed_assets.id',
+//                     'registration_fixed_assets.date',
+//                     'registration_fixed_assets.rfa_number',
+//                     'registration_fixed_assets.issue_fixed_asset_no',
+//                     'registration_fixed_assets.production_code',
+//                     'registration_fixed_assets.product_name',
+//                     'registration_fixed_assets.grn_no',
+//                     'registration_fixed_assets.requestor_name',
+//                     'users.name as user_name',
+//                     'users.nik as user_nik',
+//                     'departments.description as department_name',
+//                     'companys.company_desc as company_name',
+//                     'master_asset_groups.asset_group_name',
+//                     'master_asset_locations.asset_location_name as name_location',
+//                     'master_asset_cost_centers.cost_center_name as cost_cname',
+//                     'registration_fixed_assets.remark',
+//                     'registration_fixed_assets.approval_status1',
+//                     'registration_fixed_assets.approval_status2',
+//                     'registration_fixed_assets.approval_status3',
+//                     'registration_fixed_assets.approval_date1',
+//                     'registration_fixed_assets.approval_date2',
+//                     'registration_fixed_assets.approval_date3',
+//                     'registration_fixed_assets.created_at',
+//                 );
+//                 // dd($request->all());
+
+//                 if ($request->has('date_range') && !empty($request->date_range)) {
+//                     $dateRange = explode(' - ', $request->date_range);
+//                     if (count($dateRange) == 2) {
+//                         $data->whereRaw('DATE_FORMAT(registration_fixed_assets.created_at, "%Y-%m-%d") BETWEEN ? AND ?', [$dateRange[0], $dateRange[1]]);
+//                     }
+//                 }
+
+//                 if ($request->has('nik_name') && !empty($request->nik_name)) {
+//                     $nikName = $request->nik_name;
+//                     $data->where(function ($query) use ($nikName) {
+//                         $query->where('users.user_name', 'like', '%' . $nikName . '%')
+//                             ->orWhere('users.name', 'like', '%' . $nikName . '%');
+//                     });
+//                 }
+
+
+//                 if ($request->has('company') && !empty($request->company)) {
+//                     $data->where('registration_fixed_assets.company_id', $request->company);
+//                 }
+//                 if ($request->has('department') && !empty($request->department)) {
+//                     $data->where('registration_fixed_assets.department_id', $request->department);
+//                 }
+
+//                 if ($request->has('status') && !empty($request->status)) {
+//                     if ($request->status == 'Pending') {
+//                         $data->where('registration_fixed_assets.approval_status2', '0');
+//                     } elseif ($request->status == 'Approved') {
+//                         $data->where('registration_fixed_assets.approval_status2', '1');
+//                     } else {
+//                         $data->where('registration_fixed_assets.approval_status2', '2');
+//                     }
+
+//                 }
+
+//                 if ($request->has('asset_group') && !empty($request->asset_group)) {
+//                     $data->where('registration_fixed_assets.asset_group_id', $request->asset_group);
+//                 }
+//                 if ($request->has('asset_location') && !empty($request->asset_location)) {
+//                     $data->where('registration_fixed_assets.asset_location_id', $request->asset_location);
+//                 }
+//                 if ($request->has('asset_cost_center') && !empty($request->asset_cost_center)) {
+//                     $data->where('registration_fixed_assets.asset_cost_center_id', $request->asset_cost_center);
+//                 }
+//                 $data = $data->get();
+//             } elseif (Auth::user()->hasRole('user-md-digasset-itsp')) {
+//                 $data = Digitalassets::query()
+//                     ->leftJoin('users', 'registration_fixed_assets.user_id', '=', 'users.id')
+//                     ->leftJoin('departments', 'registration_fixed_assets.department_id', '=', 'departments.id')
+//                     ->leftJoin('companys', 'registration_fixed_assets.company_id', '=', 'companys.id')
+//                     ->leftJoin('master_asset_groups', 'registration_fixed_assets.asset_group_id', '=', 'master_asset_groups.id')
+//                     ->leftJoin('master_asset_locations', 'registration_fixed_assets.asset_location_id', '=', 'master_asset_locations.id')
+//                     ->leftJoin('master_asset_cost_centers', 'registration_fixed_assets.asset_cost_center_id', '=', 'master_asset_cost_centers.id');
+//                 $data = $data->select(
+//                     'registration_fixed_assets.id',
+//                     'registration_fixed_assets.date',
+//                     'registration_fixed_assets.rfa_number',
+//                     'registration_fixed_assets.issue_fixed_asset_no',
+//                     'registration_fixed_assets.production_code',
+//                     'registration_fixed_assets.product_name',
+//                     'registration_fixed_assets.grn_no',
+//                     'registration_fixed_assets.requestor_name',
+//                     'users.name as user_name',
+//                     'users.nik as user_nik',
+//                     'departments.description as department_name',
+//                     'companys.company_desc as company_name',
+//                     'master_asset_groups.asset_group_name',
+//                     'master_asset_locations.asset_location_name as name_location',
+//                     'master_asset_cost_centers.cost_center_name as cost_cname',
+//                     'registration_fixed_assets.remark',
+//                     'registration_fixed_assets.approval_status1',
+//                     'registration_fixed_assets.approval_status2',
+//                     'registration_fixed_assets.approval_status3',
+//                     'registration_fixed_assets.approval_date1',
+//                     'registration_fixed_assets.approval_date2',
+//                     'registration_fixed_assets.approval_date3',
+//                     'registration_fixed_assets.created_at',
+//                 );
+//                 // dd($request->all());
+
+//                 if ($request->has('date_range') && !empty($request->date_range)) {
+//                     $dateRange = explode(' - ', $request->date_range);
+//                     if (count($dateRange) == 2) {
+//                         $data->whereRaw('DATE_FORMAT(registration_fixed_assets.created_at, "%Y-%m-%d") BETWEEN ? AND ?', [$dateRange[0], $dateRange[1]]);
+//                     }
+//                 }
+
+//                 if ($request->has('nik_name') && !empty($request->nik_name)) {
+//                     $nikName = $request->nik_name;
+//                     $data->where(function ($query) use ($nikName) {
+//                         $query->where('users.user_name', 'like', '%' . $nikName . '%')
+//                             ->orWhere('users.name', 'like', '%' . $nikName . '%');
+//                     });
+//                 }
+
+
+//                 if ($request->has('company') && !empty($request->company)) {
+//                     $data->where('registration_fixed_assets.company_id', $request->company);
+//                 }
+//                 if ($request->has('department') && !empty($request->department)) {
+//                     $data->where('registration_fixed_assets.department_id', $request->department);
+//                 }
+
+//                 if ($request->has('status') && !empty($request->status)) {
+//                     if ($request->status == 'Pending') {
+//                         $data->where('registration_fixed_assets.approval_status2', '0');
+//                     } elseif ($request->status == 'Approved') {
+//                         $data->where('registration_fixed_assets.approval_status2', '1');
+//                     } else {
+//                         $data->where('registration_fixed_assets.approval_status2', '2');
+//                     }
+
+//                 }
+
+//                 if ($request->has('asset_group') && !empty($request->asset_group)) {
+//                     $data->where('registration_fixed_assets.asset_group_id', $request->asset_group);
+//                 }
+//                 if ($request->has('asset_location') && !empty($request->asset_location)) {
+//                     $data->where('registration_fixed_assets.asset_location_id', $request->asset_location);
+//                 }
+//                 if ($request->has('asset_cost_center') && !empty($request->asset_cost_center)) {
+//                     $data->where('registration_fixed_assets.asset_cost_center_id', $request->asset_cost_center);
+//                 }
+//                 $data = $data->get();
+//             } elseif (Auth::user()->hasRole('admin')) {
+//                 $data = Digitalassets::query()
+//                     ->leftJoin('users', 'registration_fixed_assets.user_id', '=', 'users.id')
+//                     ->leftJoin('departments', 'registration_fixed_assets.department_id', '=', 'departments.id')
+//                     ->leftJoin('companys', 'registration_fixed_assets.company_id', '=', 'companys.id')
+//                     ->leftJoin('master_asset_groups', 'registration_fixed_assets.asset_group_id', '=', 'master_asset_groups.id')
+//                     ->leftJoin('master_asset_locations', 'registration_fixed_assets.asset_location_id', '=', 'master_asset_locations.id')
+//                     ->leftJoin('master_asset_cost_centers', 'registration_fixed_assets.asset_cost_center_id', '=', 'master_asset_cost_centers.id');
+//                 $data = $data->select(
+//                     'registration_fixed_assets.id',
+//                     'registration_fixed_assets.date',
+//                     'registration_fixed_assets.rfa_number',
+//                     'registration_fixed_assets.issue_fixed_asset_no',
+//                     'registration_fixed_assets.production_code',
+//                     'registration_fixed_assets.product_name',
+//                     'registration_fixed_assets.grn_no',
+//                     'registration_fixed_assets.requestor_name',
+//                     'users.name as user_name',
+//                     'users.nik as user_nik',
+//                     'departments.description as department_name',
+//                     'companys.company_desc as company_name',
+//                     'master_asset_groups.asset_group_name',
+//                     'master_asset_locations.asset_location_name as name_location',
+//                     'master_asset_cost_centers.cost_center_name as cost_cname',
+//                     'registration_fixed_assets.remark',
+//                     'registration_fixed_assets.approval_status1',
+//                     'registration_fixed_assets.approval_status2',
+//                     'registration_fixed_assets.approval_status3',
+//                     'registration_fixed_assets.approval_date1',
+//                     'registration_fixed_assets.approval_date2',
+//                     'registration_fixed_assets.approval_date3',
+//                     'registration_fixed_assets.created_at',
+//                 );
+//                 // dd($request->all());
+
+//                 if ($request->has('date_range') && !empty($request->date_range)) {
+//                     $dateRange = explode(' - ', $request->date_range);
+//                     if (count($dateRange) == 2) {
+//                         $data->whereRaw('DATE_FORMAT(registration_fixed_assets.created_at, "%Y-%m-%d") BETWEEN ? AND ?', [$dateRange[0], $dateRange[1]]);
+//                     }
+//                 }
+
+//                 if ($request->has('nik_name') && !empty($request->nik_name)) {
+//                     $nikName = $request->nik_name;
+//                     $data->where(function ($query) use ($nikName) {
+//                         $query->where('users.user_name', 'like', '%' . $nikName . '%')
+//                             ->orWhere('users.name', 'like', '%' . $nikName . '%');
+//                     });
+//                 }
+
+
+//                 if ($request->has('company') && !empty($request->company)) {
+//                     $data->where('registration_fixed_assets.company_id', $request->company);
+//                 }
+//                 if ($request->has('department') && !empty($request->department)) {
+//                     $data->where('registration_fixed_assets.department_id', $request->department);
+//                 }
+
+//                 if ($request->has('status') && !empty($request->status)) {
+//                     if ($request->status == 'Pending') {
+//                         $data->where('registration_fixed_assets.approval_status2', '0');
+//                     } elseif ($request->status == 'Approved') {
+//                         $data->where('registration_fixed_assets.approval_status2', '1');
+//                     } else {
+//                         $data->where('registration_fixed_assets.approval_status2', '2');
+//                     }
+
+//                 }
+
+//                 if ($request->has('asset_group') && !empty($request->asset_group)) {
+//                     $data->where('registration_fixed_assets.asset_group_id', $request->asset_group);
+//                 }
+//                 if ($request->has('asset_location') && !empty($request->asset_location)) {
+//                     $data->where('registration_fixed_assets.asset_location_id', $request->asset_location);
+//                 }
+//                 if ($request->has('asset_cost_center') && !empty($request->asset_cost_center)) {
+//                     $data->where('registration_fixed_assets.asset_cost_center_id', $request->asset_cost_center);
+//                 }
+//                 $data = $data->get();
+//             } else {
+//                 return response()->json(['error' => 'Unauthorized'], 403);
+
+//             }
+//         }
+
+//         return DataTables::of($data)
+//             ->addColumn('action', function ($data) {
+//                 if (Auth::user()->hasRole('user-employee-digassets')) {
+//                     return view('datatables._action-user-digassets', [
+//                         'model' => $data,
+//                         'edit_url' => route('digitalassets.edit', base64_encode($data->id)),
+//                         'show_url' => route('digitalassets.show', base64_encode($data->id)),
+//                         'approve_url1' => route('digitalassets.approvedby1', $data->id),
+//                     ]);
+//                 } elseif (Auth::user()->hasRole('user-acct-digassets')) {
+//                     return view('datatables._action-user-acct-digassets', [
+//                         'model' => $data,
+//                         'edit_url' => route('digitalassets.edit', base64_encode($data->id)),
+//                         'show_url' => route('digitalassets.show', base64_encode($data->id)),
+//                         'approve_url2' => route('digitalassets.approvedby2', $data->id),
+//                         'rejected_url2' => route('digitalassets.rejectedAppr2', $data->id)
+//                     ]);
+//                 } elseif (Auth::user()->hasRole('user-md-digasset-itsp')) {
+//                     return view('datatables._action-user-md-digassets-itsp', [
+//                         'model' => $data,
+//                         'show_url' => route('digitalassets.show', base64_encode($data->id)),
+//                         'approve_url3' => route('digitalassets.approvedby3', $data->id),
+//                         'rejected_url3' => route('digitalassets.rejectedAppr3', $data->id)
+//                     ]);
+//                 } elseif (Auth::user()->hasRole('admin')) {
+//                     return view('datatables._action-admin-digassets', [
+//                         'model' => $data,
+//                         'edit_url' => route('digitalassets.edit', base64_encode($data->id)),
+//                         'show_url' => route('digitalassets.show', base64_encode($data->id)),
+//                         'destroy_url' => route('digitalassets.destroy', base64_encode($data->id)),
+//                     ]);
+//                 } else {
+//                     return '';
+//                 }
+//             })
+//             ->editColumn('approval_status2', function ($data) {
+//                 return view('datatables._approval-status2-digassets', [
+//                     'model' => $data
+//                 ]);
+//             })
+//             ->editColumn('approval_status3', function ($data) {
+//                 return view('datatables._approval-status3-digassets', [
+//                     'model' => $data
+//                 ]);
+//             })
+//             ->editColumn('rfa_number', function ($data) {
+//                 $no = $data->rfa_number;
+//                 if ($no == '-') {
+//                     return '<i>(wait for accounting dept to fill in)</i>';
+//                 } else {
+//                     return $no;
+//                 }
+//             })
+//             ->editColumn('date', function ($data) {
+//                 $no = $data->date;
+//                 if ($no == NULL) {
+//                     return '<i>(wait for accounting dept to fill in)</i>';
+//                 } else {
+//                     return $no;
+//                 }
+//             })
+//             ->rawColumns(['action', 'rfa_number', 'date'])
+//             ->make(true);
+
+//     }
+
+//     if (Auth::user()->hasRole('user-employee-digassets')) {
+//         return view('digitalassets.user-dashboard.index');
+//     } elseif (Auth::user()->hasRole('user-acct-digassets')) {
+//         $department = DB::connection('portal-itsa')->table('departments')
+//             ->get();
+//         $company = DB::connection('portal-itsa')->table('companys')
+//             ->get();
+
+
+//         $masterAssetGroups = DB::connection('portal-itsa')->table('master_asset_groups')->get();
+//         $masterAssetLocations = DB::connection('portal-itsa')->table('master_asset_locations')->get();
+//         $masterAssetCostCenters = DB::connection('portal-itsa')->table('master_asset_cost_centers')->get();
+
+
+//         return view('digitalassets.user-acct-digassets.index', compact(
+//             'department',
+//             'company',
+//             'masterAssetGroups',
+//             'masterAssetLocations',
+//             'masterAssetCostCenters'
+//         ));
+//     } elseif (Auth::user()->hasRole('user-md-digasset-itsp')) {
+//         $department = DB::connection('portal-itsa')->table('departments')
+//             ->get();
+//         $company = DB::connection('portal-itsa')->table('companys')
+//             ->get();
+
+
+//         $masterAssetGroups = DB::connection('portal-itsa')->table('master_asset_groups')->get();
+//         $masterAssetLocations = DB::connection('portal-itsa')->table('master_asset_locations')->get();
+//         $masterAssetCostCenters = DB::connection('portal-itsa')->table('master_asset_cost_centers')->get();
+//         return view('digitalassets.user-md-digassets-itsp.index', compact(
+//             'department',
+//             'company',
+//             'masterAssetGroups',
+//             'masterAssetLocations',
+//             'masterAssetCostCenters'
+//         ));
+
+//     } elseif (Auth::user()->hasRole('admin')) {
+//         $department = DB::connection('portal-itsa')->table('departments')
+//             ->get();
+//         $company = DB::connection('portal-itsa')->table('companys')
+//             ->get();
+//         $masterAssetGroups = DB::connection('portal-itsa')->table('master_asset_groups')->get();
+//         $masterAssetLocations = DB::connection('portal-itsa')->table('master_asset_locations')->get();
+//         $masterAssetCostCenters = DB::connection('portal-itsa')->table('master_asset_cost_centers')->get();
+//         return view('digitalassets.admin.index', compact(
+//             'department',
+//             'company',
+//             'masterAssetGroups',
+//             'masterAssetLocations',
+//             'masterAssetCostCenters'
+//         ));
+//     } else {
+//         return response()->json(['error' => 'Unauthorized'], 403);
+//     }
+
+
+// }
