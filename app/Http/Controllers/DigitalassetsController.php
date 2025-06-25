@@ -38,8 +38,9 @@ class DigitalassetsController extends Controller
             return redirect()->route('login');
         }
 
+
         if ($request->ajax()) {
-            if (Auth::user()->hasPermission('manage-digital-assets')) {
+            if (Auth::user()->hasPermission(['manage-digital-assets', 'manage-asset-tf-notification'])) {
                 $data = $this->getDigitalAssetsData($request);
 
                 if ($data === null) {
@@ -101,7 +102,8 @@ class DigitalassetsController extends Controller
     private function getMdDigitalAssets(Request $request)
     {
         $query = $this->buildBaseQuery()
-            ->select($this->getExtendedSelectFields());
+            ->select($this->getExtendedSelectFields())
+            ->where('registration_fixed_assets.department_id', Auth::user()->department_id);
 
         return $this->applyFilters($query, $request)->get();
     }
@@ -417,7 +419,7 @@ class DigitalassetsController extends Controller
                 'asset_cost_center_id' => $request->asset_cost_center,
                 'created_by' => Auth::user()->name,
                 'user_id' => Auth::user()->id,
-                // 'department_id' => $request->department_id,
+                'department_id' => Auth::user()->department_id,
                 'created_at' => date('Y-m-d H:i:s'),
                 'approval_status1' => '0',
                 'approval_status2' => '0',
@@ -825,12 +827,17 @@ class DigitalassetsController extends Controller
             return response()->json(['error' => 'Unauthorized'], 403);
         }
     }
+
+
+
 }
 
 
 
 
-// public function index(Request $request)
+
+
+// public function indexDashboardSendnotif(Request $request)
 // {
 
 //     if (!Auth::user()->hasPermission('manage-digital-assets')) {

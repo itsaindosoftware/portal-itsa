@@ -7,6 +7,7 @@
     width: 95%;
   }
 }
+
 #view-reqdar .modal-xl {
   max-width: 95%; /* Membuat modal hampir selebar layar */
   width: 1400px; /* Anda bisa menyesuaikan lebar ini */
@@ -40,4 +41,14 @@
     #pdf-viewer-modal .modal-body {
         height: calc(100% - 120px); /* Kurangi height header dan footer */
     }
+}
+
+#create-digassets .modal-xl {
+   max-width: 95%; /* Membuat modal hampir selebar layar */
+   width: 1400px; 
+}
+@media (max-width: 1500px) {
+  #create-digassets .modal-xl {
+    width: 95%;
+  }
 }

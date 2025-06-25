@@ -1,8 +1,8 @@
 @extends('layouts.app_custom')
 @section('title-head','Digital Assets - Registration Fixed Asset')
-@role('user-acct-digassets')
+{{-- @role('user-acct-digassets') --}}
    @section('title','Registration Fixed Asset')
-@endrole
+{{-- @endrole --}}
 @role('admin')
    @section('title','All Request Digital Assets')
 @endrole
