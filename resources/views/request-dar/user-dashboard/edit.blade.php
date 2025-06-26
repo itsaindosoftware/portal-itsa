@@ -603,7 +603,7 @@
             let id = $('#id-reqdar-form').val();
             var route = "{{ route('requestdar.update', ':param') }}";
             route_replace = route.replace(':param', id);
-            alert(id)
+            // alert(id)
             var formData = new FormData($('#reqdarFormEdit')[0]);
 
             $.ajax({

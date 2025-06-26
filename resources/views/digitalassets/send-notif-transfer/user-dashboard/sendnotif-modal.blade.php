@@ -12,7 +12,7 @@
                     <small><strong>Note:</strong> This form is to be used when assets are transferred from one Responsibility Centre to another.</small>
                 </div>
                 
-                <form id="reqdigassetsForm" method="POST" action="{{ route('transfernotif.store') }}" enctype="multipart/form-data">
+                <form id="form-send-notif" method="POST" action="{{ route('transfernotif.store') }}" enctype="multipart/form-data">
                     @csrf
                     @method('POST')
                     <!-- Section 1: Transfer of Asset FROM -->
@@ -230,19 +230,18 @@
                             </div>
                         </div> 
                     </fieldset>
-                </form>
-       
-             
+                   </form>
             </div>
             
             <div class="modal-footer bg-light">
                 <button type="button" onclick="closeModal()" class="btn btn-secondary">
                     <i class="ti-close"></i> Close
                 </button>
-                <button type="button" class="btn btn-info submitTransfer">
+                <button type="button" class="btn btn-info submitTransfer" id="submit-transfer">
                     <i class="ti-check"></i> Submit Transfer Request
                 </button>
             </div>
+              
         </div>
     </div>
 </div>
@@ -270,49 +269,49 @@
         });
 
         // Form validation
-        // document.getElementById('reqdigassetsForm').addEventListener('button', function(e) {
-        //     // e.preventDefault();
+        document.getElementById('form-send-notif').addEventListener('button', function(e) {
+            // e.preventDefault();
             
-        //     // Basic validation
-        //     const requiredFields = this.querySelectorAll('[required]');
-        //     let isValid = true;
+            // Basic validation
+            const requiredFields = this.querySelectorAll('[required]');
+            let isValid = true;
             
-        //     requiredFields.forEach(field => {
-        //         if (!field.value.trim()) {
-        //             field.classList.add('is-invalid');
-        //             isValid = false;
-        //         } else {
-        //             field.classList.remove('is-invalid');
-        //         }
-        //     });
+            requiredFields.forEach(field => {
+                if (!field.value.trim()) {
+                    field.classList.add('is-invalid');
+                    isValid = false;
+                } else {
+                    field.classList.remove('is-invalid');
+                }
+            });
 
-        //     // Check if quantities match
-        //     const qtyFrom = document.getElementById('quantity-from').value;
-        //     const qtyTo = document.getElementById('quantity-to').value;
+            // Check if quantities match
+            const qtyFrom = document.getElementById('quantity-from').value;
+            const qtyTo = document.getElementById('quantity-to').value;
             
-        //     if (qtyFrom !== qtyTo) {
-        //         alert('Quantity in both sections must match!');
-        //         return;
-        //     }
+            if (qtyFrom !== qtyTo) {
+                alert('Quantity in both sections must match!');
+                return;
+            }
 
-        //     if (isValid) {
-        //         // Show loading state
-        //         const submitBtn = document.querySelector('button[type="submit"]');
-        //         const originalText = submitBtn.innerHTML;
-        //         submitBtn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Processing...';
-        //         submitBtn.disabled = true;
+            if (isValid) {
+                // Show loading state
+                const submitBtn = document.querySelector('.submitTransfer');
+                const originalText = submitBtn.innerHTML;
+                submitBtn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Processing...';
+                submitBtn.disabled = true;
 
-        //         // Submit form
-        //         this.submit();
-        //     } else {
-        //         alert('Please fill in all required fields!');
-        //     }
-        // });
+                // Submit form
+                this.submit();
+            } else {
+                alert('Please fill in all required fields!');
+            }
+        });
     });
 
     function closeModal() {
         $('#create-digassets').modal('hide');
-        $('#reqdigassetsForm')[0].reset();
+        $('#form-send-notif')[0].reset();
         
         // Remove validation classes
         document.querySelectorAll('.is-invalid').forEach(field => {

@@ -12,6 +12,37 @@
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/custom-edit.css') }}">
 <link rel="stylesheet" type="text/css" href="{{ asset('bootstrap5/css/daterangepicker.css') }}">
 <link rel="stylesheet" type="text/css" href="{{ asset('bootstrap5/css/bootstrap-datetimepicker.min.css') }}">
+<style>
+.status-badge {
+    font-size: 0.875em;
+    padding: 0.375rem 0.75rem;
+    border-radius: 0.375rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+}
+.status-pending {
+    background-color: #fef3c7;
+    color: #92400e;
+    border: 1px solid #fbbf24;
+}
+.status-sent {
+    background-color: #dbeafe;
+    color: #1e40af;
+    border: 1px solid #3b82f6;
+}
+.status-completed {
+    background-color: #dcfce7;
+    color: #166534;
+    border: 1px solid #22c55e;
+}
+.status-cancelled {
+    background-color: #fee2e2;
+    color: #dc2626;
+    border: 1px solid #ef4444;
+}
+
+</style>
 @endsection
 @section('content')
 <div class="section-body">
@@ -27,6 +58,7 @@
 									<li>This is the Asset Transfer Notification Dashboard</li>
 									<li>Please use the date range filter to search for data based on date ranges</li>
                                     <li>Please use the search input to search for specific data located above the right of the data table list.</li>
+                                    <li>Please also use the status filter by selecting the status.</li>
 								</ul>
 							</div>
 							<button class="close" data-dismiss="alert">
@@ -51,7 +83,7 @@
 						<div class="card-body">
 							<form id="filter-form">
 								<div class="row">
-									<div class="col-md-5">
+									<div class="col-md-4">
 										<div class="form-group">
 											<label>Date Range</label>
 											<div class="input-group">
@@ -62,6 +94,18 @@
 												</div>
 												<input type="text" placeholder="Select Date Range" class="form-control daterange-picker" name="date_range" id="date_range">
 											</div>
+										</div>
+									</div>
+                                    <div class="col-md-4">
+										<div class="form-group">
+											<label>Status</label>
+											<select class="form-control" name="transfer_status" id="transfer_status">
+												<option value="">All Statuses</option>
+												<option value="pending">Pending</option>
+												<option value="sent">Sent</option>
+												<option value="completed">Completed</option>
+                                                <option value="cancelled">Cancelled</option>
+											</select>
 										</div>
 									</div>
 	
@@ -109,6 +153,8 @@
                                         <th class="text-center">production_code</th>
                                         <th class="text-center">product_name</th>
                                         <th class="text-center">Requestor Name</th>
+                                        <th class="text-center">Status</th>
+                                        <th class="text-center">Transfer Date</th>
 										<th class="text-center" width="15%">Action</th>
 									</tr>
 								</thead>
@@ -126,6 +172,7 @@
 @endsection
 @push('js')
 @include('digitalassets.send-notif-transfer.user-dashboard.sendnotif-modal')
+@include('digitalassets.send-notif-transfer.user-dashboard.view-modal')
 <script src="{{ asset('assets/Datatables/jquery.dataTables.min.js') }}"></script>
 <script src="{{ asset('assets/Datatables/dataTables.bootstrap4.min.js') }}"></script>
 <script src="{{ asset('bootstrap5/js/dataTables.rowGroup.min.js') }}"></script>
@@ -180,6 +227,7 @@ $(document).ready(function(){
 				url: "{{ route('transfernotif.index') }}",
                  data: function(d) {
                     d.date_range = $('#date_range').val();
+                    d.transfer_status = $('#transfer_status').val();
                  }
 			},
 			order: [[ 0, 'desc']],
@@ -197,6 +245,27 @@ $(document).ready(function(){
             { data: 'production_code', name: 'production_code',className: 'text-center' },
             { data: 'product_name', name: 'product_name',className: 'text-center' },
             { data: 'requestor_name', name: 'requestor_name',className: 'text-center' },
+            { 
+                data: 'transfer_status', 
+                name: 'transfer_status', 
+                className: 'text-center',
+                render: function(data, type, row) {
+                    if (type === 'display') {
+                        let statusClass = 'status-' + data;
+                        let statusText = data.charAt(0).toUpperCase() + data.slice(1);
+                        return '<span class="status-badge ' + statusClass + '">' + statusText + '</span>';
+                    }
+                    return data;
+                }
+            },
+            { 
+                data: 'transfer_sent_at', 
+                name: 'transfer_sent_at', 
+                className: 'text-center',
+                render: function(data, type, row) {
+                    return data ? moment(data).format('YYYY-MM-DD HH:mm') : '-';
+                }
+            },
 			{ data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-center' }
 			]
 	//
@@ -295,7 +364,7 @@ function hideLoadingState() {
     $('#loading-overlay').remove();
     
     // Enable form elements
-    $('#reqdigassetsForm input, #reqdigassetsForm select, #reqdigassetsForm textarea').prop('disabled', false);
+    $('#form-send-notif input, #form-send-notif select, #form-send-notif textarea').prop('disabled', false);
 }
 function showLoadingState() {
     const modalBody = $('#create-digassets .modal-body');
@@ -309,7 +378,7 @@ function showLoadingState() {
     `);
     
     // Disable form elements
-    $('#reqdigassetsForm input, #reqdigassetsForm select, #reqdigassetsForm textarea').prop('disabled', true);
+    $('#form-send-notif input, #form-send-notif select, #form-send-notif textarea').prop('disabled', true);
 }
 function showAlert(type, message) {
     const alertClass = type === 'error' ? 'alert-danger' : 'alert-success';
@@ -334,12 +403,13 @@ function showAlert(type, message) {
 // Enhanced closeModal function
 function closeModal() {
     $('#create-digassets').modal('hide');
+   	$('#table-request-manage').DataTable().ajax.reload();
     resetForm();
 }
 
 // Function to reset form
 function resetForm() {
-    $('#reqdigassetsForm')[0].reset();
+    $('#form-send-notif')[0].reset();
     
     // Remove validation classes
     document.querySelectorAll('.is-invalid').forEach(field => {
@@ -372,12 +442,12 @@ $(document).ready(function() {
         
         // Show loading state
         showSubmitLoading();
-		var form = $('#reqdigassetsForm')[0]; // Get the DOM element, not jQuery object
+		var form = $('#form-send-notif')[0]; // Get the DOM element, not jQuery object
         var formData = new FormData(form);
         // Prepare form data
 
-		var actionUrl = $('#reqdigassetsForm').attr('action');
-        // console.log(formData);
+		var actionUrl = $('#form-send-notif').attr('action');
+
         // Submit via AJAX
         $.ajax({
             url: actionUrl,
@@ -385,6 +455,7 @@ $(document).ready(function() {
             data: formData,
             processData: false,
             contentType: false,
+			cache:false,
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
                 'Accept': 'application/json' // Ensure JSON response
@@ -409,7 +480,7 @@ $(document).ready(function() {
 
 function validateForm() {
     let isValid = true;
-    const form = document.getElementById('reqdigassetsForm');
+    const form = document.getElementById('form-send-notif');
     
     // Clear previous errors
     $('.is-invalid').removeClass('is-invalid');
@@ -527,7 +598,7 @@ function scrollToFirstError() {
 
 // Show loading state during submit
 function showSubmitLoading() {
-    const submitBtn = $('button[type="submit"]');
+    const submitBtn = $('.submitTransfer');
     const closeBtn = $('.btn-secondary');
     
     // Store original button text
@@ -538,7 +609,7 @@ function showSubmitLoading() {
     closeBtn.prop('disabled', true);
     
     // Disable form
-    $('#reqdigassetsForm input, #reqdigassetsForm select, #reqdigassetsForm textarea').prop('disabled', true);
+    // $('#form-send-notif input, #form-send-notif select, #form-send-notif textarea').prop('disabled', true);
     
     // Add overlay
     const overlay = `
@@ -560,7 +631,7 @@ function showSubmitLoading() {
 
 // Hide loading state
 function hideSubmitLoading() {
-    const submitBtn = $('button[type="submit"]');
+    const submitBtn = $('.submitTransfer');
     const closeBtn = $('.btn-secondary');
     
     // Restore button
@@ -569,7 +640,7 @@ function hideSubmitLoading() {
     closeBtn.prop('disabled', false);
     
     // Enable form
-    $('#reqdigassetsForm input, #reqdigassetsForm select, #reqdigassetsForm textarea').prop('disabled', false);
+    $('#form-send-notif input, #form-send-notif select, #form-send-notif textarea').prop('disabled', false);
     
     // Remove overlay
     $('#submit-overlay').remove();
@@ -588,7 +659,7 @@ function handleSubmitSuccess(response) {
         showSuccessAlert(response.message || 'Transfer request submitted successfully!');
         
         // Disable form after success to prevent resubmission
-        $('#reqdigassetsForm input, #reqdigassetsForm select, #reqdigassetsForm textarea').prop('disabled', true);
+        $('#form-send-notif input, #form-send-notif select, #form-send-notif textarea').prop('disabled', true);
         $('button[type="button"]').prop('disabled', true);
         
         // Show success actions after a brief delay
@@ -623,13 +694,10 @@ function showSuccessWithActions(response) {
                 </div>
             </div>
             <div class="d-flex gap-2 flex-wrap">
-                <a href="${response.view_url || response.redirect_url}" class="btn btn-success">
+                <a href="${response.view_url || response.redirect_url}" class="btn btn-outline-warning">
                     <i class="fas fa-eye"></i> View Transfer Request
                 </a>
-                <button type="button" class="btn btn-outline-primary" onclick="window.location.reload()">
-                    <i class="fas fa-plus"></i> Create New Transfer
-                </button>
-                <button type="button" class="btn btn-outline-secondary" onclick="closeModalAndRefresh()">
+                <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">
                     <i class="fas fa-arrow-left"></i> Back to Dashboard
                 </button>
             </div>
@@ -644,7 +712,7 @@ function showSuccessWithActions(response) {
     
     // Update modal footer
     $('#create-digassets .modal-footer').html(`
-        <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="closeModalAndRefresh()">Close</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
     `);
 }
 
@@ -688,6 +756,7 @@ function handleValidationErrors(errors) {
 
 // Show success alert - IMPROVED
 function showSuccessAlert(message) {
+    $('#table-request-manage').DataTable().ajax.reload();
     const alertHtml = `
         <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm" role="alert">
             <div class="d-flex align-items-center">
@@ -733,7 +802,7 @@ function showErrorAlert(message) {
 // Close modal and refresh page
 function closeModalAndRefresh() {
     $('#create-digassets').modal('hide');
-    
+    $('#table-request-manage').DataTable().ajax.reload();
     // Small delay to ensure modal is closed before refresh
     setTimeout(() => {
         window.location.reload();
@@ -769,12 +838,14 @@ $(document).on('blur', '#asset-tag-number', function() {
 });
 
 // Prevent form submission on Enter key (except in textareas)
-$(document).on('keypress', '#reqdigassetsForm input', function(e) {
+$(document).on('keypress', '#form-send-notif input', function(e) {
     if (e.which === 13) {
         e.preventDefault();
         return false;
     }
 });
+
+
 
 // Alternative approach using async/await (ES6+)
 // async function loadFormDataAsync(href) {

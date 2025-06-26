@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS `asset_tf_notif` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `reg_fixed_asset_id` int(10) unsigned NOT NULL,
   `from_qty` int(11) DEFAULT NULL,
-  `from_date_of_tf` date DEFAULT NULL,
+  `from_date_of_tf` datetime DEFAULT NULL,
   `from_io_no` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `to_receiving_dept_id` int(10) unsigned DEFAULT NULL,
   `to_cost_center_id` int(10) unsigned DEFAULT NULL,
@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS `asset_tf_notif` (
   `to_pic_name` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `to_effective_date` date DEFAULT NULL,
   `to_tf_fer_no_erp` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `pic_support` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `pic_support` text COLLATE utf8mb4_unicode_ci,
   `created_by` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `updated_by` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `approval_by1` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -63,9 +63,11 @@ CREATE TABLE IF NOT EXISTS `asset_tf_notif` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table portal-itsa.asset_tf_notif: ~0 rows (approximately)
+-- Dumping data for table portal-itsa.asset_tf_notif: ~1 rows (approximately)
+REPLACE INTO `asset_tf_notif` (`id`, `reg_fixed_asset_id`, `from_qty`, `from_date_of_tf`, `from_io_no`, `to_receiving_dept_id`, `to_cost_center_id`, `to_location_id`, `to_qty`, `to_pic_name`, `to_effective_date`, `to_tf_fer_no_erp`, `pic_support`, `created_by`, `updated_by`, `approval_by1`, `approval_date1`, `approval_status1`, `remark_by1`, `approval_by2`, `approval_date2`, `approval_status2`, `remark_by2`, `approval_by3`, `approval_date3`, `approval_status3`, `remark_by3`, `approval_by4`, `approval_date4`, `approval_status4`, `remark_by4`, `approval_by5`, `approval_date5`, `approval_status5`, `remark_by5`, `approval_by6`, `approval_date6`, `approval_status6`, `remark_by6`, `created_at`, `updated_at`) VALUES
+	(13, 3, 1, '2025-06-18 00:00:00', 'IO9299323', 9, 15, 3, 1, 'Udin (new depart)', '2025-06-26', '121212', 'public/transfer-documents-assets/2025-06/1750925383_mobile.png', 'ramdhan', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2025-06-26 01:09:43', '2025-06-26 01:09:43');
 
 -- Dumping structure for table portal-itsa.companys
 CREATE TABLE IF NOT EXISTS `companys` (
@@ -233,7 +235,7 @@ CREATE TABLE IF NOT EXISTS `migrations` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table portal-itsa.migrations: ~19 rows (approximately)
+-- Dumping data for table portal-itsa.migrations: ~18 rows (approximately)
 REPLACE INTO `migrations` (`id`, `migration`, `batch`) VALUES
 	(1, '2014_10_12_000000_create_users_table', 1),
 	(2, '2014_10_12_100000_create_password_resets_table', 1),
@@ -336,7 +338,7 @@ CREATE TABLE IF NOT EXISTS `permissions` (
   UNIQUE KEY `permissions_name_unique` (`name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=107 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table portal-itsa.permissions: ~67 rows (approximately)
+-- Dumping data for table portal-itsa.permissions: ~57 rows (approximately)
 REPLACE INTO `permissions` (`id`, `name`, `display_name`, `description`, `module_id`, `created_at`, `updated_at`) VALUES
 	(1, 'manage-setting', 'Manage Setting', 'Bisa Memanage Setting', 1, '2022-05-17 00:26:49', '2022-05-17 00:26:49'),
 	(2, 'create-setting', 'Create Setting', 'Bisa Membuat Setting', 1, '2022-05-17 00:26:49', '2022-05-17 00:26:49'),
@@ -583,14 +585,16 @@ CREATE TABLE IF NOT EXISTS `registration_fixed_assets` (
   `updated_at` timestamp NULL DEFAULT NULL,
   `created_by` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
   `updated_by` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `transfer_status` enum('pending','sent','completed','cancelled') COLLATE utf8mb4_unicode_ci DEFAULT 'pending',
+  `transfer_sent_at` date DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `registration_fixed_assets_issue_fixed_asset_no_unique` (`issue_fixed_asset_no`),
   UNIQUE KEY `registration_fixed_assets_rfa_number_unique` (`rfa_number`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Dumping data for table portal-itsa.registration_fixed_assets: ~1 rows (approximately)
-REPLACE INTO `registration_fixed_assets` (`id`, `date`, `rfa_number`, `requestor_name`, `issue_fixed_asset_no`, `production_code`, `product_name`, `grn_no`, `user_id`, `department_id`, `company_id`, `asset_group_id`, `asset_location_id`, `asset_cost_center_id`, `remark`, `status`, `io_no`, `received_date`, `approval_by1`, `approval_date1`, `approval_status1`, `remark_approval_by1`, `approval_by2`, `approval_date2`, `approval_status2`, `remark_approval_by2`, `approval_by3`, `approval_date3`, `approval_status3`, `remark_approval_by3`, `created_at`, `updated_at`, `created_by`, `updated_by`) VALUES
-	(3, '2025-06-25', 'RFA1192012', 'ramdhan (Maintenance Dies)', 'IP/IF/22/APR/0002', '6014012986', 'ADDITIONAL M&E AIR COMPRESSOR', 'IP/RPO/22/MAR/3354', 9, 13, 2, 4, 4, 14, NULL, 'active', 'ITSP-IO-UP-20.125', '2025-06-19', NULL, NULL, '0', NULL, 'pristine', '2025-06-25 08:57:11', '1', NULL, 'Mr.Wuddhikrai', '2025-06-25 08:57:27', '1', NULL, '2025-06-20 01:36:00', '2025-06-23 20:49:31', 'ramdhan', NULL);
+REPLACE INTO `registration_fixed_assets` (`id`, `date`, `rfa_number`, `requestor_name`, `issue_fixed_asset_no`, `production_code`, `product_name`, `grn_no`, `user_id`, `department_id`, `company_id`, `asset_group_id`, `asset_location_id`, `asset_cost_center_id`, `remark`, `status`, `io_no`, `received_date`, `approval_by1`, `approval_date1`, `approval_status1`, `remark_approval_by1`, `approval_by2`, `approval_date2`, `approval_status2`, `remark_approval_by2`, `approval_by3`, `approval_date3`, `approval_status3`, `remark_approval_by3`, `created_at`, `updated_at`, `created_by`, `updated_by`, `transfer_status`, `transfer_sent_at`) VALUES
+	(3, '2025-06-25', 'RFA1192012', 'ramdhan (Maintenance Dies)', 'IP/IF/22/APR/0002', '6014012986', 'ADDITIONAL M&E AIR COMPRESSOR', 'IP/RPO/22/MAR/3354', 9, 13, 2, 4, 4, 14, NULL, 'active', 'ITSP-IO-UP-20.125', '2025-06-19', NULL, NULL, '0', NULL, 'pristine', '2025-06-25 08:57:11', '1', NULL, 'Mr.Wuddhikrai', '2025-06-25 08:57:27', '1', NULL, '2025-06-20 01:36:00', '2025-06-26 01:09:43', 'ramdhan', NULL, 'sent', '2025-06-26');
 
 -- Dumping structure for table portal-itsa.request_dar
 CREATE TABLE IF NOT EXISTS `request_dar` (
@@ -633,7 +637,7 @@ CREATE TABLE IF NOT EXISTS `request_dar` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table portal-itsa.request_dar: ~0 rows (approximately)
+-- Dumping data for table portal-itsa.request_dar: ~1 rows (approximately)
 REPLACE INTO `request_dar` (`id`, `number_dar`, `nik_req`, `nik_atasan`, `dept_id`, `company_id`, `position_id`, `typereqform_id`, `user_id`, `request_desc_id`, `name_doc`, `no_doc`, `qty_pages`, `reason`, `created_by`, `created_date`, `file_doc`, `storage_type`, `rev_no`, `approval_by1`, `approval_date1`, `approval_status1`, `remark_approval_by1`, `approval_by2`, `approval_date2`, `approval_status2`, `remark_approval_by2`, `approval_by3`, `approval_date3`, `approval_status3`, `remark_approval_by3`, `updated_by_1`, `updated_bydate_1`, `updated_by_2`, `updated_bydate_2`, `status`) VALUES
 	(18, '05/001', '999.99.99', '966.96.96', 6, 1, 11, 8, 3, 3, 'Form Scrap Calculation', 'FG-HHJD-HI', 1, 'ubah document', '999.99.99', '2025-05-20 07:46:14', 'public/dar_documents/2025-05/1747727174_Summary Computer Checking Result.pdf', 'year', '1', 'Manager', NULL, '0', NULL, 'Sys Dev', NULL, '0', NULL, 'Manager SysDev & IT', NULL, '0', NULL, NULL, NULL, NULL, NULL, '1');
 

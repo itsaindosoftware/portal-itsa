@@ -23,6 +23,7 @@ class Assettfnotif extends Model
         'to_effective_date',
         'to_tf_fer_no_erp',
         'created_by',
-        'created_at'
+        'created_at',
+        'pic_support'
     ];
 }

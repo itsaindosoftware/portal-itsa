@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+// use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 use DB;
 use Illuminate\Support\Facades\Hash;
@@ -17,6 +17,7 @@ use App\Mail\SendingnotifDigAssets;
 use App\Mail\SendingnotifRejected;
 use Illuminate\Support\Facades\Mail;
 use App\Assettfnotif;
+use Storage;
 
 class AssettfnotifController extends Controller
 {
@@ -69,6 +70,8 @@ class AssettfnotifController extends Controller
                         'registration_fixed_assets.approval_date1',
                         'registration_fixed_assets.approval_date2',
                         'registration_fixed_assets.approval_date3',
+                        'registration_fixed_assets.transfer_status',
+                        'registration_fixed_assets.transfer_sent_at'
                     );
 
                     if ($request->has('date_range') && !empty($request->date_range)) {
@@ -77,17 +80,21 @@ class AssettfnotifController extends Controller
                             $data->whereBetween('registration_fixed_assets.date', [$dateRange[0], $dateRange[1]]);
                         }
                     }
+                    if ($request->has('transfer_status') && !empty($request->transfer_status)) {
+                        $data->where('registration_fixed_assets.transfer_status', '=', $request->transfer_status);
+                    }
 
                     $data = $data->where('registration_fixed_assets.approval_status3', '=', '1')
                         ->where('registration_fixed_assets.user_id', '=', $user->id)->get();
                 }
-
+                // dd($data);
                 return DataTables::of($data)
                     ->addColumn('action', function ($data) use ($user) {
                         if ($user->hasRole('user-employee-digassets')) {
                             return view('datatables._action-user-digassets-sendnotif', [
                                 'model' => $data,
                                 'sendNotif' => route('transfernotif.send', base64_encode($data->id)),
+                                'show_url' => route('transfernotif.show', base64_encode($data->id))
                             ]);
                         } else {
                             return '';
@@ -150,12 +157,12 @@ class AssettfnotifController extends Controller
      */
     public function store(Request $request)
     {
+        // dd($request->all());
         // "_token" => "4bNVlPR8Zh4L3sd9EPVZAtBuMmB482mLMFO6Tbkp"
         if (Auth::user()->hasPermission('manage-asset-tf-notification', 'create-asset-tf-notif')) {
             try {
                 // Validation rules
                 $getData = $request->all();
-                dd($getData);
                 $rules = [
                     // Section 1: Transfer FROM
                     'quantity_from' => 'required|integer|min:1',
@@ -192,31 +199,37 @@ class AssettfnotifController extends Controller
                 // Validate request
                 $validatedData = $request->validate($rules, $messages);
 
-                $filePath = '-';
-                if ($request->hasFile('supporting_documents')) {
-                    $originalFileName = $request->file('supporting_documents')->getClientOriginalName();
-                    $fileName = time() . '_' . $originalFileName;
 
-                    $uploadPath = 'transfer-documents-assets/' . date('Y-m');
-
-                    $filePath = $request->file('supporting_documents')->storeAs(
-                        'public/' . $uploadPath,
-                        $fileName
-                    );
-                }
-
-
-
+                // dd($filePath);
+                DB::beginTransaction();
                 try {
-                    DB::beginTransaction();
+                    $filePath = '-';
+                    if ($request->hasFile('supporting_documents')) {
+                        $originalFileName = $request->file('supporting_documents')->getClientOriginalName();
+                        $fileName = time() . '_' . $originalFileName;
+
+                        $uploadPath = 'transfer-documents-assets/' . date('Y-m');
+
+                        $filePath = $request->file('supporting_documents')->storeAs(
+                            'public/' . $uploadPath,
+                            $fileName
+                        );
+                    }
 
                     // Create transfer notification record
                     $transferNotification = $this->createTransferNotification($validatedData, $filePath, $getData);
+                    // update status transfer in fixed assets registration
+                    $transferStatus = Digitalassets::find($getData['id_fixed_asset']);
+                    $transferStatus->transfer_status = 'sent';
+                    $transferStatus->transfer_sent_at = Carbon::now()->format('Y-m-d H:i:s');
+                    $transferStatus->save();
 
-                    DB::commit();
+
 
                     // Prepare response
                     $message = 'Transfer request submitted successfully!';
+
+
 
                     return response()->json([
                         'success' => true,
@@ -224,9 +237,11 @@ class AssettfnotifController extends Controller
                         'data' => [
                             'id' => $transferNotification->id
                         ],
-                        'redirect_url' => route('transfernotif.show', $transferNotification->id),
-                        'view_url' => route('transfernotif.show', $transferNotification->id)
+                        'redirect_url' => route('transfernotif.show', base64_encode($transferNotification->id)),
+                        'view_url' => route('transfernotif.show', base64_encode($transferNotification->id))
                     ], 200);
+
+                    DB::commit();
 
                 } catch (\Exception $e) {
                     DB::rollBack();
@@ -263,40 +278,27 @@ class AssettfnotifController extends Controller
     }
     private function createTransferNotification($data, $filePath, $getData)
     {
+        // dd($filePath);
         return Assettfnotif::create([
             // Section 1: FROM
             'reg_fixed_asset_id' => $getData['id_fixed_asset'],
             'from_date_of_tf' => $getData['date_of_transfer'],
             'from_io_no' => $getData['io_no_approval'],
+            'from_qty' => (int) $getData['quantity_from'],
 
             // Section 2: TO
             'to_receiving_dept_id' => $getData['receiving_dept'],
             'to_cost_center_id' => $getData['new_cost_center'],
             'to_location_id' => $getData['new_location'],
-            'to_qty' => $getData['quantity_to'],
+            'to_qty' => (int) $getData['quantity_to'],
             'pic_support' => $filePath,
             'to_effective_date' => $getData['effective_date'],
             'to_tf_fer_no_erp' => $getData['transfer_ref_no'],
+            'to_pic_name' => $getData['pic_name_to'],
             // System fields
             'created_by' => Auth::user()->name,
         ]);
     }
-    // private function handleFileUploads($files, $transferId)
-    // {
-    //     foreach ($files as $file) {
-    //         $filename = time() . '_' . $file->getClientOriginalName();
-    //         $path = $file->storeAs('transfer_documents', $filename, 'public');
-
-    //         TransferNotificationDocument::create([
-    //             'transfer_notification_id' => $transferId,
-    //             'original_name' => $file->getClientOriginalName(),
-    //             'file_name' => $filename,
-    //             'file_path' => $path,
-    //             'file_size' => $file->getSize(),
-    //             'mime_type' => $file->getMimeType(),
-    //         ]);
-    //     }
-    // }
 
     /**
      * Display the specified resource.
@@ -306,7 +308,53 @@ class AssettfnotifController extends Controller
      */
     public function show($id)
     {
-        //
+        $id = base64_decode($id);
+        if (Auth::user()->hasPermission('detail-ast-tf-notif')) {
+            $transfer = Digitalassets::query()
+                ->leftJoin('asset_tf_notif', 'asset_tf_notif.reg_fixed_asset_id', '=', 'registration_fixed_assets.id')
+                ->leftJoin('users', 'registration_fixed_assets.user_id', '=', 'users.id')
+                ->leftJoin('departments as dept_from', 'registration_fixed_assets.department_id', '=', 'dept_from.id') // Dept asal dari registration_fixed_assets
+                ->leftJoin('departments as dept_to', 'asset_tf_notif.to_receiving_dept_id', '=', 'dept_to.id') // Dept tujuan dari asset_tf_notif
+                ->leftJoin('companys', 'registration_fixed_assets.company_id', '=', 'companys.id')
+                ->leftJoin('master_asset_groups as group_from', 'registration_fixed_assets.asset_group_id', '=', 'group_from.id')
+                ->leftJoin('master_asset_locations as location_from_name', 'registration_fixed_assets.asset_location_id', '=', 'location_from_name.id')
+                ->leftjoin('master_asset_locations as location_to_name', 'asset_tf_notif.to_location_id', '=', 'location_to_name.id')
+                ->leftJoin('master_asset_cost_centers as cost_from', 'registration_fixed_assets.asset_cost_center_id', '=', 'cost_from.id')
+                ->leftJoin('master_asset_cost_centers as cost_to', 'asset_tf_notif.to_cost_center_id', '=', 'cost_to.id');
+            $transfer = $transfer->select(
+                'asset_tf_notif.*',
+                'users.name as user_name',
+                'registration_fixed_assets.rfa_number',
+                'registration_fixed_assets.date',
+                'registration_fixed_assets.requestor_name',
+                'registration_fixed_assets.issue_fixed_asset_no',
+                'registration_fixed_assets.production_code',
+                'registration_fixed_assets.product_name',
+                'registration_fixed_assets.grn_no',
+                'registration_fixed_assets.io_no',
+                // 'departments.description as department_name',
+                'companys.company_desc as company_name',
+                'dept_from.description as department_from_name', // Department asal dari registration_fixed_assets
+                'dept_to.description as department_to_name',
+                'location_from_name.asset_location_name as loc_from',
+                'location_to_name.asset_location_name as loc_to',
+                'cost_from.cost_center_name as from_cost_center_name',
+                'cost_from.cost_center_code as from_cost_center_code',
+                'cost_to.cost_center_name as to_cost_center_name',
+                'cost_to.cost_center_code as to_cost_center_code',
+                // 
+                'group_from.asset_group_name',
+                'location_from_name.asset_location_name as name_location',
+                'cost_from.cost_center_name as cost_cname',
+                'cost_to.cost_center_code',
+                'asset_tf_notif.id as id_asset_tf',
+                'registration_fixed_assets.transfer_status',
+                'registration_fixed_assets.transfer_sent_at',
+
+            )->where('asset_tf_notif.reg_fixed_asset_id', $id)->first();
+            // dd($transfer);
+            return view('digitalassets.send-notif-transfer.user-dashboard.view', compact('transfer'));
+        }
     }
 
     /**
@@ -372,5 +420,32 @@ class AssettfnotifController extends Controller
         }
 
 
+    }
+    public function viewDocument($id)
+    {
+        $requestDar = Assettfnotif::findOrFail($id);
+
+        if (!$requestDar->pic_support) {
+            abort(404, 'File not found');
+        }
+
+        // Cek apakah file dimulai dengan 'public/'
+        $filePath = $requestDar->pic_support;
+        if (strpos($filePath, 'public/') === 0) {
+            $filePath = substr($filePath, 7); // Hapus 'public/' dari awal path
+        }
+
+        // Cek file di storage
+        $fullPath = storage_path('app/public/' . $filePath);
+
+        if (!file_exists($fullPath)) {
+            $altPath = public_path($filePath);
+            if (!file_exists($altPath)) {
+                abort(404, 'File not found on disk');
+            }
+            $fullPath = $altPath;
+        }
+
+        return response()->file($fullPath);
     }
 }
