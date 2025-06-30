@@ -53,7 +53,7 @@ class SendingnotifDigAssets extends Mailable
             return new Content(
                 view: 'email.digital-assets-approved',
             );
-        } elseif ($this->users === 'user-md-digasset-itsp') {
+        } elseif ($this->users === 'user-mgr-dept-head') {
             return new Content(
                 view: 'email.digital-assets-approved-mgr',
             );

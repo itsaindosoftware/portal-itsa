@@ -69,7 +69,7 @@
         @include('layouts._menu-users-digitalassets-acct')
       @endrole
       
-      @role('user-md-digasset-itsp')
+      @role('user-mgr-dept-head')
         @include('layouts._menu-users-digitalassets-md-itsp')
       @endrole
     </ul>

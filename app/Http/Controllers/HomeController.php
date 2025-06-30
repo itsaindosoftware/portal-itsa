@@ -404,7 +404,7 @@ class HomeController extends Controller
                 'totalWaitingAssets' => $totalWaitingAssets,
                 'totalRejectedAssets' => $totalRejectedAssets,
             ]);
-        } elseif (Auth::user()->hasRole('user-md-digasset-itsp')) {
+        } elseif (Auth::user()->hasRole('user-mgr-dept-head')) {
 
             $totalAssets = DB::connection('portal-itsa')
                 ->table('registration_fixed_assets')
@@ -424,7 +424,7 @@ class HomeController extends Controller
                 ->table('registration_fixed_assets')
                 ->where('approval_status3', '2')
                 ->count();
-            return view('users-dashboard.digassets.user-md-digasset-itsp.home', [
+            return view('users-dashboard.digassets.user-mgr-dept-head.home', [
                 'totalAssets' => $totalAssets,
                 'totalWaitingAssets' => $totalWaitingAssets,
                 'totalApprovedAssets' => $totalApprovedAssets,

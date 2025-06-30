@@ -52,7 +52,7 @@ class SendingnotifRejected extends Mailable
             return new Content(
                 view: 'email.digital-assets-rejected',
             );
-        } elseif ($this->users === 'user-md-digasset-itsp') {
+        } elseif ($this->users === 'user-mgr-dept-head') {
             return new Content(
                 view: 'email.digital-assets-rejected-mgr',
             );

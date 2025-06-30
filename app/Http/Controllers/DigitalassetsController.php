@@ -65,7 +65,7 @@ class DigitalassetsController extends Controller
             return $this->getEmployeeDigitalAssets();
         } elseif ($user->hasRole('user-acct-digassets')) {
             return $this->getAccountingDigitalAssets($request);
-        } elseif ($user->hasRole('user-md-digasset-itsp')) {
+        } elseif ($user->hasRole('user-mgr-dept-head')) {
             return $this->getMdDigitalAssets($request);
         } elseif ($user->hasRole('admin')) {
             return $this->getAdminDigitalAssets($request);
@@ -284,8 +284,8 @@ class DigitalassetsController extends Controller
                 'approve_url2' => route('digitalassets.approvedby2', $data->id),
                 'rejected_url2' => route('digitalassets.rejectedAppr2', $data->id)
             ]);
-        } elseif ($user->hasRole('user-md-digasset-itsp')) {
-            return view('datatables._action-user-md-digassets-itsp', [
+        } elseif ($user->hasRole('user-mgr-dept-head')) {
+            return view('datatables._action-user-mgr-dept-head', [
                 'model' => $data,
                 'show_url' => route('digitalassets.show', base64_encode($data->id)),
                 'approve_url3' => route('digitalassets.approvedby3', $data->id),
@@ -318,8 +318,8 @@ class DigitalassetsController extends Controller
             return view('digitalassets.user-acct-digassets.index', $this->getMasterData());
         }
 
-        if ($user->hasRole('user-md-digasset-itsp')) {
-            return view('digitalassets.user-md-digassets-itsp.index', $this->getMasterData());
+        if ($user->hasRole('user-mgr-dept-head')) {
+            return view('digitalassets.user-mgr-dept-head.index', $this->getMasterData());
         }
 
         if ($user->hasRole('admin')) {
@@ -746,7 +746,7 @@ class DigitalassetsController extends Controller
         }
 
         if (Auth::user()->hasPermission('manage-digital-assets')) {
-            $userRole = 'user-md-digasset-itsp';
+            $userRole = 'user-mgr-dept-head';
             $digitalAsset = Digitalassets::find($id);
             if (!$digitalAsset) {
                 return redirect()->route('digitalassets.index')->with('error', 'Digital Asset not found!');
@@ -791,7 +791,7 @@ class DigitalassetsController extends Controller
         }
 
         if (Auth::user()->hasPermission('manage-digital-assets')) {
-            $userRole = 'user-md-digasset-itsp';
+            $userRole = 'user-mgr-dept-head';
             $digitalAsset = Digitalassets::find($id);
             if (!$digitalAsset) {
                 return redirect()->route('digitalassets.index')->with('error', 'Digital Asset not found!');
@@ -961,7 +961,7 @@ class DigitalassetsController extends Controller
 //                     $data->where('registration_fixed_assets.asset_cost_center_id', $request->asset_cost_center);
 //                 }
 //                 $data = $data->get();
-//             } elseif (Auth::user()->hasRole('user-md-digasset-itsp')) {
+//             } elseif (Auth::user()->hasRole('user-mgr-dept-head')) {
 //                 $data = Digitalassets::query()
 //                     ->leftJoin('users', 'registration_fixed_assets.user_id', '=', 'users.id')
 //                     ->leftJoin('departments', 'registration_fixed_assets.department_id', '=', 'departments.id')
@@ -1142,8 +1142,8 @@ class DigitalassetsController extends Controller
 //                         'approve_url2' => route('digitalassets.approvedby2', $data->id),
 //                         'rejected_url2' => route('digitalassets.rejectedAppr2', $data->id)
 //                     ]);
-//                 } elseif (Auth::user()->hasRole('user-md-digasset-itsp')) {
-//                     return view('datatables._action-user-md-digassets-itsp', [
+//                 } elseif (Auth::user()->hasRole('user-mgr-dept-head')) {
+//                     return view('datatables._action-user-mgr-dept-head', [
 //                         'model' => $data,
 //                         'show_url' => route('digitalassets.show', base64_encode($data->id)),
 //                         'approve_url3' => route('digitalassets.approvedby3', $data->id),
@@ -1212,7 +1212,7 @@ class DigitalassetsController extends Controller
 //             'masterAssetLocations',
 //             'masterAssetCostCenters'
 //         ));
-//     } elseif (Auth::user()->hasRole('user-md-digasset-itsp')) {
+//     } elseif (Auth::user()->hasRole('user-mgr-dept-head')) {
 //         $department = DB::connection('portal-itsa')->table('departments')
 //             ->get();
 //         $company = DB::connection('portal-itsa')->table('companys')
@@ -1222,7 +1222,7 @@ class DigitalassetsController extends Controller
 //         $masterAssetGroups = DB::connection('portal-itsa')->table('master_asset_groups')->get();
 //         $masterAssetLocations = DB::connection('portal-itsa')->table('master_asset_locations')->get();
 //         $masterAssetCostCenters = DB::connection('portal-itsa')->table('master_asset_cost_centers')->get();
-//         return view('digitalassets.user-md-digassets-itsp.index', compact(
+//         return view('digitalassets.user-mgr-dept-head.index', compact(
 //             'department',
 //             'company',
 //             'masterAssetGroups',
