@@ -13,6 +13,270 @@
 <link rel="stylesheet" type="text/css" href="{{ asset('bootstrap5/css/daterangepicker.css') }}">
 <link rel="stylesheet" type="text/css" href="{{ asset('bootstrap5/css/bootstrap-datetimepicker.min.css') }}">
 <style>
+    /* Timeline Styles */
+.approval-timeline {
+    position: relative;
+    padding: 20px 0;
+}
+
+.timeline-container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.timeline-step {
+    display: flex;
+    align-items: flex-start;
+    position: relative;
+}
+
+.timeline-step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: 20px;
+    top: 40px;
+    height: 30px;
+    width: 2px;
+    background: #dee2e6;
+}
+
+.timeline-step.completed::after {
+    background: #28a745;
+}
+
+.timeline-step.rejected::after {
+    background: #dc3545;
+}
+
+.timeline-marker {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: bold;
+    margin-right: 20px;
+    flex-shrink: 0;
+    z-index: 2;
+    position: relative;
+}
+
+.timeline-step.completed .timeline-marker {
+    background: #28a745;
+    color: white;
+    border: 3px solid #d4edda;
+}
+
+.timeline-step.rejected .timeline-marker {
+    background: #dc3545;
+    color: white;
+    border: 3px solid #f8d7da;
+}
+
+.timeline-step.pending .timeline-marker {
+    background: #ffc107;
+    color: #212529;
+    border: 3px solid #fff3cd;
+}
+
+.timeline-content {
+    flex: 1;
+    padding-top: 5px;
+}
+
+.timeline-content h6 {
+    margin-bottom: 5px;
+    color: #495057;
+    font-weight: 600;
+}
+
+/* Info Groups */
+.info-group {
+    margin-bottom: 15px;
+}
+
+.info-label {
+    font-weight: 600;
+    color: #495057;
+    font-size: 14px;
+    margin-bottom: 5px;
+    display: block;
+}
+
+.info-value {
+    margin-bottom: 0;
+    color: #212529;
+    font-size: 15px;
+    line-height: 1.4;
+}
+
+/* Document List */
+.document-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.document-item {
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 5px;
+    border-left: 3px solid #007bff;
+}
+
+/* Gradients */
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+}
+
+.bg-gradient-success {
+    background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+}
+
+.bg-gradient-info {
+    background: linear-gradient(135deg, #17a2b8 0%, #117a8b 100%);
+}
+
+.bg-gradient-secondary {
+    background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .timeline-container {
+        gap: 20px;
+    }
+    
+    .timeline-marker {
+        width: 30px;
+        height: 30px;
+        font-size: 14px;
+        margin-right: 15px;
+    }
+    
+    .timeline-step:not(:last-child)::after {
+        left: 15px;
+        top: 30px;
+        height: 20px;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .btn, .btn-group {
+        display: none !important;
+    }
+    
+    .card {
+        border: 1px solid #dee2e6 !important;
+        box-shadow: none !important;
+    }
+    
+    .bg-gradient-primary,
+    .bg-gradient-success,
+    .bg-gradient-info,
+    .bg-gradient-secondary {
+        background: #f8f9fa !important;
+        color: #212529 !important;
+    }
+}
+.document-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.document-item {
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #007bff;
+    transition: all 0.3s ease;
+}
+
+.document-item:hover {
+    background: #e9ecef;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.document-image-container {
+    text-align: center;
+}
+
+.document-image {
+    border: 2px solid #dee2e6;
+    transition: all 0.3s ease;
+}
+
+.document-image:hover {
+    border-color: #007bff;
+    transform: scale(1.02);
+}
+
+.document-info {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.document-name {
+    font-weight: 500;
+    color: #495057;
+}
+
+.document-link {
+    color: #007bff;
+    font-weight: 500;
+}
+
+.document-link:hover {
+    color: #0056b3;
+    text-decoration: underline !important;
+}
+
+.document-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+/* Modal Styles */
+#modalImage {
+    max-width: 100%;
+    max-height: 70vh;
+    object-fit: contain;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .document-image {
+        max-width: 100% !important;
+        max-height: 150px !important;
+    }
+    
+    .document-actions {
+        justify-content: center;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .document-actions {
+        display: none !important;
+    }
+    
+    .document-image {
+        max-width: 200px !important;
+        max-height: 150px !important;
+    }
+}
+
 .status-badge {
     font-size: 0.875em;
     padding: 0.375rem 0.75rem;
@@ -150,8 +414,8 @@
 										<th width="7%">No.</th>
 										<th class="text-center">Date</th>
 								        <th class="text-center">RFA Number</th>
-                                        <th class="text-center">production_code</th>
-                                        <th class="text-center">product_name</th>
+                                        <th class="text-center">Production Code</th>
+                                        <th class="text-center">Product Name</th>
                                         <th class="text-center">Requestor Name</th>
                                         <th class="text-center">Status</th>
                                         <th class="text-center">Transfer Date</th>
@@ -172,7 +436,7 @@
 @endsection
 @push('js')
 @include('digitalassets.send-notif-transfer.user-dashboard.sendnotif-modal')
-@include('digitalassets.send-notif-transfer.user-dashboard.view-modal')
+{{-- @include('digitalassets.send-notif-transfer.user-dashboard.view-modal') --}}
 <script src="{{ asset('assets/Datatables/jquery.dataTables.min.js') }}"></script>
 <script src="{{ asset('assets/Datatables/dataTables.bootstrap4.min.js') }}"></script>
 <script src="{{ asset('bootstrap5/js/dataTables.rowGroup.min.js') }}"></script>

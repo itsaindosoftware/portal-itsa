@@ -379,24 +379,32 @@
                             <label class="info-label">Supporting Documents:</label>
                             <div class="document-list">
                                 @php
-                                    $filePath = $transfer->pic_support;
+                                     $filePath = $transfer->pic_support;
+                                    if (!str_starts_with($filePath, 'public/')) {
+                                        // Jika filepath dimulai dengan '/', hapus dulu
+                                        $filePath = ltrim($filePath, '/');
+                                        // Tambahkan 'public/' di depan
+                                        $filePath = 'public/' . $filePath;
+                                    }
+                                    
                                     $fileName = basename($filePath);
                                     $fileExtension = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
                                     $imageExtensions = ['png', 'jpg', 'jpeg', 'gif', 'webp'];
                                     $isImage = in_array($fileExtension, $imageExtensions);
-
                                     
+                                    // URL path untuk akses dari web (tanpa 'public/')
+                                    $urlPath = str_replace('public/', '', $filePath);  
                                 @endphp
-                                <p>{{ $filePath }}</p>
+                                {{-- <p>{{  }}</p> --}}
                                 
                                 <div class="document-item">
                                     @if($isImage)
                                         <!-- Display Image -->
                                         <div class="document-image-container mb-3">
-                                            <img src="{{ asset($filePath) }}" 
+                                            <img src="{{ asset('storage/' . $urlPath) }}" 
                                                 alt="{{ $fileName }}" 
                                                 class="document-image img-fluid rounded shadow-sm"
-                                                onclick="openImageModal('{{ asset($filePath) }}', '{{ $fileName }}')"
+                                                onclick="openImageModal('{{ asset('storage/' . $urlPath) }}', '{{ $fileName }}')"
                                                 style="max-width: 300px; max-height: 200px; cursor: pointer;">
                                         </div>
                                         <div class="document-info">
@@ -419,7 +427,7 @@
                                                     };
                                                 @endphp
                                                 <i class="{{ $fileIcon }} me-2"></i>
-                                                <a href="{{ asset($filePath) }}" target="_blank" class="text-decoration-none document-link">
+                                                <a href="{{ asset('storage/' .$urlPath) }}" target="_blank" class="text-decoration-none document-link">
                                                     {{ $fileName }}
                                                 </a>
                                                 <small class="text-muted ms-2">({{ strtoupper($fileExtension) }} File)</small>
@@ -428,13 +436,13 @@
                                         
                                         <!-- Download Button -->
                                         <div class="document-actions mt-2">
-                                            <a href="{{ asset($filePath) }}" download="{{ $fileName }}" class="btn btn-sm btn-outline-primary">
+                                            <a href="{{ asset('storage/' . $urlPath) }}" download="{{ $fileName }}" class="btn btn-sm btn-outline-primary">
                                                 <i class="fas fa-download me-1"></i>
                                                 Download
                                             </a>
                                             @if($isImage)
                                                 <button type="button" class="btn btn-sm btn-outline-secondary ms-2" 
-                                                        onclick="openImageModal('{{ asset($filePath) }}', '{{ $fileName }}')">
+                                                        onclick="openImageModal('{{ asset( 'storage/'. $urlPath) }}', '{{ $fileName }}')">
                                                     <i class="fas fa-eye me-1"></i>
                                                     View Full Size
                                                 </button>
@@ -486,26 +494,7 @@
         </div>
     </div>
 </div>
-<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="imageModalLabel">Image Preview</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body text-center">
-                <img id="modalImage" src="" alt="" class="img-fluid rounded">
-            </div>
-            <div class="modal-footer">
-                <a id="modalDownloadBtn" href="" download="" class="btn btn-primary">
-                    <i class="fas fa-download me-2"></i>
-                    Download
-                </a>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
+
 
 <style>
 /* Timeline Styles */
@@ -773,28 +762,108 @@
 }
 
 </style>
+
 @endsection
 @push('js')
-    <script>
-     $(document).ready(function(){
-        var id = $('#id-assetstf').val();
-        function openImageModal(imageSrc, fileName) {
-    // alert('test')
-    // console.log(imageSrc)
-            const $modal = $('#imageModal');
-            const $modalImage = $('#modalImage');
-            const $modalTitle = $('#imageModalLabel');
-            const $downloadBtn = $('#modalDownloadBtn');
+@include('digitalassets.send-notif-transfer.user-dashboard.view-modal')
+<script>
+    let currentModal = null;
+   $(document).ready(function() {
+    // Debug info
+    console.log('Modal script loaded');
+    
+    if (typeof bootstrap === 'undefined') {
+        console.error('Bootstrap not loaded!');
+    }
+    
+  });
 
-            $modalImage.attr('src', imageSrc);
-            $modalImage.attr('alt', fileName);
-            $modalTitle.text(fileName);
-            $downloadBtn.attr('href', imageSrc);
-            $downloadBtn.attr('download', fileName);
+function openImageModal(imageSrc, fileName) {
+    console.log('Opening modal with:', imageSrc, fileName);
+    
+    try {
+        const modal = document.getElementById('imageModal');
+        const modalImage = document.getElementById('modalImage');
+        const modalTitle = document.getElementById('imageModalLabel');
+        const downloadBtn = document.getElementById('modalDownloadBtn');
+        
+        if (!modal || !modalImage || !modalTitle || !downloadBtn) {
+            console.error('Modal elements not found!');
+            return;
+        }
+        
+        // Set image source dan attributes
+        modalImage.src = imageSrc;
+        modalImage.alt = fileName;
+        modalTitle.textContent = fileName;
+        downloadBtn.href = imageSrc;
+        downloadBtn.download = fileName;
+        
+        // Show modal menggunakan Bootstrap 5
+        const bsModal = new bootstrap.Modal(modal);
+        bsModal.show();
+        
+        console.log('Modal should be visible now');
+        
+    } catch (error) {
+        console.error('Error opening modal:', error);
+        // Fallback - buka gambar di tab baru
+        window.open(imageSrc, '_blank');
+    }
+}
 
-            $modal.modal('show'); 
-           }
-        })
-      
-    </script>
+function closeModal() {
+    console.log('closeModal() called');
+    
+    try {
+        // Method 1: Gunakan Bootstrap 5 instance
+        if (currentModal) {
+            console.log('Closing with Bootstrap 5 instance');
+            currentModal.hide();
+            return;
+        }
+        
+        // Method 2: Gunakan Bootstrap 5 static method
+        const modalElement = document.getElementById('imageModal');
+        
+        // Method 3: Fallback dengan jQuery
+        console.log('Fallback to jQuery modal hide');
+        $('#imageModal').modal('hide');
+        
+        setTimeout(() => {
+            const modal = document.getElementById('imageModal');
+            if (modal && modal.classList.contains('show')) {
+                // console.log('Manual hide as last resort');
+                modal.classList.remove('show');
+                modal.style.display = 'none';
+                document.body.classList.remove('modal-open');
+                
+                // Remove backdrop manually
+                const backdrop = document.querySelector('.modal-backdrop');
+                if (backdrop) {
+                    backdrop.remove();
+                }
+            }
+        }, 100);
+        
+    } catch (error) {
+        console.error('Error closing modal:', error);
+        
+        // Emergency fallback
+        const modal = document.getElementById('imageModal');
+        if (modal) {
+            modal.style.display = 'none';
+            modal.classList.remove('show');
+            document.body.classList.remove('modal-open');
+            
+            const backdrop = document.querySelector('.modal-backdrop');
+            if (backdrop) {
+                backdrop.remove();
+            }
+        }
+    }
+}
+
+
+</script>
 @endpush
