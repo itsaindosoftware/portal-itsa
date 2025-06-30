@@ -1,8 +1,8 @@
 @extends('layouts.app_custom')
 @section('title-head','Digital Assets - Profile')
-@role('user-employee-digassets')
-   @section('title','My Profile')
-@endrole
+{{-- @role('user-employee-digassets') --}}
+@section('title','My Profile')
+{{-- @endrole --}}
 
 @section('css')
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/Datatables/dataTables.bootstrap4.min.css') }}">
