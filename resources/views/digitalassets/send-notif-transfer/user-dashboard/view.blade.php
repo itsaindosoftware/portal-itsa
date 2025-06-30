@@ -480,7 +480,7 @@
                     </button>
                     @endif
                     
-                    <button type="button" class="btn btn-primary" onclick="window.print()">
+                    {{-- <button type="button" class="btn btn-primary" onclick="window.print()">
                         <i class="fas fa-print me-2"></i>
                         Print
                     </button>
@@ -488,7 +488,7 @@
                     <a href="{{ route('transfernotif.export', $transfer->id_asset_tf) }}" class="btn btn-info">
                         <i class="fas fa-download me-2"></i>
                         Export PDF
-                    </a>
+                    </a> --}}
                 </div>
             </div>
         </div>
@@ -799,7 +799,6 @@ function openImageModal(imageSrc, fileName) {
         downloadBtn.href = imageSrc;
         downloadBtn.download = fileName;
         
-        // Show modal menggunakan Bootstrap 5
         const bsModal = new bootstrap.Modal(modal);
         bsModal.show();
         
@@ -816,14 +815,11 @@ function closeModal() {
     console.log('closeModal() called');
     
     try {
-        // Method 1: Gunakan Bootstrap 5 instance
         if (currentModal) {
             console.log('Closing with Bootstrap 5 instance');
             currentModal.hide();
             return;
         }
-        
-        // Method 2: Gunakan Bootstrap 5 static method
         const modalElement = document.getElementById('imageModal');
         
         // Method 3: Fallback dengan jQuery
