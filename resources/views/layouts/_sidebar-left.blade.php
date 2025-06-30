@@ -70,7 +70,7 @@
       @endrole
       
       @role('user-mgr-dept-head')
-        @include('layouts._menu-users-digitalassets-md-itsp')
+        @include('layouts._menu-user-mgr-dept-head')
       @endrole
     </ul>
   </aside>

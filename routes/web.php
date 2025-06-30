@@ -79,5 +79,8 @@ Route::group(['middleware' => ['auth']], function () {
     Route::resource('transfernotif', 'AssettfnotifController');
     Route::get('transfernotif/sendingNotif/{param}', 'AssettfnotifController@send')->name('transfernotif.send');
     Route::get('transfernotif/exportpdf/{param}', 'AssettfnotifController@send')->name('transfernotif.export');
-    Route::get('view-document/{param}', 'AssettfnotifController@viewDocument')->name('transfernotif.viewDocs');
+    // Route::get('view-document/{param}', 'AssettfnotifController@viewDocument')->name('transfernotif.viewDocs');
+    Route::post('transfernotif/approval/{param}', 'AssettfnotifController@approval')->name('transfernotif.approval');
+    Route::post('transfernotif/reject/{param}', 'AssettfnotifController@reject')->name('transfernotif.reject');
+
 });

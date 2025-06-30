@@ -1,9 +1,11 @@
 @extends('layouts.app_custom')
 @section('title-head','Detail Asset Transfer Notification')
-@role('user-employee-digassets')
+@role('user-employee-digassets',)
    @section('title','Detail Data')
 @endrole
-
+@role('user-mgr-dept-head',)
+   @section('title','Detail Data')
+@endrole
 @section('content')
 <div class="container-fluid">
     <!-- Header Section -->
@@ -469,16 +471,16 @@
                 </a>
                 
                 <div class="btn-group">
-                    @if(auth()->user()->can('approve_transfer'))
-                    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#approveModal">
+                    {{-- @permission('approve-transfer')
+                    <button type="button" class="btn btn-success" id="approval-transfer" data-bs-toggle="modal" data-bs-target="#approveModal">
                         <i class="fas fa-check me-2"></i>
                         Approve
                     </button>
-                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#rejectModal">
+                    <button type="button" class="btn btn-danger"  id="rejected-transfer" data-bs-toggle="modal" data-bs-target="#rejectModal">
                         <i class="fas fa-times me-2"></i>
                         Reject
                     </button>
-                    @endif
+                    @endpermission --}}
                     
                     {{-- <button type="button" class="btn btn-primary" onclick="window.print()">
                         <i class="fas fa-print me-2"></i>
@@ -489,6 +491,11 @@
                         <i class="fas fa-download me-2"></i>
                         Export PDF
                     </a> --}}
+
+                    {{-- @role('') --}}
+
+
+                    
                 </div>
             </div>
         </div>

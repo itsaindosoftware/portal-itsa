@@ -66,7 +66,7 @@ class DigitalassetsController extends Controller
         } elseif ($user->hasRole('user-acct-digassets')) {
             return $this->getAccountingDigitalAssets($request);
         } elseif ($user->hasRole('user-mgr-dept-head')) {
-            return $this->getMdDigitalAssets($request);
+            return $this->getMgrDepHeadDigitalAssets($request);
         } elseif ($user->hasRole('admin')) {
             return $this->getAdminDigitalAssets($request);
         }
@@ -99,7 +99,7 @@ class DigitalassetsController extends Controller
     /**
      * Get digital assets for MD role with filters
      */
-    private function getMdDigitalAssets(Request $request)
+    private function getMgrDepHeadDigitalAssets(Request $request)
     {
         $query = $this->buildBaseQuery()
             ->select($this->getExtendedSelectFields())
