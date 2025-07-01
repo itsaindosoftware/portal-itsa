@@ -1,11 +1,11 @@
 @extends('layouts.app_custom')
 @section('title-head','Detail Asset Transfer Notification')
-@role('user-employee-digassets',)
+{{-- @role('user-employee-digassets',)
    @section('title','Detail Data')
-@endrole
-@role('user-mgr-dept-head',)
+@endrole --}}
+{{-- @role('user-mgr-dept-head',) --}}
    @section('title','Detail Data')
-@endrole
+{{-- @endrole --}}
 @section('content')
 <div class="container-fluid">
     <!-- Header Section -->
@@ -87,7 +87,7 @@
                                             <i class="fas {{ ($transfer->approval_status2 ?? 0) == 1 ? 'fa-check' : (($transfer->approval_status2 ?? 0) == 2 ? 'fa-times' : 'fa-clock') }}"></i>
                                         </div>
                                         <div class="timeline-content">
-                                            <h6 class="mb-1">Manager DIrecture</h6>
+                                            <h6 class="mb-1">Manager Directur</h6>
                                             <p class="mb-0 text-muted small">
                                                 @if(($transfer->approval_status2 ?? 0) == 1)
                                                     Approved on {{ $transfer->approval_date2 ?? '2024-06-26 11:15' }}
@@ -147,7 +147,7 @@
                                             <i class="fas {{ ($transfer->approval_status5 ?? 0) == 1 ? 'fa-check' : 'fa-clock' }}"></i>
                                         </div>
                                         <div class="timeline-content">
-                                            <h6 class="mb-1">MGR Fin/Acct/CIC</h6>
+                                            <h6 class="mb-1">GM Fin/Acct/CIC</h6>
                                             <p class="mb-0 text-muted small">
                                                 @if(($transfer->approval_status5 ?? 0) == 1)
                                                     Completed on {{ $transfer->approval_date5 ?? '' }}

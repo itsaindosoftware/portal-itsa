@@ -13,6 +13,14 @@
     </a>
   </li>
 @endpermission
+@permission('manage-digital-assets','manage-asset-tf-notification')
+  <li class="{{ route('transfernotif.index') == request()->url() ? 'active' : '' }}">
+     <a class="nav-link" href="{{ route('transfernotif.index') }}">
+    <i class="fas fa-paper-plane"></i> <span>Asset Transfer Notif</span>
+    </a>
+   
+  </li>
+  @endpermission
 @permission('manage-user|manage-module|manage-role|manage-permission')
 <li class="menu-header">Setting Authorization</li>
 @endpermission

@@ -52,3 +52,12 @@
     width: 95%;
   }
 }
+#edit-send-notif .modal-xl {
+  max-width: 95%; /* Membuat modal hampir selebar layar */
+  width: 1400px; /* Anda bisa menyesuaikan lebar ini */
+}
+@media (max-width: 1500px) {
+  #cedit-send-notif .modal-xl {
+    width: 95%;
+  }
+}

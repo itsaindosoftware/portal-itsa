@@ -72,6 +72,19 @@
       @role('user-mgr-dept-head')
         @include('layouts._menu-user-mgr-dept-head')
       @endrole
+
+      @role('manager-directur')
+        @include('layouts._menu-user-mgrdir')
+      @endrole
+      @role('user-receive-sendnotif-dept')
+        @include('layouts._menu-user-receive-sendnotif-dept')
+      @endrole
+      @role('user-mgr-receive-send-notif-dept')
+        @include('layouts._menu-user-mgr-receive-sendnotif-dept')
+      @endrole
+        @role('user-gm-accfinn-sendnotif')
+        @include('layouts._menu-user-gm-accfinn-sendnotif')
+      @endrole
     </ul>
   </aside>
 </div>
