@@ -7,13 +7,18 @@
 @section('content')
 
 <div class="container-fluid px-4">
-<div class="alert alert-warning mb-4">
-    <h5 class="mb-1"><i class="fas fa-info-circle me-2"></i>Welcome to the Digital Assets Management Dashboard {{ Auth::user()->name }}</h5>
-    <p class="mb-0">
-        This dashboard provides you with a comprehensive overview of all fixed asset registration requests and their approval statuses.<br>
-        You can review, approve, or reject asset submissions.
-    </p>
+<div class="card">
+    <div class="card-body">
+        {{-- <div class="alert alert-warning mb-4"> --}}
+            <h5 class="mb-1"><i class="fas fa-info-circle me-2"></i> Welcome to the Digital Assets Management Dashboard {{ Auth::user()->name }}</h5>
+            <p class="mb-0">
+                This dashboard provides you with a comprehensive overview of all fixed asset registration requests and their approval statuses.<br>
+                You can review, approve, or reject asset submissions.
+            </p>
+        {{-- </div> --}}
+    </div>
 </div>
+
     <!-- Statistics Cards -->
     <div class="row g-4 mb-5">
         <div class="col-lg-3 col-md-6">
@@ -82,6 +87,46 @@
         </div>
     </div>
 
+  <div class="row">
+        <div class="col-xl-12">
+        <div class="card shadow mb-4">
+          <div class="card-header py-3 d-flex align-items-center">
+            <i class="fas fa-user-circle mr-2"></i>
+            <h6 class="m-0 font-weight-bold text-primary">Informasi User Detail</h6>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-bordered table-striped" width="100%" cellspacing="0">
+                <tbody>
+                  <tr>
+                    <td width="15%">NIK</td>
+                    <td width="35%">: {{ $users->nik }}</td>
+                    <td width="15%">Email</td>
+                    <td width="35%">: {{ $users->email }}</td>
+                  </tr>
+                  <tr>
+                    <td>Username</td>
+                    <td>: {{ $users->username }}</td>
+                    <td>Department</td>
+                    <td>: {{ $users->description }}</td>
+                  </tr>
+                  <tr>
+                    <td>Name</td>
+                    <td>: {{ $users->name }}</td>
+                    <td>Position</td>
+                    <td>: {{ $users->position_desc }}</td>
+                  </tr>
+                  <tr>
+                    <td>Company</td>
+                    <td colspan="3">: {{ $users->company_desc }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+  </div>
     <!-- Approval Info -->
 </div>
 

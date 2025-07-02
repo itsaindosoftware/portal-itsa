@@ -754,6 +754,8 @@ class HomeController extends Controller
     // Digital Assets Helper Methods
     private function getDigitalAssetStatistics()
     {
+        $userNik = Auth::user()->nik;
+        $userInfo = $this->getUserInfo($userNik);
         return [
             'totalAssets' => DB::connection('portal-itsa')
                 ->table('registration_fixed_assets')
@@ -766,6 +768,7 @@ class HomeController extends Controller
                 ->table('registration_fixed_assets')
                 ->where('status', 'inactive')
                 ->count(),
+            'users' => $userInfo
         ];
     }
 
@@ -821,6 +824,8 @@ class HomeController extends Controller
 
     private function getAccountingDigitalAssetStatistics()
     {
+        $userNik = Auth::user()->nik;
+        $userInfo = $this->getUserInfo($userNik);
         return [
             'totalAssets' => DB::connection('portal-itsa')
                 ->table('registration_fixed_assets')
@@ -828,11 +833,14 @@ class HomeController extends Controller
             'totalWaitingAssets' => $this->getAssetCountByStatus('registration_fixed_assets', 'approval_status2', '0'),
             'totalApprovedAssets' => $this->getAssetCountByStatus('registration_fixed_assets', 'approval_status2', '1'),
             'totalRejectedAssets' => $this->getAssetCountByStatus('registration_fixed_assets', 'approval_status2', '2'),
+            'users' => $userInfo
         ];
     }
 
     private function getDepartmentHeadDigitalAssetStatistics()
     {
+        $userNik = Auth::user()->nik;
+        $userInfo = $this->getUserInfo($userNik);
         return [
             'totalAssets' => DB::connection('portal-itsa')
                 ->table('registration_fixed_assets')
@@ -840,11 +848,14 @@ class HomeController extends Controller
             'totalWaitingAssets' => $this->getAssetCountByStatus('registration_fixed_assets', 'approval_status3', '0'),
             'totalApprovedAssets' => $this->getAssetCountByStatus('registration_fixed_assets', 'approval_status3', '1'),
             'totalRejectedAssets' => $this->getAssetCountByStatus('registration_fixed_assets', 'approval_status3', '2'),
+            'users' => $userInfo
         ];
     }
 
     private function getManagerDirDigitalAssetsStatistics()
     {
+        $userNik = Auth::user()->nik;
+        $userInfo = $this->getUserInfo($userNik);
         return [
             'totalData' => DB::connection('portal-itsa')
                 ->table('asset_tf_notif')
@@ -852,10 +863,13 @@ class HomeController extends Controller
             'totalWaiting' => $this->getAssetCountByStatus('asset_tf_notif', 'approval_status2', '0'),
             'totalApproval' => $this->getAssetCountByStatus('asset_tf_notif', 'approval_status2', '1'),
             'totalReject' => $this->getAssetCountByStatus('asset_tf_notif', 'approval_status2', '3'),
+            'users' => $userInfo
         ];
     }
     private function getUserReceivedSendNotifDeptStatistics()
     {
+        $userNik = Auth::user()->nik;
+        $userInfo = $this->getUserInfo($userNik);
         return [
             'totalData' => DB::connection('portal-itsa')
                 ->table('asset_tf_notif')
@@ -863,10 +877,13 @@ class HomeController extends Controller
             'totalWaiting' => $this->getAssetCountByStatus('asset_tf_notif', 'approval_status3', '0'),
             'totalApproval' => $this->getAssetCountByStatus('asset_tf_notif', 'approval_status3', '1'),
             'totalReject' => $this->getAssetCountByStatus('asset_tf_notif', 'approval_status3', '3'),
+            'users' => $userInfo
         ];
     }
     private function getUserMgrReceivedSendNotifDeptStatistics()
     {
+        $userNik = Auth::user()->nik;
+        $userInfo = $this->getUserInfo($userNik);
         return [
             'totalData' => DB::connection('portal-itsa')
                 ->table('asset_tf_notif')
@@ -874,10 +891,13 @@ class HomeController extends Controller
             'totalWaiting' => $this->getAssetCountByStatus('asset_tf_notif', 'approval_status4', '0'),
             'totalApproval' => $this->getAssetCountByStatus('asset_tf_notif', 'approval_status4', '1'),
             'totalReject' => $this->getAssetCountByStatus('asset_tf_notif', 'approval_status4', '3'),
+            'users' => $userInfo
         ];
     }
     private function getGMSendNotifStatistics()
     {
+        $userNik = Auth::user()->nik;
+        $userInfo = $this->getUserInfo($userNik);
         return [
             'totalData' => DB::connection('portal-itsa')
                 ->table('asset_tf_notif')
@@ -885,6 +905,7 @@ class HomeController extends Controller
             'totalWaiting' => $this->getAssetCountByStatus('asset_tf_notif', 'approval_status5', '0'),
             'totalApproval' => $this->getAssetCountByStatus('asset_tf_notif', 'approval_status5', '1'),
             'totalReject' => $this->getAssetCountByStatus('asset_tf_notif', 'approval_status5', '3'),
+            'users' => $userInfo
         ];
     }
 

@@ -317,7 +317,7 @@
 			<div class="col-12">
 				<div class="card">
 					<div class="card-body">
-						<div class="alert alert-warning alert-dismissible show fade">
+						{{-- <div class="alert alert-warning alert-dismissible show fade"> --}}
 							<div class="alert-icon"></div>
 							<div class="alert-body">
 								<div class="alert-title"><i class="fas fa-info-circle"></i> Guidance Notes</div>
@@ -328,10 +328,10 @@
                                     <li>Please also use the status filter by selecting the status.</li>
 								</ul>
 							</div>
-							<button class="close" data-dismiss="alert">
+							{{-- <button class="close" data-dismiss="alert">
 								<span>×</span>
-							</button>
-						</div>
+							</button> --}}
+						{{-- </div> --}}
 					</div>
 				</div>
 			</div>
