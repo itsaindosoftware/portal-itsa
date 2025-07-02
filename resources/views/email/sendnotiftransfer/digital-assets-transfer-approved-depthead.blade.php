@@ -102,8 +102,8 @@
             <p><span class="label">Date:</span> {{ $transferData->date ?? '-' }}</p>
             <p><span class="label">Approved By:</span> {{ $approverName ?? '-' }}</p>
             <p><span class="label">Approval Date:</span> {{ $transferData->approval_date1 ?? '-' }}</p>
-            <p><span class="label">Transfer Ref No. ERP:</span> {{ $transferData->transfer_ref_erp ?? '-' }}</p>
-            <p><span class="label">Effective Date:</span> {{ $transferData->effective_date ?? '-' }}</p>
+            <p><span class="label">Transfer Ref No. ERP:</span> {{ $transferData->to_tf_fer_no_erp ?? '-' }}</p>
+            <p><span class="label">Effective Date:</span> {{ $transferData->to_effective_date ?? '-' }}</p>
         </div>
 
         @if($transferData->rfa_number)
@@ -134,7 +134,7 @@
                     <p><span class="label">Receiving Department:</span><br>{{ $transferData->department_to_name ?? '-' }}</p>
                     <p><span class="label">New Cost Center:</span><br>{{ $transferData->to_cost_center_code ?? '-' }} - {{ $transferData->to_cost_center_name ?? '6003009 - Mold MTN' }}</p>
                     <p><span class="label">New Location:</span><br>{{ $transferData->loc_to ?? '-' }}</p>
-                    <p><span class="label">PIC Name:</span><br>{{ $transferData->pic_support ?? '-' }}</p>
+                    <p><span class="label">PIC Name:</span><br>{{ $transferData->to_pic_name ?? '-' }}</p>
                 </div>
             </div>
         </div>
@@ -146,14 +146,14 @@
         </div>
         @endif
 
-        <p>Please proceed with the necessary actions for this approved digital asset transfer. The asset will be transferred from <strong>{{ $transferData->transferring_department ?? 'Maintenance Dies' }}</strong> to <strong>{{ $transferData->receiving_department ?? 'Quality Assurance' }}</strong>.</p>
+        <p>Please proceed with the necessary actions for this approved digital asset transfer. The asset will be transferred from <strong>{{ $transferData->department_from_name ?? '-' }}</strong> to <strong>{{ $transferData->department_to_name ?? '-' }}</strong>.</p>
         
         <p>Best regards,<br>
-        Digital Asset Management System</p>
+        PORTAL ITSA SYSTEM</p>
     </div>
     
     <div class="footer">
-        <p>This is an automated email from the Digital Asset Management System.</p>
+        <p>This is an automated email from the PORTAL ITSA SYSTEM.</p>
     </div>
 </body>
 </html>
