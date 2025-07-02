@@ -7,7 +7,7 @@
 @section('content')
 
 <div class="container-fluid px-4">
-<div class="alert alert-info mb-4">
+<div class="alert alert-warning mb-4">
     <h5 class="mb-1"><i class="fas fa-info-circle me-2"></i>Welcome to the Digital Assets Management Dashboard {{ Auth::user()->name }}</h5>
     <p class="mb-0">
         This dashboard provides you with a comprehensive overview of all fixed asset registration requests and their approval statuses.<br>

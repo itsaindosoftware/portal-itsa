@@ -49,7 +49,7 @@
                             <div class="approval-timeline">
                                 <div class="timeline-container">
                                     <!-- Step 1: Submitted -->
-                                    <input type="hidden" id="id-assetstf" value="{{ $transfer->id_asset_tf }}">
+                                    <input type="hidden" id="id-assetstf" value="{{ $transfer->id_asset_tf ?? 0 }} ">
                                     <div class="timeline-step completed">
                                         <div class="timeline-marker">
                                             <i class="fas fa-check"></i>

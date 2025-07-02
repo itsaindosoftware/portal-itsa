@@ -1518,7 +1518,8 @@ h6 .badge {
   left: 0;
   width: 100%;
   height: 115px;
-  background-color: #3abaf4;
+  background-color: #6777ef;
+  /* 3abaf4 */
    /* background-color: #6777ef; */
   z-index: -1; }
 
@@ -2581,7 +2582,9 @@ body.layout-3 .main-footer {
   text-align: center;
   height: 70px;
   line-height: 60px; 
-   background-color: #30a9e1;
+   background-color: #5c6ad7;
+   /* 30a9e1 */
+   /* 6777ef */
    padding: 0 20px;
   position: relative; 
   }
@@ -2886,7 +2889,9 @@ body:not(.sidebar-mini) .sidebar-style-2 .sidebar-menu li.active ul.dropdown-men
 }
 
 #table-request-manage th {
-  background-color: #30a9e1;
+  background-color: #5c6ad7;
+  /* 30a9e1 */
+  /* 5c6ad7 */
   text-align: left;
   color: #ffffff;
 }

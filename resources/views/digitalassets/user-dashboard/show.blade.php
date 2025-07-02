@@ -1,8 +1,8 @@
 @extends('layouts.app_custom')
 @section('title-head','Digital Assets - Detail Registration Fixed Asset')
-{{-- @role('user-employee-digassets')
-   @section('title','Detail Digital Assets Registration')
-@endrole --}}
+
+@section('title','Detail Fixed Assets Registration')
+
 
 @section('css')
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/Datatables/dataTables.bootstrap4.min.css') }}">
@@ -127,7 +127,7 @@
                             </div>
                             <div class="approval-content">
                                 <h6 class="approval-title">Approval 2</h6>
-                                <p class="approval-role">MD</p>
+                                <p class="approval-role">Department Head</p>
                                 <div class="approval-details">
                                     @if($digitalAsset->approval_by3)
                                         <small class="text-muted">

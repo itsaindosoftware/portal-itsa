@@ -314,7 +314,7 @@
 			<div class="col-12">
 				<div class="card">
 					<div class="card-body">
-						<div class="alert alert-info alert-dismissible show fade">
+						<div class="alert alert-warning alert-dismissible show fade">
 							<div class="alert-icon"></div>
 							<div class="alert-body">
 								<div class="alert-title"><i class="fas fa-info-circle"></i> Guidance Notes</div>
@@ -552,7 +552,7 @@ $(document).on('click','#sendnotif-data', function(e){
     e.preventDefault();         
     // resetForm(); 
     var href = $(this).data('href');
-    
+    // alert(href)
     // Show loading state
     $('#create-digassets').modal('show');
     showLoadingState();
@@ -954,20 +954,19 @@ function showSuccessWithActions(response) {
                 <div>
                     <h5 class="mb-1 text-success">Transfer Request Submitted!</h5>
                     <p class="mb-1">${response.message || 'Your transfer request has been submitted successfully.'}</p>
-                    <small class="text-muted">Transfer ID: ${transferId} | Reference: ${transferRef}</small>
                 </div>
             </div>
             <div class="d-flex gap-2 flex-wrap">
-                <a href="${response.view_url || response.redirect_url}" class="btn btn-outline-warning">
-                    <i class="fas fa-eye"></i> View Transfer Request
-                </a>
                 <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">
                     <i class="fas fa-arrow-left"></i> Back to Dashboard
                 </button>
             </div>
         </div>
     `;
-    
+    //    <small class="text-muted">Transfer ID: ${transferId} | Reference: ${transferRef}</small>
+            //   <a href="${response.view_url || response.redirect_url}" class="btn btn-outline-warning">
+            //         <i class="fas fa-eye"></i> View Transfer Request
+            //     </a>
     // Replace modal content with success message
     $('#create-digassets .modal-body').html(actionsHtml);
     

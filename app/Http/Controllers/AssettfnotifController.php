@@ -55,6 +55,7 @@ class AssettfnotifController extends Controller
                     $data = $data->select(
                         'asset_tf_notif.*',
                         'users.name as user_name',
+                        // 'registration_fixed_assets.id',
                         'registration_fixed_assets.rfa_number',
                         'registration_fixed_assets.date',
                         'registration_fixed_assets.requestor_name',
@@ -569,6 +570,7 @@ class AssettfnotifController extends Controller
                 return DataTables::of($data)
                     ->addColumn('action', function ($data) use ($user) {
                         if ($user->hasRole('user-employee-digassets')) {
+                            // dd($data);
                             return view('datatables._action-user-digassets-sendnotif', [
                                 'model' => $data,
                                 'sendNotif' => route('transfernotif.send', base64_encode($data->id)),
@@ -824,11 +826,16 @@ class AssettfnotifController extends Controller
 
                     // Create transfer notification record
                     $transferNotification = $this->createTransferNotification($validatedData, $filePath, $getData);
-                    // update status transfer in fixed assets registration
-                    $transferStatus = Digitalassets::find($getData['id_fixed_asset']);
-                    $transferStatus->transfer_status = 'sent';
-                    $transferStatus->transfer_sent_at = Carbon::now()->format('Y-m-d H:i:s');
-                    $transferStatus->save();
+                    if ($transferNotification) {
+                        // Update status transfer in fixed assets registration
+                        DB::connection('portal-itsa')->table('registration_fixed_assets')
+                            ->where('id', $getData['id_fixed_asset'])
+                            ->update([
+                                'transfer_status' => 'sent',
+                                'transfer_sent_at' => Carbon::now()->format('Y-m-d H:i:s'),
+                                'updated_at' => now(),
+                            ]);
+                    }
 
 
 
@@ -840,11 +847,11 @@ class AssettfnotifController extends Controller
                     return response()->json([
                         'success' => true,
                         'message' => $message,
-                        'data' => [
-                            'id' => $transferNotification->id
-                        ],
-                        'redirect_url' => route('transfernotif.show', base64_encode($transferNotification->id)),
-                        'view_url' => route('transfernotif.show', base64_encode($transferNotification->id))
+                        // 'data' => [
+                        //     'id' => $transferNotification->id
+                        // ],
+                        // 'redirect_url' => route('transfernotif.show', base64_encode($transferNotification->id)),
+                        // 'view_url' => route('transfernotif.show', base64_encode($transferNotification->id))
                     ], 200);
 
                     DB::commit();
@@ -885,7 +892,7 @@ class AssettfnotifController extends Controller
     private function createTransferNotification($data, $filePath, $getData)
     {
         // dd($filePath);
-        return Assettfnotif::create([
+        return DB::connection('portal-itsa')->table('asset_tf_notif')->insert([
             // Section 1: FROM
             'reg_fixed_asset_id' => $getData['id_fixed_asset'],
             'from_date_of_tf' => $getData['date_of_transfer'],
@@ -915,8 +922,8 @@ class AssettfnotifController extends Controller
     public function show($id)
     {
 
-        $id = base64_decode($id);
-        // dd($id);
+        $id_ = base64_decode($id);
+        // dd($id_);
         if (Auth::user()->hasPermission('detail-ast-tf-notif')) {
             $transfer = Digitalassets::query()
                 ->leftJoin('asset_tf_notif', 'asset_tf_notif.reg_fixed_asset_id', '=', 'registration_fixed_assets.id')
@@ -959,8 +966,8 @@ class AssettfnotifController extends Controller
                 'registration_fixed_assets.transfer_status',
                 'registration_fixed_assets.transfer_sent_at',
 
-            )->where('asset_tf_notif.id', '=', $id)->first();
-            // dd($transfer);  
+            )->where('asset_tf_notif.id', '=', $id_)->first();
+            // dd($transfer);
             return view('digitalassets.send-notif-transfer.user-dashboard.view', compact('transfer'));
         }
     }
@@ -1151,8 +1158,10 @@ class AssettfnotifController extends Controller
 
     public function send(Request $request, $id)
     {
+        $id = base64_decode($id);
+        // dd($id);
         if (Auth::user()->hasPermission('manage-digital-assets', 'manage-asset-tf-notification')) {
-            $id = base64_decode($id);
+            // $id = base64_decode($id);
             $digitalAsset = Digitalassets::query()
                 ->leftJoin('users', 'registration_fixed_assets.user_id', '=', 'users.id')
                 ->leftJoin('departments', 'registration_fixed_assets.department_id', '=', 'departments.id')
@@ -1170,7 +1179,7 @@ class AssettfnotifController extends Controller
                 'master_asset_cost_centers.cost_center_name as cost_cname',
                 'master_asset_cost_centers.cost_center_code'
             )->where('registration_fixed_assets.id', $id)->first();
-
+            // dd($digitalAsset);
             return response()->json([
                 'data' => $digitalAsset,
                 'success' => true
@@ -1186,7 +1195,8 @@ class AssettfnotifController extends Controller
         // dd($user);
         if ($user->hasPermission('manage-digital-assets', 'manage-asset-tf-notification', 'approve-transfer')) {
             $dataApproval = DB::connection('portal-itsa')->table('asset_tf_notif')->where('id', $id);
-
+            $checkTfNotif = DB::connection('portal-itsa')->table('asset_tf_notif')->where('id', $id)->first();
+            $updateStatus = DB::connection('portal-itsa')->table('registration_fixed_assets')->where('id', $checkTfNotif->reg_fixed_asset_id);
             if ($user->hasRole('user-mgr-dept-head')) {
                 $dataApproval->update([
                     'approval_by1' => $user->name,
@@ -1225,6 +1235,9 @@ class AssettfnotifController extends Controller
                     'remark_by5' => $request->remark ?? '-'
                 ]);
             } elseif ($user->hasRole('user-acct-digassets')) {
+                $updateStatus->update([
+                    'transfer_status' => 'completed'
+                ]);
                 $dataApproval->update([
                     'approval_by6' => $user->name,
                     'approval_date6' => Carbon::now(),
@@ -1246,8 +1259,13 @@ class AssettfnotifController extends Controller
         $user = Auth::user();
         if ($user->hasPermission('manage-digital-assets', 'manage-asset-tf-notification', 'approve-transfer')) {
             $dataApproval = DB::connection('portal-itsa')->table('asset_tf_notif')->where('id', $id);
+            $checkTfNotif = DB::connection('portal-itsa')->table('asset_tf_notif')->where('id', $id)->first();
+            $updateStatus = DB::connection('portal-itsa')->table('registration_fixed_assets')->where('id', $checkTfNotif->reg_fixed_asset_id);
 
             if ($user->hasRole('user-mgr-dept-head')) {
+                $updateStatus->update([
+                    'transfer_status' => 'cancelled'
+                ]);
                 $dataApproval->update([
                     'approval_by1' => $user->name,
                     'approval_date1' => Carbon::now(),
@@ -1257,6 +1275,9 @@ class AssettfnotifController extends Controller
 
 
             } elseif ($user->hasRole('manager-directur')) {
+                $updateStatus->update([
+                    'transfer_status' => 'cancelled'
+                ]);
                 $dataApproval->update([
                     'approval_by2' => $user->name,
                     'approval_date2' => Carbon::now(),
@@ -1264,6 +1285,9 @@ class AssettfnotifController extends Controller
                     'remark_by2' => $request->remark ?? '-'
                 ]);
             } elseif ($user->hasRole('user-receive-sendnotif-dept')) {
+                $updateStatus->update([
+                    'transfer_status' => 'cancelled'
+                ]);
                 $dataApproval->update([
                     'approval_by3' => $user->name,
                     'approval_date3' => Carbon::now(),
@@ -1271,6 +1295,9 @@ class AssettfnotifController extends Controller
                     'remark_by3' => $request->remark ?? '-'
                 ]);
             } elseif ($user->hasRole('user-mgr-receive-send-notif-dept')) {
+                $updateStatus->update([
+                    'transfer_status' => 'cancelled'
+                ]);
                 $dataApproval->update([
                     'approval_by4' => $user->name,
                     'approval_date4' => Carbon::now(),
@@ -1278,6 +1305,9 @@ class AssettfnotifController extends Controller
                     'remark_by4' => $request->remark ?? '-'
                 ]);
             } elseif ($user->hasRole('user-gm-accfinn-sendnotif')) {
+                $updateStatus->update([
+                    'transfer_status' => 'cancelled'
+                ]);
                 $dataApproval->update([
                     'approval_by5' => $user->name,
                     'approval_date5' => Carbon::now(),
@@ -1285,11 +1315,14 @@ class AssettfnotifController extends Controller
                     'remark_by5' => $request->remark ?? '-'
                 ]);
             } elseif ($user->hasRole('user-acct-digassets')) {
+                $updateStatus->update([
+                    'transfer_status' => 'cancelled'
+                ]);
                 $dataApproval->update([
-                    'approval_by5' => $user->name,
-                    'approval_date5' => Carbon::now(),
-                    'approval_status5' => '2',
-                    'remark_by5' => $request->remark ?? '-'
+                    'approval_by6' => $user->name,
+                    'approval_date6' => Carbon::now(),
+                    'approval_status6' => '2',
+                    'remark_by6' => $request->remark ?? '-'
                 ]);
             }
 

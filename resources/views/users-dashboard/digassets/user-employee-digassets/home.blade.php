@@ -7,7 +7,7 @@
 @section('content')
 
 <div class="container-fluid px-4">
-    <div class="alert alert-info mb-4">
+    <div class="alert alert-warning mb-4">
         <h5 class="mb-1"><i class="fas fa-info-circle me-2"></i> Welcome to the Digital Assets Dashboard</h5>
         <p class="mb-0">
             Here, you can submit new fixed asset registration requests and monitor the status of your submissions.<br>
@@ -17,67 +17,67 @@
     <!-- Statistics Cards -->
     <div class="row g-4 mb-5">
         <div class="col-lg-3 col-md-6">
-            <div class="card h-100 shadow-lg border-0 rounded-3 position-relative overflow-hidden">
+            <div class="card h-100 shadow-lg border-0 rounded-3 position-relative overflow-hidden bg-gradient-primary">
                 <div class="card-body p-4">
                     <div class="d-flex align-items-center justify-content-between">
                         <div>
-                            <h6 class="card-title text-muted mb-2 fw-semibold">Total Assets</h6>
-                            <h2 class="display-6 fw-bold text-primary mb-0">{{ $totalAssets ?? 0 }}</h2>
+                            <h6 class="card-title text-white mb-2 fw-semibold opacity-90">Total Assets</h6>
+                            <h2 class="display-6 fw-bold text-white mb-0">{{ $totalAssets ?? 0 }}</h2>
                         </div>
-                        <div class="bg-primary bg-opacity-10 rounded-circle p-3">
-                            <i class="fas fa-chart-bar text-primary fs-4"></i>
+                        <div class="bg-white bg-opacity-20 rounded-circle p-3">
+                            <i class="fas fa-chart-bar"></i>
                         </div>
                     </div>
                 </div>
-                <div class="position-absolute bottom-0 start-0 w-100 bg-primary" style="height: 4px;"></div>
+                <div class="position-absolute bottom-0 start-0 w-100 bg-white bg-opacity-20" style="height: 4px;"></div>
             </div>
         </div>
         <div class="col-lg-3 col-md-6">
-            <div class="card h-100 shadow-lg border-0 rounded-3 position-relative overflow-hidden">
+            <div class="card h-100 shadow-lg border-0 rounded-3 position-relative overflow-hidden bg-gradient-success">
                 <div class="card-body p-4">
                     <div class="d-flex align-items-center justify-content-between">
                         <div>
-                            <h6 class="card-title text-muted mb-2 fw-semibold">Active Assets</h6>
-                            <h2 class="display-6 fw-bold text-success mb-0">{{ $totalActiveAssets ?? 0 }}</h2>
+                            <h6 class="card-title text-white mb-2 fw-semibold opacity-90">Active Assets</h6>
+                            <h2 class="display-6 fw-bold text-white mb-0">{{ $totalActiveAssets ?? 0 }}</h2>
                         </div>
-                        <div class="bg-success bg-opacity-10 rounded-circle p-3">
-                            <i class="fas fa-check-circle text-success fs-4"></i>
+                        <div class="bg-white bg-opacity-20 rounded-circle p-3">
+                            <i class="fas fa-check-circle"></i>
                         </div>
                     </div>
                 </div>
-                <div class="position-absolute bottom-0 start-0 w-100 bg-success" style="height: 4px;"></div>
+                <div class="position-absolute bottom-0 start-0 w-100 bg-white bg-opacity-20" style="height: 4px;"></div>
             </div>
         </div>
         <div class="col-lg-3 col-md-6">
-            <div class="card h-100 shadow-lg border-0 rounded-3 position-relative overflow-hidden">
+            <div class="card h-100 shadow-lg border-0 rounded-3 position-relative overflow-hidden bg-gradient-danger">
                 <div class="card-body p-4">
                     <div class="d-flex align-items-center justify-content-between">
                         <div>
-                            <h6 class="card-title text-muted mb-2 fw-semibold">Inactive Assets</h6>
-                            <h2 class="display-6 fw-bold text-danger mb-0">{{ $totalInactiveAssets ?? 0 }}</h2>
+                            <h6 class="card-title text-white mb-2 fw-semibold opacity-90">Inactive Assets</h6>
+                            <h2 class="display-6 fw-bold text-white mb-0">{{ $totalInactiveAssets ?? 0 }}</h2>
                         </div>
-                        <div class="bg-danger bg-opacity-10 rounded-circle p-3">
-                            <i class="fas fa-exclamation-triangle text-danger fs-4"></i>
+                        <div class="bg-white bg-opacity-20 rounded-circle p-3">
+                            <i class="fas fa-exclamation-triangle"></i>
                         </div>
                     </div>
                 </div>
-                <div class="position-absolute bottom-0 start-0 w-100 bg-danger" style="height: 4px;"></div>
+                <div class="position-absolute bottom-0 start-0 w-100 bg-white bg-opacity-20" style="height: 4px;"></div>
             </div>
         </div>
         <div class="col-lg-3 col-md-6">
-            <div class="card h-100 shadow-lg border-0 rounded-3 position-relative overflow-hidden">
+            <div class="card h-100 shadow-lg border-0 rounded-3 position-relative overflow-hidden bg-gradient-info">
                 <div class="card-body p-4">
                     <div class="d-flex align-items-center justify-content-between">
                         <div>
-                            <h6 class="card-title text-muted mb-2 fw-semibold">Asset Groups</h6>
-                            <h2 class="display-6 fw-bold text-info mb-0">{{ isset($assetGroups) ? count($assetGroups) : 0 }}</h2>
+                            <h6 class="card-title text-white mb-2 fw-semibold opacity-90">Asset Groups</h6>
+                            <h2 class="display-6 fw-bold text-white mb-0">{{ isset($assetGroups) ? count($assetGroups) : 0 }}</h2>
                         </div>
-                        <div class="bg-info bg-opacity-10 rounded-circle p-3">
-                            <i class="fas fa-layer-group text-info fs-4"></i>
+                        <div class="bg-white bg-opacity-20 rounded-circle p-3">
+                            <i class="fas fa-layer-group"></i>
                         </div>
                     </div>
                 </div>
-                <div class="position-absolute bottom-0 start-0 w-100 bg-info" style="height: 4px;"></div>
+                <div class="position-absolute bottom-0 start-0 w-100 bg-white bg-opacity-20" style="height: 4px;"></div>
             </div>
         </div>
     </div>
@@ -199,6 +199,31 @@
 </div>
 
 <style>
+/* Gradient Backgrounds */
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+}
+
+.bg-gradient-success {
+    background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+}
+
+.bg-gradient-danger {
+    background: linear-gradient(135deg, #dc3545 0%, #bd2130 100%);
+}
+
+.bg-gradient-info {
+    background: linear-gradient(135deg, #17a2b8 0%, #117a8b 100%);
+}
+
+.bg-gradient-warning {
+    background: linear-gradient(135deg, #ffc107 0%, #d39e00 100%);
+}
+
+.bg-gradient-secondary {
+    background: linear-gradient(135deg, #6c757d 0%, #545b62 100%);
+}
+
 .timeline-item::before {
     content: '';
     position: absolute;
