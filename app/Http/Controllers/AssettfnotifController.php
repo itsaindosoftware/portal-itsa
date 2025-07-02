@@ -13,7 +13,7 @@ use Yajra\DataTables\DataTables;
 use Carbon\Carbon;
 use Validator;
 use App\Digitalassets;
-use App\Mail\SendingnotifDigAssets;
+use App\Mail\SendnotifassetsApprove;
 use App\Mail\SendingnotifRejected;
 use Illuminate\Support\Facades\Mail;
 use App\Assettfnotif;
@@ -56,6 +56,7 @@ class AssettfnotifController extends Controller
                         'asset_tf_notif.*',
                         'users.name as user_name',
                         // 'registration_fixed_assets.id',
+                        'registration_fixed_assets.id as id_fixed_assets',
                         'registration_fixed_assets.rfa_number',
                         'registration_fixed_assets.date',
                         'registration_fixed_assets.requestor_name',
@@ -112,6 +113,7 @@ class AssettfnotifController extends Controller
                     $data = $data->select(
                         'asset_tf_notif.*',
                         'users.name as user_name',
+                        'registration_fixed_assets.id as id_fixed_assets',
                         'registration_fixed_assets.rfa_number',
                         'registration_fixed_assets.date',
                         'registration_fixed_assets.requestor_name',
@@ -179,6 +181,7 @@ class AssettfnotifController extends Controller
                     $data = $data->select(
                         'asset_tf_notif.*',
                         'users.name as user_name',
+                        'registration_fixed_assets.id as id_fixed_assets',
                         'registration_fixed_assets.rfa_number',
                         'registration_fixed_assets.date',
                         'registration_fixed_assets.requestor_name',
@@ -247,6 +250,7 @@ class AssettfnotifController extends Controller
                     $data = $data->select(
                         'asset_tf_notif.*',
                         'users.name as user_name',
+                        'registration_fixed_assets.id as id_fixed_assets',
                         'registration_fixed_assets.rfa_number',
                         'registration_fixed_assets.date',
                         'registration_fixed_assets.requestor_name',
@@ -316,6 +320,7 @@ class AssettfnotifController extends Controller
                     $data = $data->select(
                         'asset_tf_notif.*',
                         'users.name as user_name',
+                        'registration_fixed_assets.id as id_fixed_assets',
                         'registration_fixed_assets.rfa_number',
                         'registration_fixed_assets.date',
                         'registration_fixed_assets.requestor_name',
@@ -385,6 +390,7 @@ class AssettfnotifController extends Controller
                     $data = $data->select(
                         'asset_tf_notif.*',
                         'users.name as user_name',
+                        'registration_fixed_assets.id as id_fixed_assets',
                         'registration_fixed_assets.rfa_number',
                         'registration_fixed_assets.date',
                         'registration_fixed_assets.requestor_name',
@@ -453,6 +459,7 @@ class AssettfnotifController extends Controller
                         ->leftJoin('master_asset_cost_centers as cost_to', 'asset_tf_notif.to_cost_center_id', '=', 'cost_to.id');
                     $data = $data->select(
                         'asset_tf_notif.*',
+                        'registration_fixed_assets.id as id_fixed_assets',
                         'users.name as user_name',
                         'registration_fixed_assets.rfa_number',
                         'registration_fixed_assets.date',
@@ -523,6 +530,7 @@ class AssettfnotifController extends Controller
                     $data = $data->select(
                         'asset_tf_notif.*',
                         'users.name as user_name',
+                        'registration_fixed_assets.id as id_fixed_assets',
                         'registration_fixed_assets.rfa_number',
                         'registration_fixed_assets.date',
                         'registration_fixed_assets.requestor_name',
@@ -573,57 +581,57 @@ class AssettfnotifController extends Controller
                             // dd($data);
                             return view('datatables._action-user-digassets-sendnotif', [
                                 'model' => $data,
-                                'sendNotif' => route('transfernotif.send', base64_encode($data->id)),
-                                'show_url' => route('transfernotif.show', base64_encode($data->id))
+                                'sendNotif' => route('transfernotif.send', base64_encode($data->id ?? $data->id_fixed_assets)),
+                                'show_url' => route('transfernotif.show', base64_encode($data->id ?? $data->id_fixed_assets))
                             ]);
                         } elseif ($user->hasRole('user-mgr-dept-head')) {
                             return view('datatables._action-user-mgr-dephead-sendnotif', [
                                 'model' => $data,
-                                'show_url' => route('transfernotif.show', base64_encode($data->id)),
-                                'approval_url' => route('transfernotif.approval', base64_encode($data->id)),
-                                'reject_url' => route('transfernotif.reject', base64_encode($data->id))
+                                'show_url' => route('transfernotif.show', base64_encode($data->id ?? $data->id_fixed_assets)),
+                                'approval_url' => route('transfernotif.approval', base64_encode($data->id ?? $data->id_fixed_assets)),
+                                'reject_url' => route('transfernotif.reject', base64_encode($data->id ?? $data->id_fixed_assets))
                             ]);
                         } elseif ($user->hasRole('manager-directur')) {
                             return view('datatables._action-mgrdir-digassets-sendnotif', [
                                 'model' => $data,
-                                'show_url' => route('transfernotif.show', base64_encode($data->id)),
-                                'approval_url' => route('transfernotif.approval', base64_encode($data->id)),
-                                'reject_url' => route('transfernotif.reject', base64_encode($data->id))
+                                'show_url' => route('transfernotif.show', base64_encode($data->id ?? $data->id_fixed_assets)),
+                                'approval_url' => route('transfernotif.approval', base64_encode($data->id ?? $data->id_fixed_assets)),
+                                'reject_url' => route('transfernotif.reject', base64_encode($data->id ?? $data->id_fixed_assets))
                             ]);
                         } elseif ($user->hasRole('user-receive-sendnotif-dept')) {
                             return view('datatables._action-user-receive-sendnotif-dept', [
                                 'model' => $data,
-                                'show_url' => route('transfernotif.show', base64_encode($data->id)),
-                                'approval_url' => route('transfernotif.approval', base64_encode($data->id)),
-                                'reject_url' => route('transfernotif.reject', base64_encode($data->id))
+                                'show_url' => route('transfernotif.show', base64_encode($data->id ?? $data->id_fixed_assets)),
+                                'approval_url' => route('transfernotif.approval', base64_encode($data->id ?? $data->id_fixed_assets)),
+                                'reject_url' => route('transfernotif.reject', base64_encode($data->id ?? $data->id_fixed_assets))
                             ]);
                         } elseif ($user->hasRole('user-mgr-receive-send-notif-dept')) {
                             return view('datatables._action-user-mgr-receive-sendnotif-dept', [
                                 'model' => $data,
-                                'show_url' => route('transfernotif.show', base64_encode($data->id)),
-                                'approval_url' => route('transfernotif.approval', base64_encode($data->id)),
-                                'reject_url' => route('transfernotif.reject', base64_encode($data->id))
+                                'show_url' => route('transfernotif.show', base64_encode($data->id ?? $data->id_fixed_assets)),
+                                'approval_url' => route('transfernotif.approval', base64_encode($data->id ?? $data->id_fixed_assets)),
+                                'reject_url' => route('transfernotif.reject', base64_encode($data->id ?? $data->id_fixed_assets))
                             ]);
                         } elseif ($user->hasRole('user-gm-accfinn-sendnotif')) {
                             return view('datatables._action-user-gm-accfinn-sendnotif', [
                                 'model' => $data,
-                                'show_url' => route('transfernotif.show', base64_encode($data->id)),
-                                'approval_url' => route('transfernotif.approval', base64_encode($data->id)),
-                                'reject_url' => route('transfernotif.reject', base64_encode($data->id))
+                                'show_url' => route('transfernotif.show', base64_encode($data->id ?? $data->id_fixed_assets)),
+                                'approval_url' => route('transfernotif.approval', base64_encode($data->id ?? $data->id_fixed_assets)),
+                                'reject_url' => route('transfernotif.reject', base64_encode($data->id ?? $data->id_fixed_assets))
                             ]);
                         } elseif ($user->hasRole('user-acct-digassets')) {
                             return view('datatables._action-user-accfinn-sendnotif', [
                                 'model' => $data,
-                                'show_url' => route('transfernotif.show', base64_encode($data->id)),
-                                'approval_url' => route('transfernotif.approval', base64_encode($data->id)),
-                                'reject_url' => route('transfernotif.reject', base64_encode($data->id))
+                                'show_url' => route('transfernotif.show', base64_encode($data->id ?? $data->id_fixed_assets)),
+                                'approval_url' => route('transfernotif.approval', base64_encode($data->id ?? $data->id_fixed_assets)),
+                                'reject_url' => route('transfernotif.reject', base64_encode($data->id ?? $data->id_fixed_assets))
                             ]);
                         } elseif ($user->hasRole('admin')) {
                             return view('datatables._action-admin-sendnotif', [
                                 'model' => $data,
-                                'show_url' => route('transfernotif.show', base64_encode($data->id)),
-                                'edit_url' => route('transfernotif.edit', base64_encode($data->id)),
-                                'delete_url' => route('transfernotif.destroy', base64_encode($data->id))
+                                'show_url' => route('transfernotif.show', base64_encode($data->id ?? $data->id_fixed_assets)),
+                                'edit_url' => route('transfernotif.edit', base64_encode($data->id ?? $data->id_fixed_assets)),
+                                'delete_url' => route('transfernotif.destroy', base64_encode($data->id ?? $data->id_fixed_assets))
                             ]);
                         } else {
                             return '';
@@ -1197,6 +1205,8 @@ class AssettfnotifController extends Controller
             $dataApproval = DB::connection('portal-itsa')->table('asset_tf_notif')->where('id', $id);
             $checkTfNotif = DB::connection('portal-itsa')->table('asset_tf_notif')->where('id', $id)->first();
             $updateStatus = DB::connection('portal-itsa')->table('registration_fixed_assets')->where('id', $checkTfNotif->reg_fixed_asset_id);
+            $getData = $this->forSendmail($id);
+            // dd($getData);
             if ($user->hasRole('user-mgr-dept-head')) {
                 $dataApproval->update([
                     'approval_by1' => $user->name,
@@ -1204,6 +1214,7 @@ class AssettfnotifController extends Controller
                     'approval_status1' => '1',
                     'remark_by1' => $request->remark ?? '-'
                 ]);
+                $this->sendApprovalEmail($getData, $request->remark ?? '-', Auth::user()->name, 'user-mgr-dept-head');
 
 
             } elseif ($user->hasRole('manager-directur')) {
@@ -1274,6 +1285,7 @@ class AssettfnotifController extends Controller
                 ]);
 
 
+
             } elseif ($user->hasRole('manager-directur')) {
                 $updateStatus->update([
                     'transfer_status' => 'cancelled'
@@ -1334,5 +1346,59 @@ class AssettfnotifController extends Controller
         }
 
 
+    }
+    private function sendApprovalEmail($transferData, $remarks, $approverName, $userRole)
+    {
+
+        Mail::to('it-03@thaisummit.co.id')->send(new SendnotifassetsApprove($transferData, $remarks, $approverName, $userRole));
+        return "email successfully sending.";
+
+    }
+    private function forSendmail($id)
+    {
+        $transfer = Digitalassets::query()
+            ->leftJoin('asset_tf_notif', 'asset_tf_notif.reg_fixed_asset_id', '=', 'registration_fixed_assets.id')
+            ->leftJoin('users', 'registration_fixed_assets.user_id', '=', 'users.id')
+            ->leftJoin('departments as dept_from', 'registration_fixed_assets.department_id', '=', 'dept_from.id') // Dept asal dari registration_fixed_assets
+            ->leftJoin('departments as dept_to', 'asset_tf_notif.to_receiving_dept_id', '=', 'dept_to.id') // Dept tujuan dari asset_tf_notif
+            ->leftJoin('companys', 'registration_fixed_assets.company_id', '=', 'companys.id')
+            ->leftJoin('master_asset_groups as group_from', 'registration_fixed_assets.asset_group_id', '=', 'group_from.id')
+            ->leftJoin('master_asset_locations as location_from_name', 'registration_fixed_assets.asset_location_id', '=', 'location_from_name.id')
+            ->leftjoin('master_asset_locations as location_to_name', 'asset_tf_notif.to_location_id', '=', 'location_to_name.id')
+            ->leftJoin('master_asset_cost_centers as cost_from', 'registration_fixed_assets.asset_cost_center_id', '=', 'cost_from.id')
+            ->leftJoin('master_asset_cost_centers as cost_to', 'asset_tf_notif.to_cost_center_id', '=', 'cost_to.id');
+        $transfer = $transfer->select(
+            'asset_tf_notif.*',
+            'users.name as user_name',
+            'registration_fixed_assets.rfa_number',
+            'registration_fixed_assets.date',
+            'registration_fixed_assets.requestor_name',
+            'registration_fixed_assets.issue_fixed_asset_no',
+            'registration_fixed_assets.production_code',
+            'registration_fixed_assets.product_name',
+            'registration_fixed_assets.grn_no',
+            'registration_fixed_assets.io_no',
+            // 'departments.description as department_name',
+            'companys.company_desc as company_name',
+            'dept_from.description as department_from_name', // Department asal dari registration_fixed_assets
+            'dept_to.description as department_to_name',
+            'location_from_name.asset_location_name as loc_from',
+            'location_to_name.asset_location_name as loc_to',
+            'cost_from.cost_center_name as from_cost_center_name',
+            'cost_from.cost_center_code as from_cost_center_code',
+            'cost_to.cost_center_name as to_cost_center_name',
+            'cost_to.cost_center_code as to_cost_center_code',
+            // 
+            'group_from.asset_group_name',
+            'location_from_name.asset_location_name as name_location',
+            'cost_from.cost_center_name as cost_cname',
+            'cost_to.cost_center_code',
+            'asset_tf_notif.id as id_asset_tf',
+            'registration_fixed_assets.transfer_status',
+            'registration_fixed_assets.transfer_sent_at',
+
+        )->where('asset_tf_notif.id', '=', $id)->first();
+
+        return $transfer;
     }
 }
