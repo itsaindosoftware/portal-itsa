@@ -95,13 +95,13 @@
     <div class="content">
         <p>Dear Requestor,</p>
         
-        <p>The following digital asset transfer request has been approved by Dept Head:</p>
+        <p>The following digital asset transfer request has been approved by Receiving Department Head :</p>
         
         <div class="info-box">
             <p><span class="label">RFA Number:</span> {{ $transferData->rfa_number ?? '-' }}</p>
             <p><span class="label">Date:</span> {{ $transferData->date ?? '-' }}</p>
             <p><span class="label">Approved By:</span> {{ $approverName ?? '-' }}</p>
-            <p><span class="label">Approval Date:</span> {{ $transferData->approval_date1 ?? '-' }}</p>
+            <p><span class="label">Approval Date:</span> {{ $transferData->approval_date4 ?? '-' }}</p>
             <p><span class="label">Transfer Ref No. ERP:</span> {{ $transferData->to_tf_fer_no_erp ?? '-' }}</p>
             <p><span class="label">Effective Date:</span> {{ $transferData->to_effective_date ?? '-' }}</p>
         </div>

@@ -67,7 +67,7 @@ class SendnotifassetsApprove extends Mailable
             );
         } elseif ($this->users === 'user-mgr-receive-send-notif-dept') {
             return new Content(
-                view: 'email.sendnotiftransfer.digital-assets-transfer-receivedept-mgr-approved-mgr',
+                view: 'email.sendnotiftransfer.digital-assets-transfer-receivedept-depthead-approved',
             );
         } elseif ($this->users === 'user-gm-accfinn-sendnotif') {
             return new Content(

@@ -14,7 +14,7 @@ use Carbon\Carbon;
 use Validator;
 use App\Digitalassets;
 use App\Mail\SendnotifassetsApprove;
-use App\Mail\SendingnotifRejected;
+use App\Mail\SendnotifassetsReject;
 use Illuminate\Support\Facades\Mail;
 use App\Assettfnotif;
 use Storage;
@@ -1206,7 +1206,6 @@ class AssettfnotifController extends Controller
             $checkTfNotif = DB::connection('portal-itsa')->table('asset_tf_notif')->where('id', $id)->first();
             $updateStatus = DB::connection('portal-itsa')->table('registration_fixed_assets')->where('id', $checkTfNotif->reg_fixed_asset_id);
             $getData = $this->forSendmail($id);
-            // dd($getData);
             if ($user->hasRole('user-mgr-dept-head')) {
                 $dataApproval->update([
                     'approval_by1' => $user->name,
@@ -1224,6 +1223,7 @@ class AssettfnotifController extends Controller
                     'approval_status2' => '1',
                     'remark_by2' => $request->remark ?? '-'
                 ]);
+                $this->sendApprovalEmail($getData, $request->remark ?? '-', Auth::user()->name, 'manager-directur');
             } elseif ($user->hasRole('user-receive-sendnotif-dept')) {
                 $dataApproval->update([
                     'approval_by3' => $user->name,
@@ -1231,6 +1231,7 @@ class AssettfnotifController extends Controller
                     'approval_status3' => '1',
                     'remark_by3' => $request->remark ?? '-'
                 ]);
+                $this->sendApprovalEmail($getData, $request->remark ?? '-', Auth::user()->name, 'user-receive-sendnotif-dept');
             } elseif ($user->hasRole('user-mgr-receive-send-notif-dept')) {
                 $dataApproval->update([
                     'approval_by4' => $user->name,
@@ -1238,6 +1239,7 @@ class AssettfnotifController extends Controller
                     'approval_status4' => '1',
                     'remark_by4' => $request->remark ?? '-'
                 ]);
+                $this->sendApprovalEmail($getData, $request->remark ?? '-', Auth::user()->name, 'user-mgr-receive-send-notif-dept');
             } elseif ($user->hasRole('user-gm-accfinn-sendnotif')) {
                 $dataApproval->update([
                     'approval_by5' => $user->name,
@@ -1245,6 +1247,7 @@ class AssettfnotifController extends Controller
                     'approval_status5' => '1',
                     'remark_by5' => $request->remark ?? '-'
                 ]);
+                $this->sendApprovalEmail($getData, $request->remark ?? '-', Auth::user()->name, 'user-gm-accfinn-sendnotif');
             } elseif ($user->hasRole('user-acct-digassets')) {
                 $updateStatus->update([
                     'transfer_status' => 'completed'
@@ -1255,6 +1258,7 @@ class AssettfnotifController extends Controller
                     'approval_status6' => '1',
                     'remark_by6' => $request->remark ?? '-'
                 ]);
+                $this->sendApprovalEmail($getData, $request->remark ?? '-', Auth::user()->name, 'user-acct-digassets');
             }
         }
 
@@ -1266,13 +1270,16 @@ class AssettfnotifController extends Controller
     }
     public function reject(Request $request, $id)
     {
+
         $id = base64_decode($id);
         $user = Auth::user();
         if ($user->hasPermission('manage-digital-assets', 'manage-asset-tf-notification', 'approve-transfer')) {
             $dataApproval = DB::connection('portal-itsa')->table('asset_tf_notif')->where('id', $id);
             $checkTfNotif = DB::connection('portal-itsa')->table('asset_tf_notif')->where('id', $id)->first();
             $updateStatus = DB::connection('portal-itsa')->table('registration_fixed_assets')->where('id', $checkTfNotif->reg_fixed_asset_id);
-
+            $getRoleDisplayName = $this->getDisplayNameRole()->display_name;
+            $getData = $this->forSendmail($id);
+            // dd($getRoleDisplayName);
             if ($user->hasRole('user-mgr-dept-head')) {
                 $updateStatus->update([
                     'transfer_status' => 'cancelled'
@@ -1284,7 +1291,7 @@ class AssettfnotifController extends Controller
                     'remark_by1' => $request->remark ?? '-'
                 ]);
 
-
+                $this->sendRejectEmail($getData, $request->remark ?? '-', Auth::user()->name, 'user-mgr-dept-head', $getRoleDisplayName);
 
             } elseif ($user->hasRole('manager-directur')) {
                 $updateStatus->update([
@@ -1296,6 +1303,7 @@ class AssettfnotifController extends Controller
                     'approval_status2' => '2',
                     'remark_by2' => $request->remark ?? '-'
                 ]);
+                $this->sendRejectEmail($getData, $request->remark ?? '-', Auth::user()->name, 'manager-directur', $getRoleDisplayName);
             } elseif ($user->hasRole('user-receive-sendnotif-dept')) {
                 $updateStatus->update([
                     'transfer_status' => 'cancelled'
@@ -1306,6 +1314,7 @@ class AssettfnotifController extends Controller
                     'approval_status3' => '2',
                     'remark_by3' => $request->remark ?? '-'
                 ]);
+                $this->sendRejectEmail($getData, $request->remark ?? '-', Auth::user()->name, 'user-receive-sendnotif-dept', $getRoleDisplayName);
             } elseif ($user->hasRole('user-mgr-receive-send-notif-dept')) {
                 $updateStatus->update([
                     'transfer_status' => 'cancelled'
@@ -1316,6 +1325,7 @@ class AssettfnotifController extends Controller
                     'approval_status4' => '2',
                     'remark_by4' => $request->remark ?? '-'
                 ]);
+                $this->sendRejectEmail($getData, $request->remark ?? '-', Auth::user()->name, 'user-mgr-receive-send-notif-dept', $getRoleDisplayName);
             } elseif ($user->hasRole('user-gm-accfinn-sendnotif')) {
                 $updateStatus->update([
                     'transfer_status' => 'cancelled'
@@ -1326,6 +1336,7 @@ class AssettfnotifController extends Controller
                     'approval_status5' => '2',
                     'remark_by5' => $request->remark ?? '-'
                 ]);
+                $this->sendRejectEmail($getData, $request->remark ?? '-', Auth::user()->name, 'user-gm-accfinn-sendnotif', $getRoleDisplayName);
             } elseif ($user->hasRole('user-acct-digassets')) {
                 $updateStatus->update([
                     'transfer_status' => 'cancelled'
@@ -1336,6 +1347,7 @@ class AssettfnotifController extends Controller
                     'approval_status6' => '2',
                     'remark_by6' => $request->remark ?? '-'
                 ]);
+                $this->sendRejectEmail($getData, $request->remark ?? '-', Auth::user()->name, 'user-acct-digassets', $getRoleDisplayName);
             }
 
 
@@ -1347,10 +1359,29 @@ class AssettfnotifController extends Controller
 
 
     }
+
+    private function getDisplayNameRole()
+    {
+        $user_id = Auth::user()->id;
+        $query = DB::connection('portal-itsa')->table('users as a')
+            ->leftJoin('role_user as b', 'b.user_id', '=', 'a.id')
+            ->leftJoin('roles as c', 'b.role_id', '=', 'c.id')
+            ->select('c.display_name')
+            ->where('a.id', $user_id)
+            ->first();
+        return $query;
+    }
     private function sendApprovalEmail($transferData, $remarks, $approverName, $userRole)
     {
 
         Mail::to('it-03@thaisummit.co.id')->send(new SendnotifassetsApprove($transferData, $remarks, $approverName, $userRole));
+        return "email successfully sending.";
+
+    }
+    private function sendRejectEmail($transferData, $remarks, $approverName, $userRole, $getDisplayname)
+    {
+
+        Mail::to('it-03@thaisummit.co.id')->send(new SendnotifassetsReject($transferData, $remarks, $approverName, $userRole, $getDisplayname));
         return "email successfully sending.";
 
     }
@@ -1378,6 +1409,7 @@ class AssettfnotifController extends Controller
             'registration_fixed_assets.product_name',
             'registration_fixed_assets.grn_no',
             'registration_fixed_assets.io_no',
+            'registration_fixed_assets.transfer_status',
             // 'departments.description as department_name',
             'companys.company_desc as company_name',
             'dept_from.description as department_from_name', // Department asal dari registration_fixed_assets
