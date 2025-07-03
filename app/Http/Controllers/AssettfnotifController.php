@@ -29,731 +29,455 @@ class AssettfnotifController extends Controller
     public function index(Request $request)
     {
         $user = Auth::user();
-        if (!$user->hasPermission('manage-digital-assets', 'manage-asset-tf-notification')) {
-            return redirect()->route('apps.index')->with('error', 'You do not have access to this application yet. Please contact your IT Department.');
+
+        // Early returns for authorization and authentication
+        if (!$this->hasRequiredPermissions($user)) {
+            return redirect()->route('apps.index')
+                ->with('error', 'You do not have access to this application yet. Please contact your IT Department.');
         }
 
         if (!Auth::check()) {
             return redirect()->route('login');
         }
 
-        if ($user->hasPermission('manage-digital-assets', 'manage-asset-tf-notification')) {
-            // dd($user->department_id);
-            if ($request->ajax()) {
-                if ($user->hasRole('user-employee-digassets')) {
-                    $data = Digitalassets::query()
-                        ->leftJoin('asset_tf_notif', 'asset_tf_notif.reg_fixed_asset_id', '=', 'registration_fixed_assets.id')
-                        ->leftJoin('users', 'registration_fixed_assets.user_id', '=', 'users.id')
-                        ->leftJoin('departments as dept_from', 'registration_fixed_assets.department_id', '=', 'dept_from.id') // Dept asal dari registration_fixed_assets
-                        ->leftJoin('departments as dept_to', 'asset_tf_notif.to_receiving_dept_id', '=', 'dept_to.id') // Dept tujuan dari asset_tf_notif
-                        ->leftJoin('companys', 'registration_fixed_assets.company_id', '=', 'companys.id')
-                        ->leftJoin('master_asset_groups as group_from', 'registration_fixed_assets.asset_group_id', '=', 'group_from.id')
-                        ->leftJoin('master_asset_locations as location_from_name', 'registration_fixed_assets.asset_location_id', '=', 'location_from_name.id')
-                        ->leftjoin('master_asset_locations as location_to_name', 'asset_tf_notif.to_location_id', '=', 'location_to_name.id')
-                        ->leftJoin('master_asset_cost_centers as cost_from', 'registration_fixed_assets.asset_cost_center_id', '=', 'cost_from.id')
-                        ->leftJoin('master_asset_cost_centers as cost_to', 'asset_tf_notif.to_cost_center_id', '=', 'cost_to.id');
-                    $data = $data->select(
-                        'asset_tf_notif.*',
-                        'users.name as user_name',
-                        // 'registration_fixed_assets.id',
-                        'registration_fixed_assets.id as id_fixed_assets',
-                        'registration_fixed_assets.rfa_number',
-                        'registration_fixed_assets.date',
-                        'registration_fixed_assets.requestor_name',
-                        'registration_fixed_assets.issue_fixed_asset_no',
-                        'registration_fixed_assets.production_code',
-                        'registration_fixed_assets.product_name',
-                        'registration_fixed_assets.grn_no',
-                        'registration_fixed_assets.io_no',
-                        // 'departments.description as department_name',
-                        'companys.company_desc as company_name',
-                        'dept_from.description as department_from_name', // Department asal dari registration_fixed_assets
-                        'dept_to.description as department_to_name',
-                        'location_from_name.asset_location_name as loc_from',
-                        'location_to_name.asset_location_name as loc_to',
-                        'cost_from.cost_center_name as from_cost_center_name',
-                        'cost_from.cost_center_code as from_cost_center_code',
-                        'cost_to.cost_center_name as to_cost_center_name',
-                        'cost_to.cost_center_code as to_cost_center_code',
-                        // 
-                        'group_from.asset_group_name',
-                        'location_from_name.asset_location_name as name_location',
-                        'cost_from.cost_center_name as cost_cname',
-                        'cost_to.cost_center_code',
-                        'asset_tf_notif.id as id_asset_tf',
-                        'registration_fixed_assets.transfer_status',
-                        'registration_fixed_assets.transfer_sent_at',
+        if ($request->ajax()) {
+            return $this->handleAjaxRequest($request, $user);
+        }
 
-                    );
+        return $this->handleViewRequest($user);
+    }
 
-                    if ($request->has('date_range') && !empty($request->date_range)) {
-                        $dateRange = explode(' - ', $request->date_range);
-                        if (count($dateRange) == 2) {
-                            $data->whereBetween('registration_fixed_assets.date', [$dateRange[0], $dateRange[1]]);
-                        }
-                    }
-                    if ($request->has('transfer_status') && !empty($request->transfer_status)) {
-                        $data->where('registration_fixed_assets.transfer_status', '=', $request->transfer_status);
-                    }
+    /**
+     * Check if user has required permissions
+     */
+    private function hasRequiredPermissions($user): bool
+    {
+        return $user->hasPermission('manage-digital-assets', 'manage-asset-tf-notification');
+    }
 
-                    $data = $data->where('registration_fixed_assets.approval_status3', '=', '1')
-                        ->where('registration_fixed_assets.user_id', '=', (int) $user->id)->get();
-                } elseif ($user->hasRole('user-mgr-dept-head')) {
-                    $data = Digitalassets::query()
-                        ->leftJoin('asset_tf_notif', 'asset_tf_notif.reg_fixed_asset_id', '=', 'registration_fixed_assets.id')
-                        ->leftJoin('users', 'registration_fixed_assets.user_id', '=', 'users.id')
-                        ->leftJoin('departments as dept_from', 'registration_fixed_assets.department_id', '=', 'dept_from.id') // Dept asal dari registration_fixed_assets
-                        ->leftJoin('departments as dept_to', 'asset_tf_notif.to_receiving_dept_id', '=', 'dept_to.id') // Dept tujuan dari asset_tf_notif
-                        ->leftJoin('companys', 'registration_fixed_assets.company_id', '=', 'companys.id')
-                        ->leftJoin('master_asset_groups as group_from', 'registration_fixed_assets.asset_group_id', '=', 'group_from.id')
-                        ->leftJoin('master_asset_locations as location_from_name', 'registration_fixed_assets.asset_location_id', '=', 'location_from_name.id')
-                        ->leftjoin('master_asset_locations as location_to_name', 'asset_tf_notif.to_location_id', '=', 'location_to_name.id')
-                        ->leftJoin('master_asset_cost_centers as cost_from', 'registration_fixed_assets.asset_cost_center_id', '=', 'cost_from.id')
-                        ->leftJoin('master_asset_cost_centers as cost_to', 'asset_tf_notif.to_cost_center_id', '=', 'cost_to.id');
-                    $data = $data->select(
-                        'asset_tf_notif.*',
-                        'users.name as user_name',
-                        'registration_fixed_assets.id as id_fixed_assets',
-                        'registration_fixed_assets.rfa_number',
-                        'registration_fixed_assets.date',
-                        'registration_fixed_assets.requestor_name',
-                        'registration_fixed_assets.issue_fixed_asset_no',
-                        'registration_fixed_assets.production_code',
-                        'registration_fixed_assets.product_name',
-                        'registration_fixed_assets.grn_no',
-                        'registration_fixed_assets.io_no',
-                        // 'departments.description as department_name',
-                        'companys.company_desc as company_name',
-                        'dept_from.description as department_from_name', // Department asal dari registration_fixed_assets
-                        'dept_to.description as department_to_name',
-                        'location_from_name.asset_location_name as loc_from',
-                        'location_to_name.asset_location_name as loc_to',
-                        'cost_from.cost_center_name as from_cost_center_name',
-                        'cost_from.cost_center_code as from_cost_center_code',
-                        'cost_to.cost_center_name as to_cost_center_name',
-                        'cost_to.cost_center_code as to_cost_center_code',
-                        // 
-                        'group_from.asset_group_name',
-                        'location_from_name.asset_location_name as name_location',
-                        'cost_from.cost_center_name as cost_cname',
-                        'cost_to.cost_center_code',
-                        'asset_tf_notif.id as id_asset_tf',
-                        'registration_fixed_assets.transfer_status',
-                        'registration_fixed_assets.transfer_sent_at',
+    /**
+     * Handle AJAX request for DataTables
+     */
+    private function handleAjaxRequest(Request $request, $user)
+    {
+        $data = $this->buildBaseQuery($user);
+        $data = $this->applyRoleSpecificFilters($data, $user, $request);
+        $data = $this->applyCommonFilters($data, $request, $user);
 
-                    );
-                    $data->where('registration_fixed_assets.department_id', '=', (int) $user->department_id);
-                    $data->where('registration_fixed_assets.transfer_sent_at', '!=', null);
-                    if ($request->has('date_range') && !empty($request->date_range)) {
-                        $dateRange = explode(' - ', $request->date_range);
-                        if (count($dateRange) == 2) {
-                            $data->whereBetween('registration_fixed_assets.date', [$dateRange[0], $dateRange[1]]);
-                        }
-                    }
-                    // if ($request->has('transfer_status') && !empty($request->transfer_status)) {
-                    //     $data->where('registration_fixed_assets.transfer_status', '=', $request->transfer_status);
-                    // }
-                    if ($request->has('status_approval') && !empty($request->status_approval)) {
-                        if ($request->status_approval == 'pending') {
-                            $data->where('asset_tf_notif.approval_status1', '=', '0');
-                        } elseif ($request->status_approval == 'approved') {
-                            $data->where('asset_tf_notif.approval_status1', '=', '1');
-                        } elseif ($request->status_approval == 'rejected') {
-                            $data->where('asset_tf_notif.approval_status1', '=', '2');
-                        }
+        return DataTables::of($data)
+            ->addColumn('action', function ($data) use ($user) {
+                return $this->generateActionColumn($data, $user);
+            })
+            ->editColumn('rfa_number', function ($data) {
+                return $this->formatRfaNumber($data->rfa_number);
+            })
+            ->editColumn('date', function ($data) {
+                return $this->formatDate($data->date);
+            })
+            ->rawColumns(['action', 'rfa_number', 'date'])
+            ->make(true);
+    }
 
-                    }
-                    // dd($request->status_approval);
+    /**
+     * Handle view request (non-AJAX)
+     */
+    private function handleViewRequest($user)
+    {
+        $viewData = $this->getViewData($user);
+        $viewName = $this->getViewName($user);
 
-                    $data->get();
-                } elseif ($user->hasRole('manager-directur')) {
-                    $data = Digitalassets::query()
-                        ->leftJoin('asset_tf_notif', 'asset_tf_notif.reg_fixed_asset_id', '=', 'registration_fixed_assets.id')
-                        ->leftJoin('users', 'registration_fixed_assets.user_id', '=', 'users.id')
-                        ->leftJoin('departments as dept_from', 'registration_fixed_assets.department_id', '=', 'dept_from.id') // Dept asal dari registration_fixed_assets
-                        ->leftJoin('departments as dept_to', 'asset_tf_notif.to_receiving_dept_id', '=', 'dept_to.id') // Dept tujuan dari asset_tf_notif
-                        ->leftJoin('companys', 'registration_fixed_assets.company_id', '=', 'companys.id')
-                        ->leftJoin('master_asset_groups as group_from', 'registration_fixed_assets.asset_group_id', '=', 'group_from.id')
-                        ->leftJoin('master_asset_locations as location_from_name', 'registration_fixed_assets.asset_location_id', '=', 'location_from_name.id')
-                        ->leftjoin('master_asset_locations as location_to_name', 'asset_tf_notif.to_location_id', '=', 'location_to_name.id')
-                        ->leftJoin('master_asset_cost_centers as cost_from', 'registration_fixed_assets.asset_cost_center_id', '=', 'cost_from.id')
-                        ->leftJoin('master_asset_cost_centers as cost_to', 'asset_tf_notif.to_cost_center_id', '=', 'cost_to.id');
-                    $data = $data->select(
-                        'asset_tf_notif.*',
-                        'users.name as user_name',
-                        'registration_fixed_assets.id as id_fixed_assets',
-                        'registration_fixed_assets.rfa_number',
-                        'registration_fixed_assets.date',
-                        'registration_fixed_assets.requestor_name',
-                        'registration_fixed_assets.issue_fixed_asset_no',
-                        'registration_fixed_assets.production_code',
-                        'registration_fixed_assets.product_name',
-                        'registration_fixed_assets.grn_no',
-                        'registration_fixed_assets.io_no',
-                        // 'departments.description as department_name',
-                        'companys.company_desc as company_name',
-                        'dept_from.description as department_from_name', // Department asal dari registration_fixed_assets
-                        'dept_to.description as department_to_name',
-                        'location_from_name.asset_location_name as loc_from',
-                        'location_to_name.asset_location_name as loc_to',
-                        'cost_from.cost_center_name as from_cost_center_name',
-                        'cost_from.cost_center_code as from_cost_center_code',
-                        'cost_to.cost_center_name as to_cost_center_name',
-                        'cost_to.cost_center_code as to_cost_center_code',
-                        // 
-                        'group_from.asset_group_name',
-                        'location_from_name.asset_location_name as name_location',
-                        'cost_from.cost_center_name as cost_cname',
-                        'cost_to.cost_center_code',
-                        'asset_tf_notif.id as id_asset_tf',
-                        'registration_fixed_assets.transfer_status',
-                        'registration_fixed_assets.transfer_sent_at',
+        if (!$viewName) {
+            return view('error.403');
+        }
 
-                    );
-                    $data->where('registration_fixed_assets.company_id', '=', (int) $user->company_id);
-                    $data->where('registration_fixed_assets.transfer_sent_at', '!=', null);
-                    $data->where('asset_tf_notif.approval_status1', '=', '1');
-                    if ($request->has('date_range') && !empty($request->date_range)) {
-                        $dateRange = explode(' - ', $request->date_range);
-                        if (count($dateRange) == 2) {
-                            $data->whereBetween('registration_fixed_assets.date', [$dateRange[0], $dateRange[1]]);
-                        }
-                    }
-                    // if ($request->has('transfer_status') && !empty($request->transfer_status)) {
-                    //     $data->where('registration_fixed_assets.transfer_status', '=', $request->transfer_status);
-                    // }
-                    if ($request->has('status_approval') && !empty($request->status_approval)) {
-                        if ($request->status_approval == 'pending') {
-                            $data->where('asset_tf_notif.approval_status2', '=', '0');
-                        } elseif ($request->status_approval == 'approved') {
-                            $data->where('asset_tf_notif.approval_status2', '=', '1');
-                        } elseif ($request->status_approval == 'rejected') {
-                            $data->where('asset_tf_notif.approval_status2', '=', '2');
-                        }
+        return view($viewName, $viewData);
+    }
 
-                    }
-                    // dd($request->status_approval);
+    /**
+     * Build base query with common joins and selects
+     */
+    private function buildBaseQuery($user)
+    {
+        return Digitalassets::query()
+            ->leftJoin('asset_tf_notif', 'asset_tf_notif.reg_fixed_asset_id', '=', 'registration_fixed_assets.id')
+            ->leftJoin('users', 'registration_fixed_assets.user_id', '=', 'users.id')
+            ->leftJoin('departments as dept_from', 'registration_fixed_assets.department_id', '=', 'dept_from.id')
+            ->leftJoin('departments as dept_to', 'asset_tf_notif.to_receiving_dept_id', '=', 'dept_to.id')
+            ->leftJoin('companys', 'registration_fixed_assets.company_id', '=', 'companys.id')
+            ->leftJoin('master_asset_groups as group_from', 'registration_fixed_assets.asset_group_id', '=', 'group_from.id')
+            ->leftJoin('master_asset_locations as location_from_name', 'registration_fixed_assets.asset_location_id', '=', 'location_from_name.id')
+            ->leftJoin('master_asset_locations as location_to_name', 'asset_tf_notif.to_location_id', '=', 'location_to_name.id')
+            ->leftJoin('master_asset_cost_centers as cost_from', 'registration_fixed_assets.asset_cost_center_id', '=', 'cost_from.id')
+            ->leftJoin('master_asset_cost_centers as cost_to', 'asset_tf_notif.to_cost_center_id', '=', 'cost_to.id')
+            ->select($this->getSelectColumns());
+    }
 
-                    $data->get();
-                } elseif ($user->hasRole('user-receive-sendnotif-dept')) {
-                    $data = Digitalassets::query()
-                        ->leftJoin('asset_tf_notif', 'asset_tf_notif.reg_fixed_asset_id', '=', 'registration_fixed_assets.id')
-                        ->leftJoin('users', 'registration_fixed_assets.user_id', '=', 'users.id')
-                        ->leftJoin('departments as dept_from', 'registration_fixed_assets.department_id', '=', 'dept_from.id') // Dept asal dari registration_fixed_assets
-                        ->leftJoin('departments as dept_to', 'asset_tf_notif.to_receiving_dept_id', '=', 'dept_to.id') // Dept tujuan dari asset_tf_notif
-                        ->leftJoin('companys', 'registration_fixed_assets.company_id', '=', 'companys.id')
-                        ->leftJoin('master_asset_groups as group_from', 'registration_fixed_assets.asset_group_id', '=', 'group_from.id')
-                        ->leftJoin('master_asset_locations as location_from_name', 'registration_fixed_assets.asset_location_id', '=', 'location_from_name.id')
-                        ->leftjoin('master_asset_locations as location_to_name', 'asset_tf_notif.to_location_id', '=', 'location_to_name.id')
-                        ->leftJoin('master_asset_cost_centers as cost_from', 'registration_fixed_assets.asset_cost_center_id', '=', 'cost_from.id')
-                        ->leftJoin('master_asset_cost_centers as cost_to', 'asset_tf_notif.to_cost_center_id', '=', 'cost_to.id');
-                    $data = $data->select(
-                        'asset_tf_notif.*',
-                        'users.name as user_name',
-                        'registration_fixed_assets.id as id_fixed_assets',
-                        'registration_fixed_assets.rfa_number',
-                        'registration_fixed_assets.date',
-                        'registration_fixed_assets.requestor_name',
-                        'registration_fixed_assets.issue_fixed_asset_no',
-                        'registration_fixed_assets.production_code',
-                        'registration_fixed_assets.product_name',
-                        'registration_fixed_assets.grn_no',
-                        'registration_fixed_assets.io_no',
-                        // 'departments.description as department_name',
-                        'companys.company_desc as company_name',
-                        'dept_from.description as department_from_name', // Department asal dari registration_fixed_assets
-                        'dept_to.description as department_to_name',
-                        'location_from_name.asset_location_name as loc_from',
-                        'location_to_name.asset_location_name as loc_to',
-                        'cost_from.cost_center_name as from_cost_center_name',
-                        'cost_from.cost_center_code as from_cost_center_code',
-                        'cost_to.cost_center_name as to_cost_center_name',
-                        'cost_to.cost_center_code as to_cost_center_code',
-                        // 
-                        'group_from.asset_group_name',
-                        'location_from_name.asset_location_name as name_location',
-                        'cost_from.cost_center_name as cost_cname',
-                        'cost_to.cost_center_code',
-                        'asset_tf_notif.id as id_asset_tf',
-                        'registration_fixed_assets.transfer_status',
-                        'registration_fixed_assets.transfer_sent_at',
+    /**
+     * Get select columns for the query
+     */
+    private function getSelectColumns(): array
+    {
+        return [
+            'asset_tf_notif.*',
+            'users.name as user_name',
+            'registration_fixed_assets.id as id_fixed_assets',
+            'registration_fixed_assets.rfa_number',
+            'registration_fixed_assets.date',
+            'registration_fixed_assets.requestor_name',
+            'registration_fixed_assets.issue_fixed_asset_no',
+            'registration_fixed_assets.production_code',
+            'registration_fixed_assets.product_name',
+            'registration_fixed_assets.grn_no',
+            'registration_fixed_assets.io_no',
+            'companys.company_desc as company_name',
+            'dept_from.description as department_from_name',
+            'dept_to.description as department_to_name',
+            'location_from_name.asset_location_name as loc_from',
+            'location_to_name.asset_location_name as loc_to',
+            'cost_from.cost_center_name as from_cost_center_name',
+            'cost_from.cost_center_code as from_cost_center_code',
+            'cost_to.cost_center_name as to_cost_center_name',
+            'cost_to.cost_center_code as to_cost_center_code',
+            'group_from.asset_group_name',
+            'location_from_name.asset_location_name as name_location',
+            'cost_from.cost_center_name as cost_cname',
+            'cost_to.cost_center_code',
+            'asset_tf_notif.id as id_asset_tf',
+            'registration_fixed_assets.transfer_status',
+            'registration_fixed_assets.transfer_sent_at',
+        ];
+    }
 
-                    );
+    /**
+     * Apply role-specific filters to the query
+     */
+    private function applyRoleSpecificFilters($query, $user, $request)
+    {
+        if ($user->hasRole('user-employee-digassets')) {
+            return $this->applyEmployeeFilters($query, $user, $request);
+        }
 
-                    // $data->where('registration_fixed_assets.transfer_sent_at', '!=', null);
-                    $data->where('asset_tf_notif.approval_status2', '=', '1');
-                    $data->where('asset_tf_notif.to_receiving_dept_id', '=', (int) $user->department_id);
-                    if ($request->has('date_range') && !empty($request->date_range)) {
-                        $dateRange = explode(' - ', $request->date_range);
-                        if (count($dateRange) == 2) {
-                            $data->whereBetween('registration_fixed_assets.date', [$dateRange[0], $dateRange[1]]);
-                        }
-                    }
-                    // if ($request->has('transfer_status') && !empty($request->transfer_status)) {
-                    //     $data->where('registration_fixed_assets.transfer_status', '=', $request->transfer_status);
-                    // }
-                    if ($request->has('status_approval') && !empty($request->status_approval)) {
-                        if ($request->status_approval == 'pending') {
-                            $data->where('asset_tf_notif.approval_status3', '=', '0');
-                        } elseif ($request->status_approval == 'approved') {
-                            $data->where('asset_tf_notif.approval_status3', '=', '1');
-                        } elseif ($request->status_approval == 'rejected') {
-                            $data->where('asset_tf_notif.approval_status3', '=', '2');
-                        }
+        if ($user->hasRole('user-mgr-dept-head')) {
+            return $this->applyDeptHeadFilters($query, $user, $request);
+        }
 
-                    }
+        if ($user->hasRole('manager-directur')) {
+            return $this->applyDirectorFilters($query, $user, $request);
+        }
 
+        if ($user->hasRole('user-receive-sendnotif-dept')) {
+            return $this->applyReceiveDeptFilters($query, $user, $request);
+        }
 
-                    $data->get();
-                } elseif ($user->hasRole('user-mgr-receive-send-notif-dept')) {
-                    $data = Digitalassets::query()
-                        ->leftJoin('asset_tf_notif', 'asset_tf_notif.reg_fixed_asset_id', '=', 'registration_fixed_assets.id')
-                        ->leftJoin('users', 'registration_fixed_assets.user_id', '=', 'users.id')
-                        ->leftJoin('departments as dept_from', 'registration_fixed_assets.department_id', '=', 'dept_from.id') // Dept asal dari registration_fixed_assets
-                        ->leftJoin('departments as dept_to', 'asset_tf_notif.to_receiving_dept_id', '=', 'dept_to.id') // Dept tujuan dari asset_tf_notif
-                        ->leftJoin('companys', 'registration_fixed_assets.company_id', '=', 'companys.id')
-                        ->leftJoin('master_asset_groups as group_from', 'registration_fixed_assets.asset_group_id', '=', 'group_from.id')
-                        ->leftJoin('master_asset_locations as location_from_name', 'registration_fixed_assets.asset_location_id', '=', 'location_from_name.id')
-                        ->leftjoin('master_asset_locations as location_to_name', 'asset_tf_notif.to_location_id', '=', 'location_to_name.id')
-                        ->leftJoin('master_asset_cost_centers as cost_from', 'registration_fixed_assets.asset_cost_center_id', '=', 'cost_from.id')
-                        ->leftJoin('master_asset_cost_centers as cost_to', 'asset_tf_notif.to_cost_center_id', '=', 'cost_to.id');
-                    $data = $data->select(
-                        'asset_tf_notif.*',
-                        'users.name as user_name',
-                        'registration_fixed_assets.id as id_fixed_assets',
-                        'registration_fixed_assets.rfa_number',
-                        'registration_fixed_assets.date',
-                        'registration_fixed_assets.requestor_name',
-                        'registration_fixed_assets.issue_fixed_asset_no',
-                        'registration_fixed_assets.production_code',
-                        'registration_fixed_assets.product_name',
-                        'registration_fixed_assets.grn_no',
-                        'registration_fixed_assets.io_no',
-                        // 'departments.description as department_name',
-                        'companys.company_desc as company_name',
-                        'dept_from.description as department_from_name', // Department asal dari registration_fixed_assets
-                        'dept_to.description as department_to_name',
-                        'location_from_name.asset_location_name as loc_from',
-                        'location_to_name.asset_location_name as loc_to',
-                        'cost_from.cost_center_name as from_cost_center_name',
-                        'cost_from.cost_center_code as from_cost_center_code',
-                        'cost_to.cost_center_name as to_cost_center_name',
-                        'cost_to.cost_center_code as to_cost_center_code',
-                        // 
-                        'group_from.asset_group_name',
-                        'location_from_name.asset_location_name as name_location',
-                        'cost_from.cost_center_name as cost_cname',
-                        'cost_to.cost_center_code',
-                        'asset_tf_notif.id as id_asset_tf',
-                        'registration_fixed_assets.transfer_status',
-                        'registration_fixed_assets.transfer_sent_at',
+        if ($user->hasRole('user-mgr-receive-send-notif-dept')) {
+            return $this->applyMgrReceiveDeptFilters($query, $user, $request);
+        }
 
-                    );
+        if ($user->hasRole('user-gm-accfinn-sendnotif')) {
+            return $this->applyGmAccfinnFilters($query, $user, $request);
+        }
 
-                    // $data->where('registration_fixed_assets.transfer_sent_at', '!=', null);
-                    $data->where('asset_tf_notif.approval_status3', '=', '1');
-                    $data->where('asset_tf_notif.to_receiving_dept_id', '=', (int) $user->department_id);
-                    if ($request->has('date_range') && !empty($request->date_range)) {
-                        $dateRange = explode(' - ', $request->date_range);
-                        if (count($dateRange) == 2) {
-                            $data->whereBetween('registration_fixed_assets.date', [$dateRange[0], $dateRange[1]]);
-                        }
-                    }
-                    // if ($request->has('transfer_status') && !empty($request->transfer_status)) {
-                    //     $data->where('registration_fixed_assets.transfer_status', '=', $request->transfer_status);
-                    // }
-                    if ($request->has('status_approval') && !empty($request->status_approval)) {
-                        if ($request->status_approval == 'pending') {
-                            $data->where('asset_tf_notif.approval_status4', '=', '0');
-                        } elseif ($request->status_approval == 'approved') {
-                            $data->where('asset_tf_notif.approval_status4', '=', '1');
-                        } elseif ($request->status_approval == 'rejected') {
-                            $data->where('asset_tf_notif.approval_status4', '=', '2');
-                        }
+        if ($user->hasRole('user-acct-digassets')) {
+            return $this->applyAcctFilters($query, $user, $request);
+        }
 
-                    }
+        if ($user->hasRole('admin')) {
+            return $this->applyAdminFilters($query, $user, $request);
+        }
 
+        return $query;
+    }
 
-                    $data->get();
-                } elseif ($user->hasRole('user-gm-accfinn-sendnotif')) {
-                    $data = Digitalassets::query()
-                        ->leftJoin('asset_tf_notif', 'asset_tf_notif.reg_fixed_asset_id', '=', 'registration_fixed_assets.id')
-                        ->leftJoin('users', 'registration_fixed_assets.user_id', '=', 'users.id')
-                        ->leftJoin('departments as dept_from', 'registration_fixed_assets.department_id', '=', 'dept_from.id') // Dept asal dari registration_fixed_assets
-                        ->leftJoin('departments as dept_to', 'asset_tf_notif.to_receiving_dept_id', '=', 'dept_to.id') // Dept tujuan dari asset_tf_notif
-                        ->leftJoin('companys', 'registration_fixed_assets.company_id', '=', 'companys.id')
-                        ->leftJoin('master_asset_groups as group_from', 'registration_fixed_assets.asset_group_id', '=', 'group_from.id')
-                        ->leftJoin('master_asset_locations as location_from_name', 'registration_fixed_assets.asset_location_id', '=', 'location_from_name.id')
-                        ->leftjoin('master_asset_locations as location_to_name', 'asset_tf_notif.to_location_id', '=', 'location_to_name.id')
-                        ->leftJoin('master_asset_cost_centers as cost_from', 'registration_fixed_assets.asset_cost_center_id', '=', 'cost_from.id')
-                        ->leftJoin('master_asset_cost_centers as cost_to', 'asset_tf_notif.to_cost_center_id', '=', 'cost_to.id');
-                    $data = $data->select(
-                        'asset_tf_notif.*',
-                        'users.name as user_name',
-                        'registration_fixed_assets.id as id_fixed_assets',
-                        'registration_fixed_assets.rfa_number',
-                        'registration_fixed_assets.date',
-                        'registration_fixed_assets.requestor_name',
-                        'registration_fixed_assets.issue_fixed_asset_no',
-                        'registration_fixed_assets.production_code',
-                        'registration_fixed_assets.product_name',
-                        'registration_fixed_assets.grn_no',
-                        'registration_fixed_assets.io_no',
-                        // 'departments.description as department_name',
-                        'companys.company_desc as company_name',
-                        'dept_from.description as department_from_name', // Department asal dari registration_fixed_assets
-                        'dept_to.description as department_to_name',
-                        'location_from_name.asset_location_name as loc_from',
-                        'location_to_name.asset_location_name as loc_to',
-                        'cost_from.cost_center_name as from_cost_center_name',
-                        'cost_from.cost_center_code as from_cost_center_code',
-                        'cost_to.cost_center_name as to_cost_center_name',
-                        'cost_to.cost_center_code as to_cost_center_code',
-                        // 
-                        'group_from.asset_group_name',
-                        'location_from_name.asset_location_name as name_location',
-                        'cost_from.cost_center_name as cost_cname',
-                        'cost_to.cost_center_code',
-                        'asset_tf_notif.id as id_asset_tf',
-                        'registration_fixed_assets.transfer_status',
-                        'registration_fixed_assets.transfer_sent_at',
+    /**
+     * Apply filters for employee role
+     */
+    private function applyEmployeeFilters($query, $user, $request)
+    {
+        $query->where('registration_fixed_assets.approval_status3', '=', '1')
+            ->where('registration_fixed_assets.user_id', '=', (int) $user->id);
 
-                    );
+        if ($request->has('transfer_status') && !empty($request->transfer_status)) {
+            $query->where('registration_fixed_assets.transfer_status', '=', $request->transfer_status);
+        }
 
-                    $data->where('registration_fixed_assets.company_id', '=', (int) $user->company_id);
-                    $data->where('asset_tf_notif.approval_status4', '=', '1');
-                    // $data->where('asset_tf_notif.to_receiving_dept_id', '=', (int) $user->department_id);
-                    if ($request->has('date_range') && !empty($request->date_range)) {
-                        $dateRange = explode(' - ', $request->date_range);
-                        if (count($dateRange) == 2) {
-                            $data->whereBetween('registration_fixed_assets.date', [$dateRange[0], $dateRange[1]]);
-                        }
-                    }
-                    // if ($request->has('transfer_status') && !empty($request->transfer_status)) {
-                    //     $data->where('registration_fixed_assets.transfer_status', '=', $request->transfer_status);
-                    // }
-                    if ($request->has('status_approval') && !empty($request->status_approval)) {
-                        if ($request->status_approval == 'pending') {
-                            $data->where('asset_tf_notif.approval_status5', '=', '0');
-                        } elseif ($request->status_approval == 'approved') {
-                            $data->where('asset_tf_notif.approval_status5', '=', '1');
-                        } elseif ($request->status_approval == 'rejected') {
-                            $data->where('asset_tf_notif.approval_status5', '=', '2');
-                        }
+        return $query->get();
+    }
 
-                    }
+    /**
+     * Apply filters for department head role
+     */
+    private function applyDeptHeadFilters($query, $user, $request)
+    {
+        $query->where('registration_fixed_assets.department_id', '=', (int) $user->department_id)
+            ->where('registration_fixed_assets.transfer_sent_at', '!=', null);
 
+        $this->applyStatusApprovalFilter($query, $request, 'approval_status1');
 
-                    $data->get();
-                } elseif ($user->hasRole('user-acct-digassets')) {
-                    $data = Digitalassets::query()
-                        ->leftJoin('asset_tf_notif', 'asset_tf_notif.reg_fixed_asset_id', '=', 'registration_fixed_assets.id')
-                        ->leftJoin('users', 'registration_fixed_assets.user_id', '=', 'users.id')
-                        ->leftJoin('departments as dept_from', 'registration_fixed_assets.department_id', '=', 'dept_from.id') // Dept asal dari registration_fixed_assets
-                        ->leftJoin('departments as dept_to', 'asset_tf_notif.to_receiving_dept_id', '=', 'dept_to.id') // Dept tujuan dari asset_tf_notif
-                        ->leftJoin('companys', 'registration_fixed_assets.company_id', '=', 'companys.id')
-                        ->leftJoin('master_asset_groups as group_from', 'registration_fixed_assets.asset_group_id', '=', 'group_from.id')
-                        ->leftJoin('master_asset_locations as location_from_name', 'registration_fixed_assets.asset_location_id', '=', 'location_from_name.id')
-                        ->leftjoin('master_asset_locations as location_to_name', 'asset_tf_notif.to_location_id', '=', 'location_to_name.id')
-                        ->leftJoin('master_asset_cost_centers as cost_from', 'registration_fixed_assets.asset_cost_center_id', '=', 'cost_from.id')
-                        ->leftJoin('master_asset_cost_centers as cost_to', 'asset_tf_notif.to_cost_center_id', '=', 'cost_to.id');
-                    $data = $data->select(
-                        'asset_tf_notif.*',
-                        'registration_fixed_assets.id as id_fixed_assets',
-                        'users.name as user_name',
-                        'registration_fixed_assets.rfa_number',
-                        'registration_fixed_assets.date',
-                        'registration_fixed_assets.requestor_name',
-                        'registration_fixed_assets.issue_fixed_asset_no',
-                        'registration_fixed_assets.production_code',
-                        'registration_fixed_assets.product_name',
-                        'registration_fixed_assets.grn_no',
-                        'registration_fixed_assets.io_no',
-                        // 'departments.description as department_name',
-                        'companys.company_desc as company_name',
-                        'dept_from.description as department_from_name', // Department asal dari registration_fixed_assets
-                        'dept_to.description as department_to_name',
-                        'location_from_name.asset_location_name as loc_from',
-                        'location_to_name.asset_location_name as loc_to',
-                        'cost_from.cost_center_name as from_cost_center_name',
-                        'cost_from.cost_center_code as from_cost_center_code',
-                        'cost_to.cost_center_name as to_cost_center_name',
-                        'cost_to.cost_center_code as to_cost_center_code',
-                        // 
-                        'group_from.asset_group_name',
-                        'location_from_name.asset_location_name as name_location',
-                        'cost_from.cost_center_name as cost_cname',
-                        'cost_to.cost_center_code',
-                        'asset_tf_notif.id as id_asset_tf',
-                        'registration_fixed_assets.transfer_status',
-                        'registration_fixed_assets.transfer_sent_at',
+        return $query->get();
+    }
 
-                    );
+    /**
+     * Apply filters for director role
+     */
+    private function applyDirectorFilters($query, $user, $request)
+    {
+        $query->where('registration_fixed_assets.company_id', '=', (int) $user->company_id)
+            ->where('registration_fixed_assets.transfer_sent_at', '!=', null)
+            ->where('asset_tf_notif.approval_status1', '=', '1');
 
-                    $data->where('registration_fixed_assets.company_id', '=', (int) $user->company_id);
-                    $data->where('asset_tf_notif.approval_status5', '=', '1');
-                    // $data->where('asset_tf_notif.to_receiving_dept_id', '=', (int) $user->department_id);
-                    if ($request->has('date_range') && !empty($request->date_range)) {
-                        $dateRange = explode(' - ', $request->date_range);
-                        if (count($dateRange) == 2) {
-                            $data->whereBetween('registration_fixed_assets.date', [$dateRange[0], $dateRange[1]]);
-                        }
-                    }
-                    // if ($request->has('transfer_status') && !empty($request->transfer_status)) {
-                    //     $data->where('registration_fixed_assets.transfer_status', '=', $request->transfer_status);
-                    // }
-                    if ($request->has('status_approval') && !empty($request->status_approval)) {
-                        if ($request->status_approval == 'pending') {
-                            $data->where('asset_tf_notif.approval_status6', '=', '0');
-                        } elseif ($request->status_approval == 'approved') {
-                            $data->where('asset_tf_notif.approval_status6', '=', '1');
-                        } elseif ($request->status_approval == 'rejected') {
-                            $data->where('asset_tf_notif.approval_status6', '=', '2');
-                        }
+        $this->applyStatusApprovalFilter($query, $request, 'approval_status2');
 
-                    }
+        return $query->get();
+    }
 
+    /**
+     * Apply filters for receive department role
+     */
+    private function applyReceiveDeptFilters($query, $user, $request)
+    {
+        $query->where('asset_tf_notif.approval_status2', '=', '1')
+            ->where('asset_tf_notif.to_receiving_dept_id', '=', (int) $user->department_id);
 
-                    $data->get();
-                } elseif ($user->hasRole('admin')) {
-                    $data = Digitalassets::query()
-                        ->leftJoin('asset_tf_notif', 'asset_tf_notif.reg_fixed_asset_id', '=', 'registration_fixed_assets.id')
-                        ->leftJoin('users', 'registration_fixed_assets.user_id', '=', 'users.id')
-                        ->leftJoin('departments as dept_from', 'registration_fixed_assets.department_id', '=', 'dept_from.id') // Dept asal dari registration_fixed_assets
-                        ->leftJoin('departments as dept_to', 'asset_tf_notif.to_receiving_dept_id', '=', 'dept_to.id') // Dept tujuan dari asset_tf_notif
-                        ->leftJoin('companys', 'registration_fixed_assets.company_id', '=', 'companys.id')
-                        ->leftJoin('master_asset_groups as group_from', 'registration_fixed_assets.asset_group_id', '=', 'group_from.id')
-                        ->leftJoin('master_asset_locations as location_from_name', 'registration_fixed_assets.asset_location_id', '=', 'location_from_name.id')
-                        ->leftjoin('master_asset_locations as location_to_name', 'asset_tf_notif.to_location_id', '=', 'location_to_name.id')
-                        ->leftJoin('master_asset_cost_centers as cost_from', 'registration_fixed_assets.asset_cost_center_id', '=', 'cost_from.id')
-                        ->leftJoin('master_asset_cost_centers as cost_to', 'asset_tf_notif.to_cost_center_id', '=', 'cost_to.id');
-                    $data = $data->select(
-                        'asset_tf_notif.*',
-                        'users.name as user_name',
-                        'registration_fixed_assets.id as id_fixed_assets',
-                        'registration_fixed_assets.rfa_number',
-                        'registration_fixed_assets.date',
-                        'registration_fixed_assets.requestor_name',
-                        'registration_fixed_assets.issue_fixed_asset_no',
-                        'registration_fixed_assets.production_code',
-                        'registration_fixed_assets.product_name',
-                        'registration_fixed_assets.grn_no',
-                        'registration_fixed_assets.io_no',
-                        // 'departments.description as department_name',
-                        'companys.company_desc as company_name',
-                        'dept_from.description as department_from_name', // Department asal dari registration_fixed_assets
-                        'dept_to.description as department_to_name',
-                        'location_from_name.asset_location_name as loc_from',
-                        'location_to_name.asset_location_name as loc_to',
-                        'cost_from.cost_center_name as from_cost_center_name',
-                        'cost_from.cost_center_code as from_cost_center_code',
-                        'cost_to.cost_center_name as to_cost_center_name',
-                        'cost_to.cost_center_code as to_cost_center_code',
-                        // 
-                        'group_from.asset_group_name',
-                        'location_from_name.asset_location_name as name_location',
-                        'cost_from.cost_center_name as cost_cname',
-                        'cost_to.cost_center_code',
-                        'asset_tf_notif.id as id_asset_tf',
-                        'registration_fixed_assets.transfer_status',
-                        'registration_fixed_assets.transfer_sent_at',
+        $this->applyStatusApprovalFilter($query, $request, 'approval_status3');
 
-                    );
-                    // $data->where('asset_tf_notif.to_receiving_dept_id', '=', (int) $user->department_id);
-                    if ($request->has('date_range') && !empty($request->date_range)) {
-                        $dateRange = explode(' - ', $request->date_range);
-                        if (count($dateRange) == 2) {
-                            $data->whereBetween('registration_fixed_assets.date', [$dateRange[0], $dateRange[1]]);
-                        }
-                    }
-                    if ($request->has('company_cp') && !empty($request->company_cp)) {
-                        $data->where('registration_fixed_asset.company_id', '=', $request->company_cp);
-                    }
-                    if ($request->has('transfer_status') && !empty($request->transfer_status)) {
-                        $data->where('registration_fixed_assets.transfer_status', '=', $request->transfer_status);
-                    }
-                    $data->get();
-                }
-                // dd($data->toSql());
-                return DataTables::of($data)
-                    ->addColumn('action', function ($data) use ($user) {
-                        if ($user->hasRole('user-employee-digassets')) {
-                            // dd($data);
-                            return view('datatables._action-user-digassets-sendnotif', [
-                                'model' => $data,
-                                'sendNotif' => route('transfernotif.send', base64_encode($data->id ?? $data->id_fixed_assets)),
-                                'show_url' => route('transfernotif.show', base64_encode($data->id ?? $data->id_fixed_assets))
-                            ]);
-                        } elseif ($user->hasRole('user-mgr-dept-head')) {
-                            return view('datatables._action-user-mgr-dephead-sendnotif', [
-                                'model' => $data,
-                                'show_url' => route('transfernotif.show', base64_encode($data->id ?? $data->id_fixed_assets)),
-                                'approval_url' => route('transfernotif.approval', base64_encode($data->id ?? $data->id_fixed_assets)),
-                                'reject_url' => route('transfernotif.reject', base64_encode($data->id ?? $data->id_fixed_assets))
-                            ]);
-                        } elseif ($user->hasRole('manager-directur')) {
-                            return view('datatables._action-mgrdir-digassets-sendnotif', [
-                                'model' => $data,
-                                'show_url' => route('transfernotif.show', base64_encode($data->id ?? $data->id_fixed_assets)),
-                                'approval_url' => route('transfernotif.approval', base64_encode($data->id ?? $data->id_fixed_assets)),
-                                'reject_url' => route('transfernotif.reject', base64_encode($data->id ?? $data->id_fixed_assets))
-                            ]);
-                        } elseif ($user->hasRole('user-receive-sendnotif-dept')) {
-                            return view('datatables._action-user-receive-sendnotif-dept', [
-                                'model' => $data,
-                                'show_url' => route('transfernotif.show', base64_encode($data->id ?? $data->id_fixed_assets)),
-                                'approval_url' => route('transfernotif.approval', base64_encode($data->id ?? $data->id_fixed_assets)),
-                                'reject_url' => route('transfernotif.reject', base64_encode($data->id ?? $data->id_fixed_assets))
-                            ]);
-                        } elseif ($user->hasRole('user-mgr-receive-send-notif-dept')) {
-                            return view('datatables._action-user-mgr-receive-sendnotif-dept', [
-                                'model' => $data,
-                                'show_url' => route('transfernotif.show', base64_encode($data->id ?? $data->id_fixed_assets)),
-                                'approval_url' => route('transfernotif.approval', base64_encode($data->id ?? $data->id_fixed_assets)),
-                                'reject_url' => route('transfernotif.reject', base64_encode($data->id ?? $data->id_fixed_assets))
-                            ]);
-                        } elseif ($user->hasRole('user-gm-accfinn-sendnotif')) {
-                            return view('datatables._action-user-gm-accfinn-sendnotif', [
-                                'model' => $data,
-                                'show_url' => route('transfernotif.show', base64_encode($data->id ?? $data->id_fixed_assets)),
-                                'approval_url' => route('transfernotif.approval', base64_encode($data->id ?? $data->id_fixed_assets)),
-                                'reject_url' => route('transfernotif.reject', base64_encode($data->id ?? $data->id_fixed_assets))
-                            ]);
-                        } elseif ($user->hasRole('user-acct-digassets')) {
-                            return view('datatables._action-user-accfinn-sendnotif', [
-                                'model' => $data,
-                                'show_url' => route('transfernotif.show', base64_encode($data->id ?? $data->id_fixed_assets)),
-                                'approval_url' => route('transfernotif.approval', base64_encode($data->id ?? $data->id_fixed_assets)),
-                                'reject_url' => route('transfernotif.reject', base64_encode($data->id ?? $data->id_fixed_assets))
-                            ]);
-                        } elseif ($user->hasRole('admin')) {
-                            return view('datatables._action-admin-sendnotif', [
-                                'model' => $data,
-                                'show_url' => route('transfernotif.show', base64_encode($data->id ?? $data->id_fixed_assets)),
-                                'edit_url' => route('transfernotif.edit', base64_encode($data->id ?? $data->id_fixed_assets)),
-                                'delete_url' => route('transfernotif.destroy', base64_encode($data->id ?? $data->id_fixed_assets))
-                            ]);
-                        } else {
-                            return '';
-                        }
-                    })
-                    ->editColumn('rfa_number', function ($data) {
-                        $no = $data->rfa_number;
-                        if ($no == '-') {
-                            return '<i>(wait for accounting dept to fill in)</i>';
-                        } else {
-                            return $no;
-                        }
-                    })
-                    ->editColumn('date', function ($data) {
-                        $no = $data->date;
-                        if ($no == NULL) {
-                            return '<i>(wait for accounting dept to fill in)</i>';
-                        } else {
-                            return $no;
-                        }
-                    })
-                    ->rawColumns(['action', 'rfa_number', 'date'])
-                    ->make(true);
+        return $query->get();
+    }
+
+    /**
+     * Apply filters for manager receive department role
+     */
+    private function applyMgrReceiveDeptFilters($query, $user, $request)
+    {
+        $query->where('asset_tf_notif.approval_status3', '=', '1')
+            ->where('asset_tf_notif.to_receiving_dept_id', '=', (int) $user->department_id);
+
+        $this->applyStatusApprovalFilter($query, $request, 'approval_status4');
+
+        return $query->get();
+    }
+
+    /**
+     * Apply filters for GM accounting finance role
+     */
+    private function applyGmAccfinnFilters($query, $user, $request)
+    {
+        $query->where('registration_fixed_assets.company_id', '=', (int) $user->company_id)
+            ->where('asset_tf_notif.approval_status4', '=', '1');
+
+        $this->applyStatusApprovalFilter($query, $request, 'approval_status5');
+
+        return $query->get();
+    }
+
+    /**
+     * Apply filters for accounting role
+     */
+    private function applyAcctFilters($query, $user, $request)
+    {
+        $query->where('registration_fixed_assets.company_id', '=', (int) $user->company_id)
+            ->where('asset_tf_notif.approval_status5', '=', '1');
+
+        $this->applyStatusApprovalFilter($query, $request, 'approval_status6');
+
+        return $query->get();
+    }
+
+    /**
+     * Apply filters for admin role
+     */
+    private function applyAdminFilters($query, $user, $request)
+    {
+        if ($request->has('company_cp') && !empty($request->company_cp)) {
+            $query->where('registration_fixed_assets.company_id', '=', $request->company_cp);
+        }
+
+        if ($request->has('transfer_status') && !empty($request->transfer_status)) {
+            $query->where('registration_fixed_assets.transfer_status', '=', $request->transfer_status);
+        }
+
+        return $query->get();
+    }
+
+    /**
+     * Apply status approval filter
+     */
+    private function applyStatusApprovalFilter($query, $request, $statusColumn)
+    {
+        if ($request->has('status_approval') && !empty($request->status_approval)) {
+            $statusMap = [
+                'pending' => '0',
+                'approved' => '1',
+                'rejected' => '2'
+            ];
+
+            if (isset($statusMap[$request->status_approval])) {
+                $query->where("asset_tf_notif.{$statusColumn}", '=', $statusMap[$request->status_approval]);
             }
-
-            // Return view untuk request non-AJAX (halaman pertama kali dimuat)
-            if ($user->hasRole('user-employee-digassets')) {
-                $masterAssetGroups = DB::connection('portal-itsa')->table('master_asset_groups')->get();
-                $masterAssetLocations = DB::connection('portal-itsa')->table('master_asset_locations')->get();
-                $masterAssetCostCenters = DB::connection('portal-itsa')->table('master_asset_cost_centers')->get();
-                $department = DB::connection('portal-itsa')->table('departments')->get();
-                return view('digitalassets.send-notif-transfer.user-dashboard.index', [
-                    'masterAssetsGroups' => $masterAssetGroups,
-                    'masterAssetLocations' => $masterAssetLocations,
-                    'masterAssetCostCenters' => $masterAssetCostCenters,
-                    'departments' => $department
-                ]);
-            } elseif ($user->hasRole('user-mgr-dept-head')) {
-                $masterAssetGroups = DB::connection('portal-itsa')->table('master_asset_groups')->get();
-                $masterAssetLocations = DB::connection('portal-itsa')->table('master_asset_locations')->get();
-                $masterAssetCostCenters = DB::connection('portal-itsa')->table('master_asset_cost_centers')->get();
-                $department = DB::connection('portal-itsa')->table('departments')->get();
-                return view('digitalassets.send-notif-transfer.user-mgr-depthead.index', [
-                    'masterAssetsGroups' => $masterAssetGroups,
-                    'masterAssetLocations' => $masterAssetLocations,
-                    'masterAssetCostCenters' => $masterAssetCostCenters,
-                    'departments' => $department
-                ]);
-            } elseif ($user->hasRole('manager-directur')) {
-                $masterAssetGroups = DB::connection('portal-itsa')->table('master_asset_groups')->get();
-                $masterAssetLocations = DB::connection('portal-itsa')->table('master_asset_locations')->get();
-                $masterAssetCostCenters = DB::connection('portal-itsa')->table('master_asset_cost_centers')->get();
-                $department = DB::connection('portal-itsa')->table('departments')->get();
-                return view('digitalassets.send-notif-transfer.user-mgrdir.index', [
-                    'masterAssetsGroups' => $masterAssetGroups,
-                    'masterAssetLocations' => $masterAssetLocations,
-                    'masterAssetCostCenters' => $masterAssetCostCenters,
-                    'departments' => $department
-                ]);
-            } elseif ($user->hasRole('user-receive-sendnotif-dept')) {
-                $masterAssetGroups = DB::connection('portal-itsa')->table('master_asset_groups')->get();
-                $masterAssetLocations = DB::connection('portal-itsa')->table('master_asset_locations')->get();
-                $masterAssetCostCenters = DB::connection('portal-itsa')->table('master_asset_cost_centers')->get();
-                $department = DB::connection('portal-itsa')->table('departments')->get();
-                return view('digitalassets.send-notif-transfer.user-receive-sendnotif-dept.index', [
-                    'masterAssetsGroups' => $masterAssetGroups,
-                    'masterAssetLocations' => $masterAssetLocations,
-                    'masterAssetCostCenters' => $masterAssetCostCenters,
-                    'departments' => $department
-                ]);
-            } elseif ($user->hasRole('user-mgr-receive-send-notif-dept')) {
-                $masterAssetGroups = DB::connection('portal-itsa')->table('master_asset_groups')->get();
-                $masterAssetLocations = DB::connection('portal-itsa')->table('master_asset_locations')->get();
-                $masterAssetCostCenters = DB::connection('portal-itsa')->table('master_asset_cost_centers')->get();
-                $department = DB::connection('portal-itsa')->table('departments')->get();
-                return view('digitalassets.send-notif-transfer.user-mgr-receive-sendnotif-dept.index', [
-                    'masterAssetsGroups' => $masterAssetGroups,
-                    'masterAssetLocations' => $masterAssetLocations,
-                    'masterAssetCostCenters' => $masterAssetCostCenters,
-                    'departments' => $department
-                ]);
-            } elseif ($user->hasRole('user-gm-accfinn-sendnotif')) {
-                $masterAssetGroups = DB::connection('portal-itsa')->table('master_asset_groups')->get();
-                $masterAssetLocations = DB::connection('portal-itsa')->table('master_asset_locations')->get();
-                $masterAssetCostCenters = DB::connection('portal-itsa')->table('master_asset_cost_centers')->get();
-                $department = DB::connection('portal-itsa')->table('departments')->get();
-                return view('digitalassets.send-notif-transfer.user-gm-accfinn-sendnotif.index', [
-                    'masterAssetsGroups' => $masterAssetGroups,
-                    'masterAssetLocations' => $masterAssetLocations,
-                    'masterAssetCostCenters' => $masterAssetCostCenters,
-                    'departments' => $department
-                ]);
-            } elseif ($user->hasRole('user-acct-digassets')) {
-                $masterAssetGroups = DB::connection('portal-itsa')->table('master_asset_groups')->get();
-                $masterAssetLocations = DB::connection('portal-itsa')->table('master_asset_locations')->get();
-                $masterAssetCostCenters = DB::connection('portal-itsa')->table('master_asset_cost_centers')->get();
-                $department = DB::connection('portal-itsa')->table('departments')->get();
-                return view('digitalassets.send-notif-transfer.user-accfinn-sendnotif.index', [
-                    'masterAssetsGroups' => $masterAssetGroups,
-                    'masterAssetLocations' => $masterAssetLocations,
-                    'masterAssetCostCenters' => $masterAssetCostCenters,
-                    'departments' => $department
-                ]);
-            } elseif ($user->hasRole('admin')) {
-                $masterAssetGroups = DB::connection('portal-itsa')->table('master_asset_groups')->get();
-                $masterAssetLocations = DB::connection('portal-itsa')->table('master_asset_locations')->get();
-                $masterAssetCostCenters = DB::connection('portal-itsa')->table('master_asset_cost_centers')->get();
-                $department = DB::connection('portal-itsa')->table('departments')->get();
-                $company = DB::connection('portal-itsa')->table('companys')->get();
-                return view('digitalassets.send-notif-transfer.user-admin-sendnotif.index', [
-                    'masterAssetsGroups' => $masterAssetGroups,
-                    'masterAssetLocations' => $masterAssetLocations,
-                    'masterAssetCostCenters' => $masterAssetCostCenters,
-                    'departments' => $department,
-                    'companys' => $company
-                ]);
-            } else {
-                return view('error.403');
-            }
-
         }
     }
+
+    /**
+     * Apply common filters (date range)
+     */
+    private function applyCommonFilters($query, $request, $user)
+    {
+        if ($request->has('date_range') && !empty($request->date_range)) {
+            $dateRange = explode(' - ', $request->date_range);
+            if (count($dateRange) == 2) {
+                $query->whereBetween('registration_fixed_assets.date', [$dateRange[0], $dateRange[1]]);
+            }
+        }
+
+        return $query;
+    }
+
+    /**
+     * Generate action column for DataTables
+     */
+    private function generateActionColumn($data, $user)
+    {
+        $roleViewMap = [
+            'user-employee-digassets' => [
+                'view' => 'datatables._action-user-digassets-sendnotif',
+                'routes' => [
+                    'sendNotif' => 'transfernotif.send',
+                    'show_url' => 'transfernotif.show'
+                ]
+            ],
+            'user-mgr-dept-head' => [
+                'view' => 'datatables._action-user-mgr-dephead-sendnotif',
+                'routes' => [
+                    'show_url' => 'transfernotif.show',
+                    'approval_url' => 'transfernotif.approval',
+                    'reject_url' => 'transfernotif.reject'
+                ]
+            ],
+            'manager-directur' => [
+                'view' => 'datatables._action-mgrdir-digassets-sendnotif',
+                'routes' => [
+                    'show_url' => 'transfernotif.show',
+                    'approval_url' => 'transfernotif.approval',
+                    'reject_url' => 'transfernotif.reject'
+                ]
+            ],
+            'user-receive-sendnotif-dept' => [
+                'view' => 'datatables._action-user-receive-sendnotif-dept',
+                'routes' => [
+                    'show_url' => 'transfernotif.show',
+                    'approval_url' => 'transfernotif.approval',
+                    'reject_url' => 'transfernotif.reject'
+                ]
+            ],
+            'user-mgr-receive-send-notif-dept' => [
+                'view' => 'datatables._action-user-mgr-receive-sendnotif-dept',
+                'routes' => [
+                    'show_url' => 'transfernotif.show',
+                    'approval_url' => 'transfernotif.approval',
+                    'reject_url' => 'transfernotif.reject'
+                ]
+            ],
+            'user-gm-accfinn-sendnotif' => [
+                'view' => 'datatables._action-user-gm-accfinn-sendnotif',
+                'routes' => [
+                    'show_url' => 'transfernotif.show',
+                    'approval_url' => 'transfernotif.approval',
+                    'reject_url' => 'transfernotif.reject'
+                ]
+            ],
+            'user-acct-digassets' => [
+                'view' => 'datatables._action-user-accfinn-sendnotif',
+                'routes' => [
+                    'show_url' => 'transfernotif.show',
+                    'approval_url' => 'transfernotif.approval',
+                    'reject_url' => 'transfernotif.reject'
+                ]
+            ],
+            'admin' => [
+                'view' => 'datatables._action-admin-sendnotif',
+                'routes' => [
+                    'show_url' => 'transfernotif.show',
+                    'edit_url' => 'transfernotif.edit',
+                    'delete_url' => 'transfernotif.destroy'
+                ]
+            ]
+        ];
+
+        foreach ($roleViewMap as $role => $config) {
+            if ($user->hasRole($role)) {
+                $routeParams = [];
+                foreach ($config['routes'] as $key => $route) {
+                    $routeParams[$key] = route($route, base64_encode($data->id ?? $data->id_fixed_assets));
+                }
+
+                return view($config['view'], array_merge([
+                    'model' => $data
+                ], $routeParams));
+            }
+        }
+
+        return '';
+    }
+
+    /**
+     * Format RFA number for display
+     */
+    private function formatRfaNumber($rfaNumber)
+    {
+        return $rfaNumber == '-' ? '<i>(wait for accounting dept to fill in)</i>' : $rfaNumber;
+    }
+
+    /**
+     * Format date for display
+     */
+    private function formatDate($date)
+    {
+        return $date == null ? '<i>(wait for accounting dept to fill in)</i>' : $date;
+    }
+
+    /**
+     * Get view data for non-AJAX requests
+     */
+    private function getViewData($user)
+    {
+        $commonData = [
+            'masterAssetsGroups' => DB::connection('portal-itsa')->table('master_asset_groups')->get(),
+            'masterAssetLocations' => DB::connection('portal-itsa')->table('master_asset_locations')->get(),
+            'masterAssetCostCenters' => DB::connection('portal-itsa')->table('master_asset_cost_centers')->get(),
+            'departments' => DB::connection('portal-itsa')->table('departments')->get(),
+        ];
+
+        if ($user->hasRole('admin')) {
+            $commonData['companys'] = DB::connection('portal-itsa')->table('companys')->get();
+        }
+
+        return $commonData;
+    }
+
+    /**
+     * Get view name based on user role
+     */
+    private function getViewName($user)
+    {
+        $roleViewMap = [
+            'user-employee-digassets' => 'digitalassets.send-notif-transfer.user-dashboard.index',
+            'user-mgr-dept-head' => 'digitalassets.send-notif-transfer.user-mgr-depthead.index',
+            'manager-directur' => 'digitalassets.send-notif-transfer.user-mgrdir.index',
+            'user-receive-sendnotif-dept' => 'digitalassets.send-notif-transfer.user-receive-sendnotif-dept.index',
+            'user-mgr-receive-send-notif-dept' => 'digitalassets.send-notif-transfer.user-mgr-receive-sendnotif-dept.index',
+            'user-gm-accfinn-sendnotif' => 'digitalassets.send-notif-transfer.user-gm-accfinn-sendnotif.index',
+            'user-acct-digassets' => 'digitalassets.send-notif-transfer.user-accfinn-sendnotif.index',
+            'admin' => 'digitalassets.send-notif-transfer.user-admin-sendnotif.index'
+        ];
+
+        foreach ($roleViewMap as $role => $view) {
+            if ($user->hasRole($role)) {
+                return $view;
+            }
+        }
+
+        return null;
+    }
+
 
     /**
      * Show the form for creating a new resource.
@@ -1434,3 +1158,733 @@ class AssettfnotifController extends Controller
         return $transfer;
     }
 }
+
+
+//  public function index(Request $request)
+//     {
+//         $user = Auth::user();
+//         if (!$user->hasPermission('manage-digital-assets', 'manage-asset-tf-notification')) {
+//             return redirect()->route('apps.index')->with('error', 'You do not have access to this application yet. Please contact your IT Department.');
+//         }
+
+//         if (!Auth::check()) {
+//             return redirect()->route('login');
+//         }
+
+//         if ($user->hasPermission('manage-digital-assets', 'manage-asset-tf-notification')) {
+//             // dd($user->department_id);
+//             if ($request->ajax()) {
+//                 if ($user->hasRole('user-employee-digassets')) {
+//                     $data = Digitalassets::query()
+//                         ->leftJoin('asset_tf_notif', 'asset_tf_notif.reg_fixed_asset_id', '=', 'registration_fixed_assets.id')
+//                         ->leftJoin('users', 'registration_fixed_assets.user_id', '=', 'users.id')
+//                         ->leftJoin('departments as dept_from', 'registration_fixed_assets.department_id', '=', 'dept_from.id') // Dept asal dari registration_fixed_assets
+//                         ->leftJoin('departments as dept_to', 'asset_tf_notif.to_receiving_dept_id', '=', 'dept_to.id') // Dept tujuan dari asset_tf_notif
+//                         ->leftJoin('companys', 'registration_fixed_assets.company_id', '=', 'companys.id')
+//                         ->leftJoin('master_asset_groups as group_from', 'registration_fixed_assets.asset_group_id', '=', 'group_from.id')
+//                         ->leftJoin('master_asset_locations as location_from_name', 'registration_fixed_assets.asset_location_id', '=', 'location_from_name.id')
+//                         ->leftjoin('master_asset_locations as location_to_name', 'asset_tf_notif.to_location_id', '=', 'location_to_name.id')
+//                         ->leftJoin('master_asset_cost_centers as cost_from', 'registration_fixed_assets.asset_cost_center_id', '=', 'cost_from.id')
+//                         ->leftJoin('master_asset_cost_centers as cost_to', 'asset_tf_notif.to_cost_center_id', '=', 'cost_to.id');
+//                     $data = $data->select(
+//                         'asset_tf_notif.*',
+//                         'users.name as user_name',
+//                         // 'registration_fixed_assets.id',
+//                         'registration_fixed_assets.id as id_fixed_assets',
+//                         'registration_fixed_assets.rfa_number',
+//                         'registration_fixed_assets.date',
+//                         'registration_fixed_assets.requestor_name',
+//                         'registration_fixed_assets.issue_fixed_asset_no',
+//                         'registration_fixed_assets.production_code',
+//                         'registration_fixed_assets.product_name',
+//                         'registration_fixed_assets.grn_no',
+//                         'registration_fixed_assets.io_no',
+//                         // 'departments.description as department_name',
+//                         'companys.company_desc as company_name',
+//                         'dept_from.description as department_from_name', // Department asal dari registration_fixed_assets
+//                         'dept_to.description as department_to_name',
+//                         'location_from_name.asset_location_name as loc_from',
+//                         'location_to_name.asset_location_name as loc_to',
+//                         'cost_from.cost_center_name as from_cost_center_name',
+//                         'cost_from.cost_center_code as from_cost_center_code',
+//                         'cost_to.cost_center_name as to_cost_center_name',
+//                         'cost_to.cost_center_code as to_cost_center_code',
+//                         // 
+//                         'group_from.asset_group_name',
+//                         'location_from_name.asset_location_name as name_location',
+//                         'cost_from.cost_center_name as cost_cname',
+//                         'cost_to.cost_center_code',
+//                         'asset_tf_notif.id as id_asset_tf',
+//                         'registration_fixed_assets.transfer_status',
+//                         'registration_fixed_assets.transfer_sent_at',
+
+//                     );
+
+//                     if ($request->has('date_range') && !empty($request->date_range)) {
+//                         $dateRange = explode(' - ', $request->date_range);
+//                         if (count($dateRange) == 2) {
+//                             $data->whereBetween('registration_fixed_assets.date', [$dateRange[0], $dateRange[1]]);
+//                         }
+//                     }
+//                     if ($request->has('transfer_status') && !empty($request->transfer_status)) {
+//                         $data->where('registration_fixed_assets.transfer_status', '=', $request->transfer_status);
+//                     }
+
+//                     $data = $data->where('registration_fixed_assets.approval_status3', '=', '1')
+//                         ->where('registration_fixed_assets.user_id', '=', (int) $user->id)->get();
+//                 } elseif ($user->hasRole('user-mgr-dept-head')) {
+//                     $data = Digitalassets::query()
+//                         ->leftJoin('asset_tf_notif', 'asset_tf_notif.reg_fixed_asset_id', '=', 'registration_fixed_assets.id')
+//                         ->leftJoin('users', 'registration_fixed_assets.user_id', '=', 'users.id')
+//                         ->leftJoin('departments as dept_from', 'registration_fixed_assets.department_id', '=', 'dept_from.id') // Dept asal dari registration_fixed_assets
+//                         ->leftJoin('departments as dept_to', 'asset_tf_notif.to_receiving_dept_id', '=', 'dept_to.id') // Dept tujuan dari asset_tf_notif
+//                         ->leftJoin('companys', 'registration_fixed_assets.company_id', '=', 'companys.id')
+//                         ->leftJoin('master_asset_groups as group_from', 'registration_fixed_assets.asset_group_id', '=', 'group_from.id')
+//                         ->leftJoin('master_asset_locations as location_from_name', 'registration_fixed_assets.asset_location_id', '=', 'location_from_name.id')
+//                         ->leftjoin('master_asset_locations as location_to_name', 'asset_tf_notif.to_location_id', '=', 'location_to_name.id')
+//                         ->leftJoin('master_asset_cost_centers as cost_from', 'registration_fixed_assets.asset_cost_center_id', '=', 'cost_from.id')
+//                         ->leftJoin('master_asset_cost_centers as cost_to', 'asset_tf_notif.to_cost_center_id', '=', 'cost_to.id');
+//                     $data = $data->select(
+//                         'asset_tf_notif.*',
+//                         'users.name as user_name',
+//                         'registration_fixed_assets.id as id_fixed_assets',
+//                         'registration_fixed_assets.rfa_number',
+//                         'registration_fixed_assets.date',
+//                         'registration_fixed_assets.requestor_name',
+//                         'registration_fixed_assets.issue_fixed_asset_no',
+//                         'registration_fixed_assets.production_code',
+//                         'registration_fixed_assets.product_name',
+//                         'registration_fixed_assets.grn_no',
+//                         'registration_fixed_assets.io_no',
+//                         // 'departments.description as department_name',
+//                         'companys.company_desc as company_name',
+//                         'dept_from.description as department_from_name', // Department asal dari registration_fixed_assets
+//                         'dept_to.description as department_to_name',
+//                         'location_from_name.asset_location_name as loc_from',
+//                         'location_to_name.asset_location_name as loc_to',
+//                         'cost_from.cost_center_name as from_cost_center_name',
+//                         'cost_from.cost_center_code as from_cost_center_code',
+//                         'cost_to.cost_center_name as to_cost_center_name',
+//                         'cost_to.cost_center_code as to_cost_center_code',
+//                         // 
+//                         'group_from.asset_group_name',
+//                         'location_from_name.asset_location_name as name_location',
+//                         'cost_from.cost_center_name as cost_cname',
+//                         'cost_to.cost_center_code',
+//                         'asset_tf_notif.id as id_asset_tf',
+//                         'registration_fixed_assets.transfer_status',
+//                         'registration_fixed_assets.transfer_sent_at',
+
+//                     );
+//                     $data->where('registration_fixed_assets.department_id', '=', (int) $user->department_id);
+//                     $data->where('registration_fixed_assets.transfer_sent_at', '!=', null);
+//                     if ($request->has('date_range') && !empty($request->date_range)) {
+//                         $dateRange = explode(' - ', $request->date_range);
+//                         if (count($dateRange) == 2) {
+//                             $data->whereBetween('registration_fixed_assets.date', [$dateRange[0], $dateRange[1]]);
+//                         }
+//                     }
+//                     // if ($request->has('transfer_status') && !empty($request->transfer_status)) {
+//                     //     $data->where('registration_fixed_assets.transfer_status', '=', $request->transfer_status);
+//                     // }
+//                     if ($request->has('status_approval') && !empty($request->status_approval)) {
+//                         if ($request->status_approval == 'pending') {
+//                             $data->where('asset_tf_notif.approval_status1', '=', '0');
+//                         } elseif ($request->status_approval == 'approved') {
+//                             $data->where('asset_tf_notif.approval_status1', '=', '1');
+//                         } elseif ($request->status_approval == 'rejected') {
+//                             $data->where('asset_tf_notif.approval_status1', '=', '2');
+//                         }
+
+//                     }
+//                     // dd($request->status_approval);
+
+//                     $data->get();
+//                 } elseif ($user->hasRole('manager-directur')) {
+//                     $data = Digitalassets::query()
+//                         ->leftJoin('asset_tf_notif', 'asset_tf_notif.reg_fixed_asset_id', '=', 'registration_fixed_assets.id')
+//                         ->leftJoin('users', 'registration_fixed_assets.user_id', '=', 'users.id')
+//                         ->leftJoin('departments as dept_from', 'registration_fixed_assets.department_id', '=', 'dept_from.id') // Dept asal dari registration_fixed_assets
+//                         ->leftJoin('departments as dept_to', 'asset_tf_notif.to_receiving_dept_id', '=', 'dept_to.id') // Dept tujuan dari asset_tf_notif
+//                         ->leftJoin('companys', 'registration_fixed_assets.company_id', '=', 'companys.id')
+//                         ->leftJoin('master_asset_groups as group_from', 'registration_fixed_assets.asset_group_id', '=', 'group_from.id')
+//                         ->leftJoin('master_asset_locations as location_from_name', 'registration_fixed_assets.asset_location_id', '=', 'location_from_name.id')
+//                         ->leftjoin('master_asset_locations as location_to_name', 'asset_tf_notif.to_location_id', '=', 'location_to_name.id')
+//                         ->leftJoin('master_asset_cost_centers as cost_from', 'registration_fixed_assets.asset_cost_center_id', '=', 'cost_from.id')
+//                         ->leftJoin('master_asset_cost_centers as cost_to', 'asset_tf_notif.to_cost_center_id', '=', 'cost_to.id');
+//                     $data = $data->select(
+//                         'asset_tf_notif.*',
+//                         'users.name as user_name',
+//                         'registration_fixed_assets.id as id_fixed_assets',
+//                         'registration_fixed_assets.rfa_number',
+//                         'registration_fixed_assets.date',
+//                         'registration_fixed_assets.requestor_name',
+//                         'registration_fixed_assets.issue_fixed_asset_no',
+//                         'registration_fixed_assets.production_code',
+//                         'registration_fixed_assets.product_name',
+//                         'registration_fixed_assets.grn_no',
+//                         'registration_fixed_assets.io_no',
+//                         // 'departments.description as department_name',
+//                         'companys.company_desc as company_name',
+//                         'dept_from.description as department_from_name', // Department asal dari registration_fixed_assets
+//                         'dept_to.description as department_to_name',
+//                         'location_from_name.asset_location_name as loc_from',
+//                         'location_to_name.asset_location_name as loc_to',
+//                         'cost_from.cost_center_name as from_cost_center_name',
+//                         'cost_from.cost_center_code as from_cost_center_code',
+//                         'cost_to.cost_center_name as to_cost_center_name',
+//                         'cost_to.cost_center_code as to_cost_center_code',
+//                         // 
+//                         'group_from.asset_group_name',
+//                         'location_from_name.asset_location_name as name_location',
+//                         'cost_from.cost_center_name as cost_cname',
+//                         'cost_to.cost_center_code',
+//                         'asset_tf_notif.id as id_asset_tf',
+//                         'registration_fixed_assets.transfer_status',
+//                         'registration_fixed_assets.transfer_sent_at',
+
+//                     );
+//                     $data->where('registration_fixed_assets.company_id', '=', (int) $user->company_id);
+//                     $data->where('registration_fixed_assets.transfer_sent_at', '!=', null);
+//                     $data->where('asset_tf_notif.approval_status1', '=', '1');
+//                     if ($request->has('date_range') && !empty($request->date_range)) {
+//                         $dateRange = explode(' - ', $request->date_range);
+//                         if (count($dateRange) == 2) {
+//                             $data->whereBetween('registration_fixed_assets.date', [$dateRange[0], $dateRange[1]]);
+//                         }
+//                     }
+//                     // if ($request->has('transfer_status') && !empty($request->transfer_status)) {
+//                     //     $data->where('registration_fixed_assets.transfer_status', '=', $request->transfer_status);
+//                     // }
+//                     if ($request->has('status_approval') && !empty($request->status_approval)) {
+//                         if ($request->status_approval == 'pending') {
+//                             $data->where('asset_tf_notif.approval_status2', '=', '0');
+//                         } elseif ($request->status_approval == 'approved') {
+//                             $data->where('asset_tf_notif.approval_status2', '=', '1');
+//                         } elseif ($request->status_approval == 'rejected') {
+//                             $data->where('asset_tf_notif.approval_status2', '=', '2');
+//                         }
+
+//                     }
+//                     // dd($request->status_approval);
+
+//                     $data->get();
+//                 } elseif ($user->hasRole('user-receive-sendnotif-dept')) {
+//                     $data = Digitalassets::query()
+//                         ->leftJoin('asset_tf_notif', 'asset_tf_notif.reg_fixed_asset_id', '=', 'registration_fixed_assets.id')
+//                         ->leftJoin('users', 'registration_fixed_assets.user_id', '=', 'users.id')
+//                         ->leftJoin('departments as dept_from', 'registration_fixed_assets.department_id', '=', 'dept_from.id') // Dept asal dari registration_fixed_assets
+//                         ->leftJoin('departments as dept_to', 'asset_tf_notif.to_receiving_dept_id', '=', 'dept_to.id') // Dept tujuan dari asset_tf_notif
+//                         ->leftJoin('companys', 'registration_fixed_assets.company_id', '=', 'companys.id')
+//                         ->leftJoin('master_asset_groups as group_from', 'registration_fixed_assets.asset_group_id', '=', 'group_from.id')
+//                         ->leftJoin('master_asset_locations as location_from_name', 'registration_fixed_assets.asset_location_id', '=', 'location_from_name.id')
+//                         ->leftjoin('master_asset_locations as location_to_name', 'asset_tf_notif.to_location_id', '=', 'location_to_name.id')
+//                         ->leftJoin('master_asset_cost_centers as cost_from', 'registration_fixed_assets.asset_cost_center_id', '=', 'cost_from.id')
+//                         ->leftJoin('master_asset_cost_centers as cost_to', 'asset_tf_notif.to_cost_center_id', '=', 'cost_to.id');
+//                     $data = $data->select(
+//                         'asset_tf_notif.*',
+//                         'users.name as user_name',
+//                         'registration_fixed_assets.id as id_fixed_assets',
+//                         'registration_fixed_assets.rfa_number',
+//                         'registration_fixed_assets.date',
+//                         'registration_fixed_assets.requestor_name',
+//                         'registration_fixed_assets.issue_fixed_asset_no',
+//                         'registration_fixed_assets.production_code',
+//                         'registration_fixed_assets.product_name',
+//                         'registration_fixed_assets.grn_no',
+//                         'registration_fixed_assets.io_no',
+//                         // 'departments.description as department_name',
+//                         'companys.company_desc as company_name',
+//                         'dept_from.description as department_from_name', // Department asal dari registration_fixed_assets
+//                         'dept_to.description as department_to_name',
+//                         'location_from_name.asset_location_name as loc_from',
+//                         'location_to_name.asset_location_name as loc_to',
+//                         'cost_from.cost_center_name as from_cost_center_name',
+//                         'cost_from.cost_center_code as from_cost_center_code',
+//                         'cost_to.cost_center_name as to_cost_center_name',
+//                         'cost_to.cost_center_code as to_cost_center_code',
+//                         // 
+//                         'group_from.asset_group_name',
+//                         'location_from_name.asset_location_name as name_location',
+//                         'cost_from.cost_center_name as cost_cname',
+//                         'cost_to.cost_center_code',
+//                         'asset_tf_notif.id as id_asset_tf',
+//                         'registration_fixed_assets.transfer_status',
+//                         'registration_fixed_assets.transfer_sent_at',
+
+//                     );
+
+//                     // $data->where('registration_fixed_assets.transfer_sent_at', '!=', null);
+//                     $data->where('asset_tf_notif.approval_status2', '=', '1');
+//                     $data->where('asset_tf_notif.to_receiving_dept_id', '=', (int) $user->department_id);
+//                     if ($request->has('date_range') && !empty($request->date_range)) {
+//                         $dateRange = explode(' - ', $request->date_range);
+//                         if (count($dateRange) == 2) {
+//                             $data->whereBetween('registration_fixed_assets.date', [$dateRange[0], $dateRange[1]]);
+//                         }
+//                     }
+//                     // if ($request->has('transfer_status') && !empty($request->transfer_status)) {
+//                     //     $data->where('registration_fixed_assets.transfer_status', '=', $request->transfer_status);
+//                     // }
+//                     if ($request->has('status_approval') && !empty($request->status_approval)) {
+//                         if ($request->status_approval == 'pending') {
+//                             $data->where('asset_tf_notif.approval_status3', '=', '0');
+//                         } elseif ($request->status_approval == 'approved') {
+//                             $data->where('asset_tf_notif.approval_status3', '=', '1');
+//                         } elseif ($request->status_approval == 'rejected') {
+//                             $data->where('asset_tf_notif.approval_status3', '=', '2');
+//                         }
+
+//                     }
+
+
+//                     $data->get();
+//                 } elseif ($user->hasRole('user-mgr-receive-send-notif-dept')) {
+//                     $data = Digitalassets::query()
+//                         ->leftJoin('asset_tf_notif', 'asset_tf_notif.reg_fixed_asset_id', '=', 'registration_fixed_assets.id')
+//                         ->leftJoin('users', 'registration_fixed_assets.user_id', '=', 'users.id')
+//                         ->leftJoin('departments as dept_from', 'registration_fixed_assets.department_id', '=', 'dept_from.id') // Dept asal dari registration_fixed_assets
+//                         ->leftJoin('departments as dept_to', 'asset_tf_notif.to_receiving_dept_id', '=', 'dept_to.id') // Dept tujuan dari asset_tf_notif
+//                         ->leftJoin('companys', 'registration_fixed_assets.company_id', '=', 'companys.id')
+//                         ->leftJoin('master_asset_groups as group_from', 'registration_fixed_assets.asset_group_id', '=', 'group_from.id')
+//                         ->leftJoin('master_asset_locations as location_from_name', 'registration_fixed_assets.asset_location_id', '=', 'location_from_name.id')
+//                         ->leftjoin('master_asset_locations as location_to_name', 'asset_tf_notif.to_location_id', '=', 'location_to_name.id')
+//                         ->leftJoin('master_asset_cost_centers as cost_from', 'registration_fixed_assets.asset_cost_center_id', '=', 'cost_from.id')
+//                         ->leftJoin('master_asset_cost_centers as cost_to', 'asset_tf_notif.to_cost_center_id', '=', 'cost_to.id');
+//                     $data = $data->select(
+//                         'asset_tf_notif.*',
+//                         'users.name as user_name',
+//                         'registration_fixed_assets.id as id_fixed_assets',
+//                         'registration_fixed_assets.rfa_number',
+//                         'registration_fixed_assets.date',
+//                         'registration_fixed_assets.requestor_name',
+//                         'registration_fixed_assets.issue_fixed_asset_no',
+//                         'registration_fixed_assets.production_code',
+//                         'registration_fixed_assets.product_name',
+//                         'registration_fixed_assets.grn_no',
+//                         'registration_fixed_assets.io_no',
+//                         // 'departments.description as department_name',
+//                         'companys.company_desc as company_name',
+//                         'dept_from.description as department_from_name', // Department asal dari registration_fixed_assets
+//                         'dept_to.description as department_to_name',
+//                         'location_from_name.asset_location_name as loc_from',
+//                         'location_to_name.asset_location_name as loc_to',
+//                         'cost_from.cost_center_name as from_cost_center_name',
+//                         'cost_from.cost_center_code as from_cost_center_code',
+//                         'cost_to.cost_center_name as to_cost_center_name',
+//                         'cost_to.cost_center_code as to_cost_center_code',
+//                         // 
+//                         'group_from.asset_group_name',
+//                         'location_from_name.asset_location_name as name_location',
+//                         'cost_from.cost_center_name as cost_cname',
+//                         'cost_to.cost_center_code',
+//                         'asset_tf_notif.id as id_asset_tf',
+//                         'registration_fixed_assets.transfer_status',
+//                         'registration_fixed_assets.transfer_sent_at',
+
+//                     );
+
+//                     // $data->where('registration_fixed_assets.transfer_sent_at', '!=', null);
+//                     $data->where('asset_tf_notif.approval_status3', '=', '1');
+//                     $data->where('asset_tf_notif.to_receiving_dept_id', '=', (int) $user->department_id);
+//                     if ($request->has('date_range') && !empty($request->date_range)) {
+//                         $dateRange = explode(' - ', $request->date_range);
+//                         if (count($dateRange) == 2) {
+//                             $data->whereBetween('registration_fixed_assets.date', [$dateRange[0], $dateRange[1]]);
+//                         }
+//                     }
+//                     // if ($request->has('transfer_status') && !empty($request->transfer_status)) {
+//                     //     $data->where('registration_fixed_assets.transfer_status', '=', $request->transfer_status);
+//                     // }
+//                     if ($request->has('status_approval') && !empty($request->status_approval)) {
+//                         if ($request->status_approval == 'pending') {
+//                             $data->where('asset_tf_notif.approval_status4', '=', '0');
+//                         } elseif ($request->status_approval == 'approved') {
+//                             $data->where('asset_tf_notif.approval_status4', '=', '1');
+//                         } elseif ($request->status_approval == 'rejected') {
+//                             $data->where('asset_tf_notif.approval_status4', '=', '2');
+//                         }
+
+//                     }
+
+
+//                     $data->get();
+//                 } elseif ($user->hasRole('user-gm-accfinn-sendnotif')) {
+//                     $data = Digitalassets::query()
+//                         ->leftJoin('asset_tf_notif', 'asset_tf_notif.reg_fixed_asset_id', '=', 'registration_fixed_assets.id')
+//                         ->leftJoin('users', 'registration_fixed_assets.user_id', '=', 'users.id')
+//                         ->leftJoin('departments as dept_from', 'registration_fixed_assets.department_id', '=', 'dept_from.id') // Dept asal dari registration_fixed_assets
+//                         ->leftJoin('departments as dept_to', 'asset_tf_notif.to_receiving_dept_id', '=', 'dept_to.id') // Dept tujuan dari asset_tf_notif
+//                         ->leftJoin('companys', 'registration_fixed_assets.company_id', '=', 'companys.id')
+//                         ->leftJoin('master_asset_groups as group_from', 'registration_fixed_assets.asset_group_id', '=', 'group_from.id')
+//                         ->leftJoin('master_asset_locations as location_from_name', 'registration_fixed_assets.asset_location_id', '=', 'location_from_name.id')
+//                         ->leftjoin('master_asset_locations as location_to_name', 'asset_tf_notif.to_location_id', '=', 'location_to_name.id')
+//                         ->leftJoin('master_asset_cost_centers as cost_from', 'registration_fixed_assets.asset_cost_center_id', '=', 'cost_from.id')
+//                         ->leftJoin('master_asset_cost_centers as cost_to', 'asset_tf_notif.to_cost_center_id', '=', 'cost_to.id');
+//                     $data = $data->select(
+//                         'asset_tf_notif.*',
+//                         'users.name as user_name',
+//                         'registration_fixed_assets.id as id_fixed_assets',
+//                         'registration_fixed_assets.rfa_number',
+//                         'registration_fixed_assets.date',
+//                         'registration_fixed_assets.requestor_name',
+//                         'registration_fixed_assets.issue_fixed_asset_no',
+//                         'registration_fixed_assets.production_code',
+//                         'registration_fixed_assets.product_name',
+//                         'registration_fixed_assets.grn_no',
+//                         'registration_fixed_assets.io_no',
+//                         // 'departments.description as department_name',
+//                         'companys.company_desc as company_name',
+//                         'dept_from.description as department_from_name', // Department asal dari registration_fixed_assets
+//                         'dept_to.description as department_to_name',
+//                         'location_from_name.asset_location_name as loc_from',
+//                         'location_to_name.asset_location_name as loc_to',
+//                         'cost_from.cost_center_name as from_cost_center_name',
+//                         'cost_from.cost_center_code as from_cost_center_code',
+//                         'cost_to.cost_center_name as to_cost_center_name',
+//                         'cost_to.cost_center_code as to_cost_center_code',
+//                         // 
+//                         'group_from.asset_group_name',
+//                         'location_from_name.asset_location_name as name_location',
+//                         'cost_from.cost_center_name as cost_cname',
+//                         'cost_to.cost_center_code',
+//                         'asset_tf_notif.id as id_asset_tf',
+//                         'registration_fixed_assets.transfer_status',
+//                         'registration_fixed_assets.transfer_sent_at',
+
+//                     );
+
+//                     $data->where('registration_fixed_assets.company_id', '=', (int) $user->company_id);
+//                     $data->where('asset_tf_notif.approval_status4', '=', '1');
+//                     // $data->where('asset_tf_notif.to_receiving_dept_id', '=', (int) $user->department_id);
+//                     if ($request->has('date_range') && !empty($request->date_range)) {
+//                         $dateRange = explode(' - ', $request->date_range);
+//                         if (count($dateRange) == 2) {
+//                             $data->whereBetween('registration_fixed_assets.date', [$dateRange[0], $dateRange[1]]);
+//                         }
+//                     }
+//                     // if ($request->has('transfer_status') && !empty($request->transfer_status)) {
+//                     //     $data->where('registration_fixed_assets.transfer_status', '=', $request->transfer_status);
+//                     // }
+//                     if ($request->has('status_approval') && !empty($request->status_approval)) {
+//                         if ($request->status_approval == 'pending') {
+//                             $data->where('asset_tf_notif.approval_status5', '=', '0');
+//                         } elseif ($request->status_approval == 'approved') {
+//                             $data->where('asset_tf_notif.approval_status5', '=', '1');
+//                         } elseif ($request->status_approval == 'rejected') {
+//                             $data->where('asset_tf_notif.approval_status5', '=', '2');
+//                         }
+
+//                     }
+
+
+//                     $data->get();
+//                 } elseif ($user->hasRole('user-acct-digassets')) {
+//                     $data = Digitalassets::query()
+//                         ->leftJoin('asset_tf_notif', 'asset_tf_notif.reg_fixed_asset_id', '=', 'registration_fixed_assets.id')
+//                         ->leftJoin('users', 'registration_fixed_assets.user_id', '=', 'users.id')
+//                         ->leftJoin('departments as dept_from', 'registration_fixed_assets.department_id', '=', 'dept_from.id') // Dept asal dari registration_fixed_assets
+//                         ->leftJoin('departments as dept_to', 'asset_tf_notif.to_receiving_dept_id', '=', 'dept_to.id') // Dept tujuan dari asset_tf_notif
+//                         ->leftJoin('companys', 'registration_fixed_assets.company_id', '=', 'companys.id')
+//                         ->leftJoin('master_asset_groups as group_from', 'registration_fixed_assets.asset_group_id', '=', 'group_from.id')
+//                         ->leftJoin('master_asset_locations as location_from_name', 'registration_fixed_assets.asset_location_id', '=', 'location_from_name.id')
+//                         ->leftjoin('master_asset_locations as location_to_name', 'asset_tf_notif.to_location_id', '=', 'location_to_name.id')
+//                         ->leftJoin('master_asset_cost_centers as cost_from', 'registration_fixed_assets.asset_cost_center_id', '=', 'cost_from.id')
+//                         ->leftJoin('master_asset_cost_centers as cost_to', 'asset_tf_notif.to_cost_center_id', '=', 'cost_to.id');
+//                     $data = $data->select(
+//                         'asset_tf_notif.*',
+//                         'registration_fixed_assets.id as id_fixed_assets',
+//                         'users.name as user_name',
+//                         'registration_fixed_assets.rfa_number',
+//                         'registration_fixed_assets.date',
+//                         'registration_fixed_assets.requestor_name',
+//                         'registration_fixed_assets.issue_fixed_asset_no',
+//                         'registration_fixed_assets.production_code',
+//                         'registration_fixed_assets.product_name',
+//                         'registration_fixed_assets.grn_no',
+//                         'registration_fixed_assets.io_no',
+//                         // 'departments.description as department_name',
+//                         'companys.company_desc as company_name',
+//                         'dept_from.description as department_from_name', // Department asal dari registration_fixed_assets
+//                         'dept_to.description as department_to_name',
+//                         'location_from_name.asset_location_name as loc_from',
+//                         'location_to_name.asset_location_name as loc_to',
+//                         'cost_from.cost_center_name as from_cost_center_name',
+//                         'cost_from.cost_center_code as from_cost_center_code',
+//                         'cost_to.cost_center_name as to_cost_center_name',
+//                         'cost_to.cost_center_code as to_cost_center_code',
+//                         // 
+//                         'group_from.asset_group_name',
+//                         'location_from_name.asset_location_name as name_location',
+//                         'cost_from.cost_center_name as cost_cname',
+//                         'cost_to.cost_center_code',
+//                         'asset_tf_notif.id as id_asset_tf',
+//                         'registration_fixed_assets.transfer_status',
+//                         'registration_fixed_assets.transfer_sent_at',
+
+//                     );
+
+//                     $data->where('registration_fixed_assets.company_id', '=', (int) $user->company_id);
+//                     $data->where('asset_tf_notif.approval_status5', '=', '1');
+//                     // $data->where('asset_tf_notif.to_receiving_dept_id', '=', (int) $user->department_id);
+//                     if ($request->has('date_range') && !empty($request->date_range)) {
+//                         $dateRange = explode(' - ', $request->date_range);
+//                         if (count($dateRange) == 2) {
+//                             $data->whereBetween('registration_fixed_assets.date', [$dateRange[0], $dateRange[1]]);
+//                         }
+//                     }
+//                     // if ($request->has('transfer_status') && !empty($request->transfer_status)) {
+//                     //     $data->where('registration_fixed_assets.transfer_status', '=', $request->transfer_status);
+//                     // }
+//                     if ($request->has('status_approval') && !empty($request->status_approval)) {
+//                         if ($request->status_approval == 'pending') {
+//                             $data->where('asset_tf_notif.approval_status6', '=', '0');
+//                         } elseif ($request->status_approval == 'approved') {
+//                             $data->where('asset_tf_notif.approval_status6', '=', '1');
+//                         } elseif ($request->status_approval == 'rejected') {
+//                             $data->where('asset_tf_notif.approval_status6', '=', '2');
+//                         }
+
+//                     }
+
+
+//                     $data->get();
+//                 } elseif ($user->hasRole('admin')) {
+//                     $data = Digitalassets::query()
+//                         ->leftJoin('asset_tf_notif', 'asset_tf_notif.reg_fixed_asset_id', '=', 'registration_fixed_assets.id')
+//                         ->leftJoin('users', 'registration_fixed_assets.user_id', '=', 'users.id')
+//                         ->leftJoin('departments as dept_from', 'registration_fixed_assets.department_id', '=', 'dept_from.id') // Dept asal dari registration_fixed_assets
+//                         ->leftJoin('departments as dept_to', 'asset_tf_notif.to_receiving_dept_id', '=', 'dept_to.id') // Dept tujuan dari asset_tf_notif
+//                         ->leftJoin('companys', 'registration_fixed_assets.company_id', '=', 'companys.id')
+//                         ->leftJoin('master_asset_groups as group_from', 'registration_fixed_assets.asset_group_id', '=', 'group_from.id')
+//                         ->leftJoin('master_asset_locations as location_from_name', 'registration_fixed_assets.asset_location_id', '=', 'location_from_name.id')
+//                         ->leftjoin('master_asset_locations as location_to_name', 'asset_tf_notif.to_location_id', '=', 'location_to_name.id')
+//                         ->leftJoin('master_asset_cost_centers as cost_from', 'registration_fixed_assets.asset_cost_center_id', '=', 'cost_from.id')
+//                         ->leftJoin('master_asset_cost_centers as cost_to', 'asset_tf_notif.to_cost_center_id', '=', 'cost_to.id');
+//                     $data = $data->select(
+//                         'asset_tf_notif.*',
+//                         'users.name as user_name',
+//                         'registration_fixed_assets.id as id_fixed_assets',
+//                         'registration_fixed_assets.rfa_number',
+//                         'registration_fixed_assets.date',
+//                         'registration_fixed_assets.requestor_name',
+//                         'registration_fixed_assets.issue_fixed_asset_no',
+//                         'registration_fixed_assets.production_code',
+//                         'registration_fixed_assets.product_name',
+//                         'registration_fixed_assets.grn_no',
+//                         'registration_fixed_assets.io_no',
+//                         // 'departments.description as department_name',
+//                         'companys.company_desc as company_name',
+//                         'dept_from.description as department_from_name', // Department asal dari registration_fixed_assets
+//                         'dept_to.description as department_to_name',
+//                         'location_from_name.asset_location_name as loc_from',
+//                         'location_to_name.asset_location_name as loc_to',
+//                         'cost_from.cost_center_name as from_cost_center_name',
+//                         'cost_from.cost_center_code as from_cost_center_code',
+//                         'cost_to.cost_center_name as to_cost_center_name',
+//                         'cost_to.cost_center_code as to_cost_center_code',
+//                         // 
+//                         'group_from.asset_group_name',
+//                         'location_from_name.asset_location_name as name_location',
+//                         'cost_from.cost_center_name as cost_cname',
+//                         'cost_to.cost_center_code',
+//                         'asset_tf_notif.id as id_asset_tf',
+//                         'registration_fixed_assets.transfer_status',
+//                         'registration_fixed_assets.transfer_sent_at',
+
+//                     );
+//                     // $data->where('asset_tf_notif.to_receiving_dept_id', '=', (int) $user->department_id);
+//                     if ($request->has('date_range') && !empty($request->date_range)) {
+//                         $dateRange = explode(' - ', $request->date_range);
+//                         if (count($dateRange) == 2) {
+//                             $data->whereBetween('registration_fixed_assets.date', [$dateRange[0], $dateRange[1]]);
+//                         }
+//                     }
+//                     if ($request->has('company_cp') && !empty($request->company_cp)) {
+//                         $data->where('registration_fixed_asset.company_id', '=', $request->company_cp);
+//                     }
+//                     if ($request->has('transfer_status') && !empty($request->transfer_status)) {
+//                         $data->where('registration_fixed_assets.transfer_status', '=', $request->transfer_status);
+//                     }
+//                     $data->get();
+//                 }
+//                 // dd($data->toSql());
+//                 return DataTables::of($data)
+//                     ->addColumn('action', function ($data) use ($user) {
+//                         if ($user->hasRole('user-employee-digassets')) {
+//                             // dd($data);
+//                             return view('datatables._action-user-digassets-sendnotif', [
+//                                 'model' => $data,
+//                                 'sendNotif' => route('transfernotif.send', base64_encode($data->id ?? $data->id_fixed_assets)),
+//                                 'show_url' => route('transfernotif.show', base64_encode($data->id ?? $data->id_fixed_assets))
+//                             ]);
+//                         } elseif ($user->hasRole('user-mgr-dept-head')) {
+//                             return view('datatables._action-user-mgr-dephead-sendnotif', [
+//                                 'model' => $data,
+//                                 'show_url' => route('transfernotif.show', base64_encode($data->id ?? $data->id_fixed_assets)),
+//                                 'approval_url' => route('transfernotif.approval', base64_encode($data->id ?? $data->id_fixed_assets)),
+//                                 'reject_url' => route('transfernotif.reject', base64_encode($data->id ?? $data->id_fixed_assets))
+//                             ]);
+//                         } elseif ($user->hasRole('manager-directur')) {
+//                             return view('datatables._action-mgrdir-digassets-sendnotif', [
+//                                 'model' => $data,
+//                                 'show_url' => route('transfernotif.show', base64_encode($data->id ?? $data->id_fixed_assets)),
+//                                 'approval_url' => route('transfernotif.approval', base64_encode($data->id ?? $data->id_fixed_assets)),
+//                                 'reject_url' => route('transfernotif.reject', base64_encode($data->id ?? $data->id_fixed_assets))
+//                             ]);
+//                         } elseif ($user->hasRole('user-receive-sendnotif-dept')) {
+//                             return view('datatables._action-user-receive-sendnotif-dept', [
+//                                 'model' => $data,
+//                                 'show_url' => route('transfernotif.show', base64_encode($data->id ?? $data->id_fixed_assets)),
+//                                 'approval_url' => route('transfernotif.approval', base64_encode($data->id ?? $data->id_fixed_assets)),
+//                                 'reject_url' => route('transfernotif.reject', base64_encode($data->id ?? $data->id_fixed_assets))
+//                             ]);
+//                         } elseif ($user->hasRole('user-mgr-receive-send-notif-dept')) {
+//                             return view('datatables._action-user-mgr-receive-sendnotif-dept', [
+//                                 'model' => $data,
+//                                 'show_url' => route('transfernotif.show', base64_encode($data->id ?? $data->id_fixed_assets)),
+//                                 'approval_url' => route('transfernotif.approval', base64_encode($data->id ?? $data->id_fixed_assets)),
+//                                 'reject_url' => route('transfernotif.reject', base64_encode($data->id ?? $data->id_fixed_assets))
+//                             ]);
+//                         } elseif ($user->hasRole('user-gm-accfinn-sendnotif')) {
+//                             return view('datatables._action-user-gm-accfinn-sendnotif', [
+//                                 'model' => $data,
+//                                 'show_url' => route('transfernotif.show', base64_encode($data->id ?? $data->id_fixed_assets)),
+//                                 'approval_url' => route('transfernotif.approval', base64_encode($data->id ?? $data->id_fixed_assets)),
+//                                 'reject_url' => route('transfernotif.reject', base64_encode($data->id ?? $data->id_fixed_assets))
+//                             ]);
+//                         } elseif ($user->hasRole('user-acct-digassets')) {
+//                             return view('datatables._action-user-accfinn-sendnotif', [
+//                                 'model' => $data,
+//                                 'show_url' => route('transfernotif.show', base64_encode($data->id ?? $data->id_fixed_assets)),
+//                                 'approval_url' => route('transfernotif.approval', base64_encode($data->id ?? $data->id_fixed_assets)),
+//                                 'reject_url' => route('transfernotif.reject', base64_encode($data->id ?? $data->id_fixed_assets))
+//                             ]);
+//                         } elseif ($user->hasRole('admin')) {
+//                             return view('datatables._action-admin-sendnotif', [
+//                                 'model' => $data,
+//                                 'show_url' => route('transfernotif.show', base64_encode($data->id ?? $data->id_fixed_assets)),
+//                                 'edit_url' => route('transfernotif.edit', base64_encode($data->id ?? $data->id_fixed_assets)),
+//                                 'delete_url' => route('transfernotif.destroy', base64_encode($data->id ?? $data->id_fixed_assets))
+//                             ]);
+//                         } else {
+//                             return '';
+//                         }
+//                     })
+//                     ->editColumn('rfa_number', function ($data) {
+//                         $no = $data->rfa_number;
+//                         if ($no == '-') {
+//                             return '<i>(wait for accounting dept to fill in)</i>';
+//                         } else {
+//                             return $no;
+//                         }
+//                     })
+//                     ->editColumn('date', function ($data) {
+//                         $no = $data->date;
+//                         if ($no == NULL) {
+//                             return '<i>(wait for accounting dept to fill in)</i>';
+//                         } else {
+//                             return $no;
+//                         }
+//                     })
+//                     ->rawColumns(['action', 'rfa_number', 'date'])
+//                     ->make(true);
+//             }
+
+//             // Return view untuk request non-AJAX (halaman pertama kali dimuat)
+//             if ($user->hasRole('user-employee-digassets')) {
+//                 $masterAssetGroups = DB::connection('portal-itsa')->table('master_asset_groups')->get();
+//                 $masterAssetLocations = DB::connection('portal-itsa')->table('master_asset_locations')->get();
+//                 $masterAssetCostCenters = DB::connection('portal-itsa')->table('master_asset_cost_centers')->get();
+//                 $department = DB::connection('portal-itsa')->table('departments')->get();
+//                 return view('digitalassets.send-notif-transfer.user-dashboard.index', [
+//                     'masterAssetsGroups' => $masterAssetGroups,
+//                     'masterAssetLocations' => $masterAssetLocations,
+//                     'masterAssetCostCenters' => $masterAssetCostCenters,
+//                     'departments' => $department
+//                 ]);
+//             } elseif ($user->hasRole('user-mgr-dept-head')) {
+//                 $masterAssetGroups = DB::connection('portal-itsa')->table('master_asset_groups')->get();
+//                 $masterAssetLocations = DB::connection('portal-itsa')->table('master_asset_locations')->get();
+//                 $masterAssetCostCenters = DB::connection('portal-itsa')->table('master_asset_cost_centers')->get();
+//                 $department = DB::connection('portal-itsa')->table('departments')->get();
+//                 return view('digitalassets.send-notif-transfer.user-mgr-depthead.index', [
+//                     'masterAssetsGroups' => $masterAssetGroups,
+//                     'masterAssetLocations' => $masterAssetLocations,
+//                     'masterAssetCostCenters' => $masterAssetCostCenters,
+//                     'departments' => $department
+//                 ]);
+//             } elseif ($user->hasRole('manager-directur')) {
+//                 $masterAssetGroups = DB::connection('portal-itsa')->table('master_asset_groups')->get();
+//                 $masterAssetLocations = DB::connection('portal-itsa')->table('master_asset_locations')->get();
+//                 $masterAssetCostCenters = DB::connection('portal-itsa')->table('master_asset_cost_centers')->get();
+//                 $department = DB::connection('portal-itsa')->table('departments')->get();
+//                 return view('digitalassets.send-notif-transfer.user-mgrdir.index', [
+//                     'masterAssetsGroups' => $masterAssetGroups,
+//                     'masterAssetLocations' => $masterAssetLocations,
+//                     'masterAssetCostCenters' => $masterAssetCostCenters,
+//                     'departments' => $department
+//                 ]);
+//             } elseif ($user->hasRole('user-receive-sendnotif-dept')) {
+//                 $masterAssetGroups = DB::connection('portal-itsa')->table('master_asset_groups')->get();
+//                 $masterAssetLocations = DB::connection('portal-itsa')->table('master_asset_locations')->get();
+//                 $masterAssetCostCenters = DB::connection('portal-itsa')->table('master_asset_cost_centers')->get();
+//                 $department = DB::connection('portal-itsa')->table('departments')->get();
+//                 return view('digitalassets.send-notif-transfer.user-receive-sendnotif-dept.index', [
+//                     'masterAssetsGroups' => $masterAssetGroups,
+//                     'masterAssetLocations' => $masterAssetLocations,
+//                     'masterAssetCostCenters' => $masterAssetCostCenters,
+//                     'departments' => $department
+//                 ]);
+//             } elseif ($user->hasRole('user-mgr-receive-send-notif-dept')) {
+//                 $masterAssetGroups = DB::connection('portal-itsa')->table('master_asset_groups')->get();
+//                 $masterAssetLocations = DB::connection('portal-itsa')->table('master_asset_locations')->get();
+//                 $masterAssetCostCenters = DB::connection('portal-itsa')->table('master_asset_cost_centers')->get();
+//                 $department = DB::connection('portal-itsa')->table('departments')->get();
+//                 return view('digitalassets.send-notif-transfer.user-mgr-receive-sendnotif-dept.index', [
+//                     'masterAssetsGroups' => $masterAssetGroups,
+//                     'masterAssetLocations' => $masterAssetLocations,
+//                     'masterAssetCostCenters' => $masterAssetCostCenters,
+//                     'departments' => $department
+//                 ]);
+//             } elseif ($user->hasRole('user-gm-accfinn-sendnotif')) {
+//                 $masterAssetGroups = DB::connection('portal-itsa')->table('master_asset_groups')->get();
+//                 $masterAssetLocations = DB::connection('portal-itsa')->table('master_asset_locations')->get();
+//                 $masterAssetCostCenters = DB::connection('portal-itsa')->table('master_asset_cost_centers')->get();
+//                 $department = DB::connection('portal-itsa')->table('departments')->get();
+//                 return view('digitalassets.send-notif-transfer.user-gm-accfinn-sendnotif.index', [
+//                     'masterAssetsGroups' => $masterAssetGroups,
+//                     'masterAssetLocations' => $masterAssetLocations,
+//                     'masterAssetCostCenters' => $masterAssetCostCenters,
+//                     'departments' => $department
+//                 ]);
+//             } elseif ($user->hasRole('user-acct-digassets')) {
+//                 $masterAssetGroups = DB::connection('portal-itsa')->table('master_asset_groups')->get();
+//                 $masterAssetLocations = DB::connection('portal-itsa')->table('master_asset_locations')->get();
+//                 $masterAssetCostCenters = DB::connection('portal-itsa')->table('master_asset_cost_centers')->get();
+//                 $department = DB::connection('portal-itsa')->table('departments')->get();
+//                 return view('digitalassets.send-notif-transfer.user-accfinn-sendnotif.index', [
+//                     'masterAssetsGroups' => $masterAssetGroups,
+//                     'masterAssetLocations' => $masterAssetLocations,
+//                     'masterAssetCostCenters' => $masterAssetCostCenters,
+//                     'departments' => $department
+//                 ]);
+//             } elseif ($user->hasRole('admin')) {
+//                 $masterAssetGroups = DB::connection('portal-itsa')->table('master_asset_groups')->get();
+//                 $masterAssetLocations = DB::connection('portal-itsa')->table('master_asset_locations')->get();
+//                 $masterAssetCostCenters = DB::connection('portal-itsa')->table('master_asset_cost_centers')->get();
+//                 $department = DB::connection('portal-itsa')->table('departments')->get();
+//                 $company = DB::connection('portal-itsa')->table('companys')->get();
+//                 return view('digitalassets.send-notif-transfer.user-admin-sendnotif.index', [
+//                     'masterAssetsGroups' => $masterAssetGroups,
+//                     'masterAssetLocations' => $masterAssetLocations,
+//                     'masterAssetCostCenters' => $masterAssetCostCenters,
+//                     'departments' => $department,
+//                     'companys' => $company
+//                 ]);
+//             } else {
+//                 return view('error.403');
+//             }
+
+//         }
+//     }
