@@ -9,6 +9,8 @@ use DB;
 use Illuminate\Support\Facades\Hash;
 use Symfony\Component\HttpFoundation\FileBag;
 use Yajra\DataTables\DataTables;
+use App\Mail\SendnotifRequestDar;
+use Illuminate\Support\Facades\Mail;
 use Carbon\Carbon;
 use Validator;
 use Storage;
@@ -126,9 +128,9 @@ class RequestdarController extends Controller
                             'type_of_reqforms.request_type as reqtype',
                             'request_desc.request_descript'
                         )
-                        ->where('request_dar.nik_atasan', Auth::user()->nik)
+                        // ->where('request_dar.nik_atasan', Auth::user()->nik)
                         ->where('request_dar.dept_id', Auth::user()->department_id);
-
+                    // ss
                     if ($request->has('date_range') && !empty($request->date_range)) {
                         $dateRange = explode(' - ', $request->date_range);
                         if (count($dateRange) == 2) {
@@ -444,9 +446,9 @@ class RequestdarController extends Controller
                 'no_doc' => 'required|string|max:50',
                 'qty_pages' => 'required|integer|min:1',
                 'reason' => 'required|string',
-                'rev_no' => 'required|integer|min:0',
+                'rev_no_before' => 'required|integer|min:0',
                 'storage_type' => 'required|in:month,year',
-                'file_doc' => 'required|file|mimes:pdf|max:5120', // 5MB max
+                'file_doc' => 'required|file|mimes:pdf,xlsx,xls|max:10240', // 5MB max 5120 
             ]);
             try {
                 // Begin transaction
@@ -473,7 +475,7 @@ class RequestdarController extends Controller
                 $requestdar = new Requestdar();
                 $requestdar->number_dar = $requestdar::generateDocumentNumber();
                 $requestdar->nik_req = Auth::user()->nik;
-                $requestdar->nik_atasan = '966.96.96';
+                // $requestdar->nik_atasan = '966.96.96';
                 $requestdar->company_id = Auth::user()->company_id;
                 $requestdar->position_id = Auth::user()->position_id;
                 $requestdar->user_id = Auth::user()->id;
@@ -484,7 +486,8 @@ class RequestdarController extends Controller
                 $requestdar->no_doc = $request->no_doc;
                 $requestdar->qty_pages = $request->qty_pages;
                 $requestdar->reason = $request->reason;
-                $requestdar->rev_no = $request->rev_no;
+                $requestdar->rev_no_before = $request->rev_no_before;
+                $requestdar->rev_no_after = $request->rev_no_after;
                 $requestdar->storage_type = $request->storage_type;
                 $requestdar->file_doc = $filePath;
                 $requestdar->status = '1'; // Default status
@@ -640,10 +643,14 @@ class RequestdarController extends Controller
                 $data->no_doc = empty($request->no_doc) ? $data->no_doc : $request->no_doc;
                 $data->qty_pages = empty($request->qty_pages) ? $data->qty_pages : $request->qty_pages;
                 $data->reason = empty($request->reason) ? $data->reason : $request->reason;
-                $data->rev_no = empty($request->rev_no) ? $data->rev_no : $request->rev_no;
+                $data->rev_no_before = empty($request->rev_no_before) ? $data->rev_no_before : $request->rev_no_before;
+                $data->rev_no_after = empty($request->rev_no_after) ? $data->rev_no_after : $request->rev_no_after;
                 $data->storage_type = empty($request->storage_type) ? $data->storage_type : $request->storage_type;
                 $data->typereqform_id = empty($request->typereqform_id) ? $data->typereqform_id : $request->typereqform_id;
                 $data->request_desc_id = empty($request->request_desc_id) ? $data->request_desc_id : $request->request_desc_id;
+                $data->approval_by1 = 'Manager';
+                $data->approval_by2 = 'Sys Dev';
+                $data->approval_by3 = 'Manager SysDev & IT';
 
                 if ($request->hasFile('file_doc')) {
                     $oldFilePath = $data->file_doc;
@@ -735,14 +742,34 @@ class RequestdarController extends Controller
         return response()->file($fullPath);
     }
 
+    private function getDataForEmail($id)
+    {
+        $dataEmail = $this->dataFromEmail($id);
+        $getRoleDisplayName = $this->getDisplayNameRole()->display_name;
+
+        return [
+            'dataEmail' => $dataEmail,
+            'roleDisplayName' => $getRoleDisplayName
+        ];
+    }
     public function approvedBy1(Request $request, $id)
     {
         if (Auth::user()->hasPermission(['manager-dar-system', 'approved-by1'])) {
+            $getData = $this->getDataForEmail($id);
+
             DB::connection('portal-itsa')->table('request_dar')->where('id', $id)->update([
                 'approval_date1' => date('Y-m-d H:i:s'),
                 'approval_status1' => '1',
                 'remark_approval_by1' => $request->input('remarks', '')
             ]);
+            $this->sendApprovalEmail(
+                $getData['dataEmail'],
+                $request->input('remarks', ''),
+                Auth::user()->name,
+                'manager',
+                $getData['roleDisplayName'],
+                date('Y-m-d H:i:s')
+            );
 
             return response()->json([
                 'status' => true
@@ -752,11 +779,14 @@ class RequestdarController extends Controller
     public function rejectedAppr1(Request $request, $id)
     {
         if (Auth::user()->hasPermission(['manager-dar-system', 'approved-by1', 'rejected-appr1'])) {
+
             DB::connection('portal-itsa')->table('request_dar')->where('id', $id)->update([
                 'approval_date1' => date('Y-m-d H:i:s'),
                 'approval_status1' => '2',
                 'remark_approval_by1' => $request->reject_reason
             ]);
+
+
 
             return response()->json([
                 'status' => true
@@ -766,12 +796,21 @@ class RequestdarController extends Controller
     public function approvedBy2(Request $request, $id)
     {
         if (Auth::user()->hasPermission(['manager-dar-system', 'approved-by2'])) {
+            $getData = $this->getDataForEmail($id);
+
             DB::connection('portal-itsa')->table('request_dar')->where('id', $id)->update([
                 'approval_date2' => date('Y-m-d H:i:s'),
                 'approval_status2' => '1',
                 'remark_approval_by2' => $request->input('remarks', '')
             ]);
-
+            $this->sendApprovalEmail(
+                $getData['dataEmail'],
+                $request->input('remarks', ''),
+                Auth::user()->name,
+                'sysdev',
+                $getData['roleDisplayName'],
+                date('Y-m-d H:i:s')
+            );
             return response()->json([
                 'status' => true
             ]);
@@ -796,11 +835,20 @@ class RequestdarController extends Controller
         \Log::info('Request data for approval:', $request->all());
 
         if (Auth::user()->hasPermission(['manager-dar-system', 'approved-by3'])) {
+            $getData = $this->getDataForEmail($id);
             DB::connection('portal-itsa')->table('request_dar')->where('id', $id)->update([
                 'approval_date3' => date('Y-m-d H:i:s'),
                 'approval_status3' => '1',
                 'remark_approval_by3' => $request->input('remarks', '')
             ]);
+            $this->sendApprovalEmail(
+                $getData['dataEmail'],
+                $request->input('remarks', ''),
+                Auth::user()->name,
+                'manager-it',
+                $getData['roleDisplayName'],
+                date('Y-m-d H:i:s')
+            );
 
             return response()->json([
                 'status' => true
@@ -820,6 +868,46 @@ class RequestdarController extends Controller
                 'status' => true
             ]);
         }
+    }
+
+    private function dataFromEmail($id)
+    {
+        $data = DB::connection('portal-itsa')->table('request_dar')->leftJoin('users', 'request_dar.user_id', '=', 'users.id')
+            ->leftJoin('departments', 'request_dar.dept_id', '=', 'departments.id')
+            ->leftJoin('companys', 'request_dar.company_id', '=', 'companys.id')
+            ->leftJoin('positions', 'request_dar.position_id', '=', 'positions.id')
+            ->leftJoin('type_of_reqforms', 'request_dar.typereqform_id', '=', 'type_of_reqforms.id')
+            ->leftJoin('request_desc', 'request_dar.request_desc_id', '=', 'request_desc.id')
+            ->select(
+                'request_dar.*',
+                'request_dar.id as reqdar_id',
+                'users.*',
+                'departments.description as department',
+                'companys.company_desc as company',
+                'positions.position_desc as position',
+                'type_of_reqforms.request_type as reqtype',
+                'request_desc.request_descript'
+            )
+            ->where('request_dar.id', $id)->first();
+        return $data;
+    }
+    private function sendApprovalEmail($dataDar, $remarks, $approverName, $userRole, $getDisplayname, $approvalDate)
+    {
+
+        Mail::to('it-03@thaisummit.co.id')->send(new SendnotifRequestDar($dataDar, $remarks, $approverName, $userRole, $getDisplayname, $approvalDate));
+        return "email successfully sending.";
+
+    }
+    private function getDisplayNameRole()
+    {
+        $user_id = Auth::user()->id;
+        $query = DB::connection('portal-itsa')->table('users as a')
+            ->leftJoin('role_user as b', 'b.user_id', '=', 'a.id')
+            ->leftJoin('roles as c', 'b.role_id', '=', 'c.id')
+            ->select('c.display_name')
+            ->where('a.id', $user_id)
+            ->first();
+        return $query;
     }
     public function downloadDocument($id)
     {
