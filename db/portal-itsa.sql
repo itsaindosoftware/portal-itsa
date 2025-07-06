@@ -2,7 +2,7 @@
 -- Host:                         127.0.0.1
 -- Server version:               5.7.24 - MySQL Community Server (GPL)
 -- Server OS:                    Win64
--- HeidiSQL Version:             12.5.0.6677
+-- HeidiSQL Version:             12.8.0.6951
 -- --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -132,18 +132,27 @@ CREATE TABLE IF NOT EXISTS `news` (
   `dept_id` int(11) NOT NULL,
   `role_id` int(11) NOT NULL,
   `title` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `slug` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `excerpt` text COLLATE utf8mb4_unicode_ci,
   `pic` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
   `description` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `meta_description` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT '',
+  `category` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `status` enum('active','inactive','draft') COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `published_at` timestamp NULL DEFAULT NULL,
+  `views_count` int(11) DEFAULT '0',
   `created_by` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_by` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `slug` (`slug`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table portal-itsa.news: ~1 rows (approximately)
-REPLACE INTO `news` (`id`, `users_id`, `dept_id`, `role_id`, `title`, `pic`, `description`, `created_by`, `created_at`, `updated_by`, `updated_at`) VALUES
-	(2, 1, 0, 1, 'Champions KIIC SPort', '2.png', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.', 'admin-itsa', '2025-05-23 02:35:38', NULL, NULL);
+-- Dumping data for table portal-itsa.news: ~2 rows (approximately)
+REPLACE INTO `news` (`id`, `users_id`, `dept_id`, `role_id`, `title`, `slug`, `excerpt`, `pic`, `description`, `meta_description`, `category`, `status`, `published_at`, `views_count`, `created_by`, `created_at`, `updated_by`, `updated_at`) VALUES
+	(3, 1, 0, 1, 'Champions KIIC Sport', 'champions-kiic-sport', 'tes', '2.png', 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.', NULL, 'event', 'active', '2025-05-24 01:50:00', 0, 'admin-itsa', '2025-05-23 17:30:04', 'admin-itsa', '2025-05-23 18:50:37'),
+	(4, 1, 0, 1, 'Thai Summit Grup Thailand', 'thai-summit-grup-thailand', 'We are pleased and honored to have received CHANGAN\'s first job, We truly appreciate CHANGAN\'s trust and confidence in our company.\r\n                    Thai Summit Group is greatly delighted to be on...', 'Changan.jpg', 'We are pleased and honored to have received CHANGAN\'s first job, We truly appreciate CHANGAN\'s trust and confidence in our company.\r\n                    Thai Summit Group is greatly delighted to be one of the automotive parts suppliers and to have a business-related partnership that strengthens the excellent connection between CHANGAN and Thai Summit Group.', NULL, 'general', 'active', '2025-05-24 02:25:00', 0, 'admin-itsa', '2025-05-23 19:25:51', 'admin-itsa', NULL);
 
 -- Dumping structure for table portal-itsa.password_resets
 CREATE TABLE IF NOT EXISTS `password_resets` (
@@ -460,7 +469,7 @@ CREATE TABLE IF NOT EXISTS `service` (
   `updated_at` timestamp NULL DEFAULT NULL,
   `updated_by` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Dumping data for table portal-itsa.service: ~2 rows (approximately)
 REPLACE INTO `service` (`id`, `title`, `description`, `created_by`, `created_at`, `updated_at`, `updated_by`) VALUES
@@ -508,9 +517,9 @@ CREATE TABLE IF NOT EXISTS `users` (
   UNIQUE KEY `users_username_unique` (`username`)
 ) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table portal-itsa.users: ~7 rows (approximately)
+-- Dumping data for table portal-itsa.users: ~8 rows (approximately)
 REPLACE INTO `users` (`id`, `name`, `email`, `username`, `nik`, `department_id`, `position_id`, `company_id`, `email_verified_at`, `password`, `remember_token`, `created_at`, `updated_at`) VALUES
-	(1, 'admin-itsa', 'admin@gmail.com', 'admin', '111.11.11', 0, 0, 0, NULL, '$2y$10$tTyzV0K8C7vi/LrpYIznduJU8oDrSechvHm5AgO5S0MsBKT9e1.Mm', 'VMMKMfp0OTbs38eaHVIb7im5pqVu89yJU2JESrhNWTDgVqGEUoCKbK3dpobd', '2022-05-17 00:26:49', '2023-11-14 21:25:23'),
+	(1, 'admin-itsa', 'admin@gmail.com', 'admin', '111.11.11', 0, 0, 0, NULL, '$2y$10$tTyzV0K8C7vi/LrpYIznduJU8oDrSechvHm5AgO5S0MsBKT9e1.Mm', 'SzuGy5urBgXwi63jG8T1bWavCeUxf4nCSlKp9mVQmlI4cUMHCJbbjhZSYh4a', '2022-05-17 00:26:49', '2023-11-14 21:25:23'),
 	(2, 'Wildan Fathur Rohman', 'it-03@thaisummit.co.id', 'wildanfr', '943.04.25', 10, 11, 1, NULL, '$2y$10$erCl0A6vAO9m4jvBAr5bhOTY4b5Au1lv1BVi/blcMsr1ZAGopVjUK', NULL, '2025-05-05 20:30:05', '2025-05-05 21:07:00'),
 	(3, 'user1', 'user1@gmail.com', 'user1', '999.99.99', 6, 11, 1, NULL, '$2y$10$uQnjMQuQtcMnVMsDv1pxRuOCKl/SeRdi6iaVi9Pqg13LtVvSIaQ0O', NULL, '2025-05-06 20:59:02', '2025-05-06 20:59:02'),
 	(4, 'user2-manager', 'user2@thaisummit.co.id', 'user2-manager', '966.96.96', 6, 9, 1, NULL, '$2y$10$rGv5v8aPHb9Ie2B3X7g7Oeb3jWwG0irAiIVrFiCg0CaRU2ZH6zWfO', NULL, '2025-05-17 09:17:08', '2025-05-17 09:17:08'),
