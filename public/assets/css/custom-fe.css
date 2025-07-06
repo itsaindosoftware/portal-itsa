@@ -146,7 +146,9 @@
       padding-bottom: 100px;
       background-color: #f8f9fa;
       position: relative;
-      overflow: hidden;
+      /* overflow: hidden;
+       */
+        overflow: visible;
     }
 
     .about-portal:before {
@@ -211,6 +213,7 @@
 
     /* Contact Us Section */
     .contact-us {
+      overflow: visible;
       padding: 100px 0;
       background-color: #ffffff;
       position: relative;

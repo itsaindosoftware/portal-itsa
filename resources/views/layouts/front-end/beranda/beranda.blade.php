@@ -116,8 +116,9 @@
   </section>
 
   <!-- News Section -->
-  <section class="news-section" style="padding: 100px 0; background-color: #f8f9fa;">
-    <div class="container">
+  <section class="news-section" style="padding: 100px 0; background-color: #f8f9fa;; overflow: visible !important">
+     {{-- min-height: auto; height: auto; --}}
+    <div class="container" style="overflow: visible !important;">
 
       <!-- Search and Filter Section -->
       <div class="row mb-5">
@@ -202,7 +203,8 @@
         @foreach($news as $item)
         <!-- News Item -->
         <div class="col-lg-4 col-md-6 mb-4">
-          <div class="news-card" style="background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.08); transition: all 0.3s ease; height: 100%;">
+          <div class="news-card" style="background: #ffffff; border-radius: 15px;
+           overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.08); transition: all 0.3s ease; height: auto;min-height:400px;">
             <div class="news-image" style="position: relative; overflow: hidden;">
               <img src="{{ $item->pic ? asset('storage/news/' . $item->pic) : '/api/placeholder/400/250' }}" alt="{{ $item->title }}" style="width: 100%; height: 200px; object-fit: cover; transition: transform 0.3s ease;">
               @if($item->category)
@@ -263,6 +265,7 @@
       @endif
 
     </div>
+  </section>
 
 
 

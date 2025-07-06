@@ -84,4 +84,9 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('transfernotif/approval/{param}', 'AssettfnotifController@approval')->name('transfernotif.approval');
     Route::post('transfernotif/reject/{param}', 'AssettfnotifController@reject')->name('transfernotif.reject');
 
+    // :: Master Documents ::
+    Route::resource('masterdocs', 'MasterDocController');
+    Route::get('view-document-master/{param}', 'MasterDocController@viewDocument')->name('masterdocs.view-document');
+    Route::get('/download-document-master/{param}', 'MasterDocController@downloadDocument')->name('masterdocs.downloadDocument');
+
 });

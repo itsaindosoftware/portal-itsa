@@ -128,7 +128,7 @@
               </div>
               <h5 class="fw-bold mb-3" style="color: #333; line-height: 1.3;">{{ $item->title }}</h5>
               <p style="color: #666; line-height: 1.6; font-size: 0.95rem;">{{ Str::limit(strip_tags($item->description), 100) }}</p>
-              @[]
+              {{-- @[] --}}
               <a href="{{ route('news.show', base64_encode($item->id)) }}" style="color: #007bff; text-decoration: none; font-weight: 600; font-size: 0.9rem;">Read More <i class="fas fa-chevron-right ms-1"></i></a>
             </div>
           </div>

@@ -164,10 +164,10 @@
                                 <div class="form-group">
                                     <label class="font-weight-bold">Upload Document</label>
                                     <div class="custom-file">
-                                        <input type="file" 
-                                        class="custom-file-input" 
-                                        id="file_doc" 
-                                        name="file_doc" 
+                                        <input type="file"
+                                        class="custom-file-input"
+                                        id="file_doc"
+                                        name="file_doc"
                                          accept=".pdf,.xlsx,.xls" required>
                                         <label class="custom-file-label" for="file_doc">Pilih file PDF/Excel</label>
                                     </div>
@@ -215,7 +215,7 @@
         $('input[name="storage_type"]').prop('checked', false);
         $('input[name="request_desc_id"]').prop('checked', false);
     }
-    
+
 
 
 </script>

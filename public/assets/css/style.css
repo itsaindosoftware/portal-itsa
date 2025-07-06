@@ -2,14 +2,14 @@
 /**
  * Stisla
  *
- * Stisla is a clean & modern HTML5 admin template based on Bootstrap 4. 
+ * Stisla is a clean & modern HTML5 admin template based on Bootstrap 4.
  * Stisla will make it easier for you to create your own admin interface.
  *
- * @package	Stisla 
+ * @package	Stisla
  * @version	2.2.0
  * @author 	Muhamad Nauval Azhar
  * @url 	https://getstisla.com
- * 
+ *
  */
 /**
  * TABLE OF CONTENTS
@@ -2581,12 +2581,12 @@ body.layout-3 .main-footer {
   width: 100%;
   text-align: center;
   height: 70px;
-  line-height: 60px; 
+  line-height: 60px;
    background-color: #5c6ad7;
    /* 30a9e1 */
    /* 6777ef */
    padding: 0 20px;
-  position: relative; 
+  position: relative;
   }
   .main-sidebar .sidebar-brand.sidebar-brand-sm {
     display: none; }
@@ -2595,7 +2595,7 @@ body.layout-3 .main-footer {
     text-transform: uppercase;
     letter-spacing: 1.5px;
     font-weight: 700;
-    color: #ffffff; 
+    color: #ffffff;
     /* color: #000; */
   }
 .main-sidebar .sidebar-user {
@@ -2896,6 +2896,14 @@ body:not(.sidebar-mini) .sidebar-style-2 .sidebar-menu li.active ul.dropdown-men
   color: #ffffff;
 }
 
+#table-master-manage th {
+  background-color: #5c6ad7;
+  /* 30a9e1 */
+  /* 5c6ad7 */
+  text-align: left;
+  color: #ffffff;
+}
+
 #table-request-manage tr:nth-child(even) {
   background-color: #f2f2f2;
 }
@@ -2925,7 +2933,7 @@ body:not(.sidebar-mini) .sidebar-style-2 .sidebar-menu li.active ul.dropdown-men
 }
 #table-module-manage th,
 #table-module-manage td {
-  padding: 12px 15px; 
+  padding: 12px 15px;
   border: 1px solid #ddd;
 }
 #table-module-manage th {
@@ -2935,7 +2943,7 @@ body:not(.sidebar-mini) .sidebar-style-2 .sidebar-menu li.active ul.dropdown-men
 
 #table-permission-manage {
   width: 100%;
-  border-collapse: collapse;  
+  border-collapse: collapse;
 }
 #table-permission-manage th,
 #table-permission-manage td {
@@ -2953,7 +2961,7 @@ body:not(.sidebar-mini) .sidebar-style-2 .sidebar-menu li.active ul.dropdown-men
 }
 #table-role-manage th,
 #table-role-manage td {
-  padding: 12px 15px;   
+  padding: 12px 15px;
   border: 1px solid #ddd;
 }
 #table-role-manage th {
@@ -2969,7 +2977,7 @@ body:not(.sidebar-mini) .sidebar-style-2 .sidebar-menu li.active ul.dropdown-men
 #table-company-manage td {
   padding: 12px 15px;
   border: 1px solid #ddd;
-}   
+}
 #table-company-manage th {
   background-color: #30a9e1;
   color: #ffffff;
@@ -2980,10 +2988,10 @@ body:not(.sidebar-mini) .sidebar-style-2 .sidebar-menu li.active ul.dropdown-men
 
 }
 #table-department-manage th,
-#table-department-manage td { 
+#table-department-manage td {
   padding: 12px 15px;
   border: 1px solid #ddd;
-}   
+}
 #table-department-manage th {
   background-color: #30a9e1;
   color: #ffffff;
@@ -2991,10 +2999,10 @@ body:not(.sidebar-mini) .sidebar-style-2 .sidebar-menu li.active ul.dropdown-men
 
 #table-position-manage {
   width: 100%;
-  border-collapse: collapse;  
+  border-collapse: collapse;
 }
 #table-position-manage th,
-#table-position-manage td { 
+#table-position-manage td {
   padding: 12px 15px;
   border: 1px solid #ddd;
 }
@@ -3019,16 +3027,16 @@ body:not(.sidebar-mini) .sidebar-style-2 .sidebar-menu li.active ul.dropdown-men
 
 #table-service-manage {
   width: 100%;
-  border-collapse: collapse;  
+  border-collapse: collapse;
 }
 #table-service-manage th,
 #table-service-manage td {
-  padding: 12px 15px;   
+  padding: 12px 15px;
   border: 1px solid #ddd;
 }
 #table-service-manage th {
   background-color: #30a9e1;
-  color: #ffffff;   
+  color: #ffffff;
 }
 
 /* #table-permission-manage tr:nth-child(even) {
