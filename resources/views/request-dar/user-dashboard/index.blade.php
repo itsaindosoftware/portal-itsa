@@ -137,33 +137,79 @@ $(document).on('click','#show-create-dar', function(e){
     $('#reqdarForm input[type="radio"]').on('change', function() {
         validateForm();
     });
-
+     $('input[name="request_desc_id"]').on('change', function() {
+        handleDescriptionChange();
+        validateForm();
+    });
+    function handleDescriptionChange() {
+    var selectedDesc = $('input[name="request_desc_id"]:checked');
+    var revNoContainer = $('#rev_no_before, #rev_no_after').closest('.col-md-3');
+    
+    if (selectedDesc.length > 0) {
+        // Get the label text of selected description
+        var descText = selectedDesc.next('label').text().toLowerCase();
+        
+        if (descText.includes('new issue') || descText.includes('new')) {
+            // Hide Rev No fields
+            revNoContainer.hide();
+            $('#rev_no_before').removeAttr('required').val('');
+            $('#rev_no_after').val('');
+        } else {
+            revNoContainer.show();
+            $('#rev_no_before').attr('required', true);
+        }
+    } else {
+        // If no description selected, show Rev No fields but don't make them required yet
+        revNoContainer.show();
+        $('#rev_no_before').removeAttr('required');
+    }
+}
     // validasi file_doc
     $('#file_doc').on('change', function() {
         var fileInput = this;
-        var fileName = fileInput.files[0] ? fileInput.files[0].name : 'Pilih file PDF';
+        var fileName = fileInput.files[0] ? fileInput.files[0].name : 'Pilih file PDF atau Excel';
         $(this).next('.custom-file-label').text(fileName);
 
         // Validate file type and size
         if (fileInput.files.length > 0) {
             var file = fileInput.files[0];
+            
+            // Allowed file types
+                var allowedTypes = [
+                    'application/pdf',
+                    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // .xlsx
+                    'application/vnd.ms-excel' // .xls
+                ];
+                
+                // Get file extension
+                var fileExtension = file.name.split('.').pop().toLowerCase();
+                var allowedExtensions = ['pdf', 'xlsx', 'xls'];
 
-            // Check file type (must be PDF)
-            if (file.type !== 'application/pdf') {
-                showNotification('error', 'Hanya file PDF yang diperbolehkan');
-                $(this).val(''); // Clear file input
-                $(this).next('.custom-file-label').text('Pilih file PDF');
-                return false;
+                // Check file type using MIME type and extension
+                if (!allowedTypes.includes(file.type) && !allowedExtensions.includes(fileExtension)) {
+                    showNotification('error', 'Hanya file PDF dan Excel (.xlsx, .xls) yang diperbolehkan');
+                    $(this).val(''); // Clear file input
+                    $(this).next('.custom-file-label').text('Pilih file PDF atau Excel');
+                    return false;
+                }
+
+            
+                // Check file size (max 10MB for Excel, 5MB for PDF)
+                var maxSize = fileExtension === 'pdf' ? 5 * 1024 * 1024 : 10 * 1024 * 1024; // 5MB for PDF, 10MB for Excel
+                var maxSizeText = fileExtension === 'pdf' ? '5MB' : '10MB';
+                
+                if (file.size > maxSize) {
+                    showNotification('error', 'Ukuran file maksimal ' + maxSizeText);
+                    $(this).val(''); // Clear file input
+                    $(this).next('.custom-file-label').text('Pilih file PDF atau Excel');
+                    return false;
+                }
+
+                // Show success message for valid file
+                var fileType = fileExtension === 'pdf' ? 'PDF' : 'Excel';
+                // showNotification('success', 'File ' + fileType + ' berhasil dipilih: ' + fileName);
             }
 
-            // Check file size (max 5MB)
-            if (file.size > 5 * 1024 * 1024) {
-                showNotification('error', 'Ukuran file maksimal 5MB');
-                $(this).val(''); // Clear file input
-                $(this).next('.custom-file-label').text('Pilih file PDF');
-                return false;
-            }
-        }
 
         // Re-validate the form
         validateForm();
@@ -202,7 +248,11 @@ $(document).on('click','#show-create-dar', function(e){
             !$('#no-doc').val().trim() ||
             !$('#qty-pages').val() ||
             !$('#reason').val().trim() ||
-            !$('#rev_no').val()) {
+            !$('#rev_no_before').val()) {
+            isValid = false;
+        }
+
+        if ($('#rev_no_before').is(':visible') && $('#rev_no_before').prop('required') && !$('#rev_no_before').val()) {
             isValid = false;
         }
 
@@ -224,7 +274,7 @@ $(document).on('click','#show-create-dar', function(e){
         $('input[name="typereqform_id"]').prop('checked', false);
         $('input[name="storage_type"]').prop('checked', false);
         $('input[name="request_desc_id"]').prop('checked', false);
-        $('.custom-file-label').text('Pilih file PDF');
+        $('.custom-file-label').text('Pilih file PDF/Excel');
         $('#reqdarForm input, #reqdarForm textarea, #reqdarForm select').prop('disabled', false);
     }
     function showNotification(type, message) {
@@ -317,6 +367,8 @@ $(document).on('click','#show-create-dar', function(e){
             $('#table-request-manage').DataTable().ajax.reload();
         }
     });
+
+
 
 
 

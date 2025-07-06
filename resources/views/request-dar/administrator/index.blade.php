@@ -268,7 +268,7 @@ $(document).ready(function(){
         $('input[name="typereqform_id"]').prop('checked', false);
         $('input[name="storage_type"]').prop('checked', false);
         $('input[name="request_desc_id"]').prop('checked', false);
-        $('.custom-file-label').text('Pilih file PDF');
+        $('.custom-file-label').text('Pilih file PDF/Excel');
         $('#reqdarForm input, #reqdarForm textarea, #reqdarForm select').prop('disabled', false);
     }
     function showNotification(type, message) {

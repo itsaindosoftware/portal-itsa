@@ -7,15 +7,15 @@
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-lg-8 text-center">
-                    <h2 class="fw-bold mb-4">Contact Us</h2>
+                    <h2 class="fw-bold mb-4">Contact Information</h2>
                     <div class="divider mx-auto my-4"></div>
-                    <p class="lead mb-5">Have questions about our services? Feel free to contact us using any of the methods below</p>
+                    <p class="lead mb-5">Ext Phone</p>
                 </div>
             </div>
             
             <!-- Main Contact Info -->
             <div class="main-phones">
-                <h4><i class="fas fa-phone me-2"></i>Indonesia Thai Summit Auto</h4>
+                <h4><i class="fas fa-phone me-2"></i>Indonesia Thai Summit Auto Ext Phone</h4>
                 <div class="phone-numbers">
                     <div class="phone-item"><i class="fas fa-phone me-2"></i>021-8911 4252</div>
                     <div class="phone-item"><i class="fas fa-phone me-2"></i>0267-845 7184</div>
@@ -73,7 +73,7 @@
                                     <span class="ext-number">250</span>
                                 </li>
                                 <li class="dept-item">
-                                    <span class="dept-name">Rahma Pridine</span>
+                                    <span class="dept-name">Rahma</span>
                                     <span class="ext-number">251</span>
                                 </li>
                                 <li class="dept-item">
@@ -93,11 +93,11 @@
                                     <span class="ext-number">108</span>
                                 </li>
                                 <li class="dept-item">
-                                    <span class="dept-name">Dede Konal</span>
+                                    <span class="dept-name">Dede, Ronal</span>
                                     <span class="ext-number">242</span>
                                 </li>
                                 <li class="dept-item">
-                                    <span class="dept-name">Didin Rico</span>
+                                    <span class="dept-name">Didin, Wildan</span>
                                     <span class="ext-number">251</span>
                                 </li>
                             </ul>
@@ -113,7 +113,7 @@
                                     <span class="ext-number">120</span>
                                 </li>
                                 <li class="dept-item">
-                                    <span class="dept-name">Dewi Yogi</span>
+                                    <span class="dept-name">Dewi,Yogi</span>
                                     <span class="ext-number">575</span>
                                 </li>
                             </ul>
@@ -125,7 +125,7 @@
                             <h5><i class="fas fa-bullhorn me-2"></i>Marketing</h5>
                             <ul class="dept-list">
                                 <li class="dept-item">
-                                    <span class="dept-name">Yuriha</span>
+                                    <span class="dept-name">Yudha</span>
                                     <span class="ext-number">241</span>
                                 </li>
                                 <li class="dept-item">
@@ -157,7 +157,7 @@
                             <h5><i class="fas fa-user-tie me-2"></i>HR, GA & Legal</h5>
                             <ul class="dept-list">
                                 <li class="dept-item">
-                                    <span class="dept-name">Miftah</span>
+                                    <span class="dept-name">Andi</span>
                                     <span class="ext-number">245</span>
                                 </li>
                                 <li class="dept-item">
@@ -169,7 +169,7 @@
                                     <span class="ext-number">262</span>
                                 </li>
                                 <li class="dept-item">
-                                    <span class="dept-name">Asvina Fakhurrofman</span>
+                                    <span class="dept-name">Fakhurrohman</span>
                                     <span class="ext-number">290</span>
                                 </li>
                             </ul>
@@ -205,7 +205,7 @@
                                     <span class="ext-number">-</span>
                                 </li>
                                 <li class="dept-item">
-                                    <span class="dept-name">Maman Novan</span>
+                                    <span class="dept-name">Maman, Novan</span>
                                     <span class="ext-number">-</span>
                                 </li>
                             </ul>
@@ -225,7 +225,7 @@
                                     <span class="ext-number">-</span>
                                 </li>
                                 <li class="dept-item">
-                                    <span class="dept-name">Susi Yolanda</span>
+                                    <span class="dept-name">Susi,Yolanda</span>
                                     <span class="ext-number">-</span>
                                 </li>
                             </ul>

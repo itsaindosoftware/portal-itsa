@@ -23,6 +23,7 @@
   {{-- @include('sweetalert::alert') --}}
     <!-- Custom js -->
   <script src="{{ asset('assets/sweetalert2/dist/sweetalert2.min.js') }}"></script>
+  
   @stack('js')
 
   @yield('script')

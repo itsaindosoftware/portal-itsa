@@ -7,16 +7,16 @@
 <div class="row">
   <!-- Total Request Card -->
   <div class="col-xl-3 col-md-6 mb-4">
-    <div class="card border-left-primary shadow h-100 py-2">
+    <div class="card border-left-primary shadow h-100 py-2" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
       <div class="card-body">
         <div class="row no-gutters align-items-center">
           <div class="col mr-2">
-            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+            <div class="text-xs font-weight-bold text-white text-uppercase mb-1">
               Total Request DAR</div>
-            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $totalDar }}</div>
+            <div class="h5 mb-0 font-weight-bold text-white">{{ $totalDar }}</div>
           </div>
           <div class="col-auto">
-            <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+            <i class="fas fa-clipboard-list fa-2x text-white opacity-75"></i>
           </div>
         </div>
       </div>
@@ -25,16 +25,16 @@
 
   <!-- Pending Requests Card -->
   <div class="col-xl-3 col-md-6 mb-4">
-    <div class="card border-left-warning shadow h-100 py-2">
+    <div class="card border-left-warning shadow h-100 py-2" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
       <div class="card-body">
         <div class="row no-gutters align-items-center">
           <div class="col mr-2">
-            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-              Menunggu Approval</div>
-            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $pending }}</div>
+            <div class="text-xs font-weight-bold text-white text-uppercase mb-1">
+              Waiting Approval</div>
+            <div class="h5 mb-0 font-weight-bold text-white">{{ $pending }}</div>
           </div>
           <div class="col-auto">
-            <i class="fas fa-clock fa-2x text-gray-300"></i>
+            <i class="fas fa-clock fa-2x text-white opacity-75"></i>
           </div>
         </div>
       </div>
@@ -43,16 +43,16 @@
 
   <!-- Approved Requests Card -->
   <div class="col-xl-3 col-md-6 mb-4">
-    <div class="card border-left-success shadow h-100 py-2">
+    <div class="card border-left-success shadow h-100 py-2" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
       <div class="card-body">
         <div class="row no-gutters align-items-center">
           <div class="col mr-2">
-            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+            <div class="text-xs font-weight-bold text-white text-uppercase mb-1">
               Approved</div>
-            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $approved }}</div>
+            <div class="h5 mb-0 font-weight-bold text-white">{{ $approved }}</div>
           </div>
           <div class="col-auto">
-            <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+            <i class="fas fa-check-circle fa-2x text-white opacity-75"></i>
           </div>
         </div>
       </div>
@@ -61,16 +61,16 @@
 
   <!-- Rejected Requests Card -->
   <div class="col-xl-3 col-md-6 mb-4">
-    <div class="card border-left-danger shadow h-100 py-2">
+    <div class="card border-left-danger shadow h-100 py-2" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
       <div class="card-body">
         <div class="row no-gutters align-items-center">
           <div class="col mr-2">
-            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+            <div class="text-xs font-weight-bold text-white text-uppercase mb-1">
               Rejected</div>
-            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $rejected }}</div>
+            <div class="h5 mb-0 font-weight-bold text-white">{{ $rejected }}</div>
           </div>
           <div class="col-auto">
-            <i class="fas fa-times-circle fa-2x text-gray-300"></i>
+            <i class="fas fa-times-circle fa-2x text-white opacity-75"></i>
           </div>
         </div>
       </div>
@@ -117,9 +117,9 @@
       <div class="card-header py-3 d-flex align-items-center justify-content-between">
         <div>
           <i class="fas fa-tasks mr-2"></i>
-          <h6 class="m-0 font-weight-bold text-primary d-inline">Request Menunggu Approval</h6>
+          <h6 class="m-0 font-weight-bold text-primary d-inline">Request Waiting Approval</h6>
         </div>
-        <a href="{{ route('requestdar.index') }}" class="btn btn-sm btn-primary">Lihat Semua</a>
+        <a href="{{ route('requestdar.index') }}" class="btn btn-sm btn-primary">All list</a>
       </div>
       <div class="card-body">
         <div class="table-responsive">
@@ -146,7 +146,7 @@
               </tr>
               @empty
               <tr>
-                <td colspan="6" class="text-center">Tidak ada request yang menunggu approval</td>
+                <td colspan="6" class="text-center">No data available</td>
               </tr>
               @endforelse
             </tbody>
@@ -332,5 +332,3 @@
     });
 </script>
 @endpush
-
-

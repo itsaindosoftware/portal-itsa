@@ -258,14 +258,25 @@
                                     </div>
                                 </div>
 
-                                <div class="col-md-6">
+                                <div class="col-md-3">
                                     <div class="form-group">
-                                        <label class="font-weight-bold">Rev No</label>
+                                        <label class="font-weight-bold">Rev No Before</label>
                                         <div class="input-group">
                                             <div class="input-group-prepend">
                                                 <span class="input-group-text"><i class="fa fa-file"></i></span>
                                             </div>
-                                            <input type="number" class="form-control" name="rev_no" id="rev_no_edit" required placeholder="Rev No.">
+                                            <input type="number" class="form-control" name="rev_no_before" id="rev_no_before_edit" required placeholder="Rev No Before.">
+                                        </div>
+                                    </div>
+                                </div>
+                                 <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label class="font-weight-bold">Rev No After</label>
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="fa fa-file"></i></span>
+                                            </div>
+                                            <input type="number" class="form-control" name="rev_no_after" readonly id="rev_no_after_edit" required placeholder="Rev No After.">
                                         </div>
                                     </div>
                                 </div>
@@ -300,13 +311,13 @@
                                     <div class="custom-file">
                                         <input type="hidden" id="file-storage">
                                         <input type="file" class="custom-file-input-edit" id="file_doc_edit" name="file_doc" accept=".pdf">
-                                        <label class="custom-file-label-edit" for="file_doc">Pilih file PDF</label>
+                                        <label class="custom-file-label-edit" for="file_doc">Pilih file PDF/Excel</label>
                                     </div>
-                                    <small class="form-text text-muted">Format yang diterima: PDF. Maksimal ukuran: 5MB</small>
+                                    <small class="form-text text-muted">Format yang diterima: PDF. Maksimal ukuran: 5MB, Excel Maksimal ukuran: 10mb</small>
                                     <!-- Tambahkan tombol view PDF -->
                                    <div class="mt-2">
                                     <button type="button" id="view-pdf-btn" class="btn btn-sm btn-primary" disabled>
-                                        <i class="fa fa-eye"></i> Lihat PDF
+                                        <i class="fa fa-eye"></i> Lihat File
                                     </button>
                                     <span class="text-muted ml-2" id="pdf-file-name"></span>
                                 </div>
@@ -410,8 +421,8 @@
             $('#no-doc-edit').val(response.no_doc);
             $('#qty-pages-edit').val(response.qty_pages);
             $('#reason-edit').val(response.reason);
-            $('#rev_no_edit').val(response.rev_no);
-
+            $('#rev_no_before_edit').val(response.rev_no_before);
+            $('#rev_no_after_edit').val(response.rev_no_after);
             // APPROVAL 1
             $('#approved-by1-edit').text(response.approval_by1);
             $('#approval-date1-edit').text(response.approval_date1);
@@ -450,6 +461,7 @@
                     // Enable tombol view PDF dan set document ID
                     $('#view-pdf-btn').data('document-id', response.reqdar_id);
                     $('#view-pdf-btn').prop('disabled', false);
+                    updateViewButton(fileName);
             } else {
                 $('#pdf-file-name').text('Tidak ada file');
                 $('#view-pdf-btn').prop('disabled', true);
@@ -597,13 +609,13 @@
             }).format(date);
         }
         $(document).on('click','.editfrm', function(){
-            if (!validateFileSize('file_doc_edit', 5)) {
+            if (!validateFileSize('file_doc_edit', 10)) {
                 return false;
             }
             let id = $('#id-reqdar-form').val();
             var route = "{{ route('requestdar.update', ':param') }}";
             route_replace = route.replace(':param', id);
-            alert(id)
+            // alert(id)
             var formData = new FormData($('#reqdarFormEdit')[0]);
 
             $.ajax({
@@ -643,24 +655,54 @@
         // });
     $(document).on('click', '#view-pdf-btn', function() {
         const documentId = $(this).data('document-id');
+        let urlFiledoc = $('#file-storage').val();
 
-        if (documentId) {
+        // alert(urlFiledoc)
+        if (documentId  && urlFiledoc ) {
             // Set URL dan tampilkan modal
-            const pdfUrl = `${window.location.origin}/view-document/${documentId}`;
-            $('#pdf-viewer-iframe').attr('src', pdfUrl);
+            const fileExtension = urlFiledoc.split('.').pop().toLowerCase();
+            const excelExtensions = ['xlsx', 'xls', 'xlsm', 'xlsb', 'csv'];
 
-            const downloadUrl = `${window.location.origin}/download-document/${documentId}`;
-            $('#download-pdf-btn').attr('href', downloadUrl);
-            $('#pdf-viewer-modal').modal('show');
+            if (excelExtensions.includes(fileExtension)) {
+                const downloadUrl = `${window.location.origin}/download-document/${documentId}`;
+                const link = document.createElement('a');
+                link.href = downloadUrl;
+                link.download = ''; 
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } else if(fileExtension == 'pdf'){
+                const pdfUrl = `${window.location.origin}/view-document/${documentId}`;
+                $('#pdf-viewer-iframe').attr('src', pdfUrl);
+
+                const downloadUrl = `${window.location.origin}/download-document/${documentId}`;
+                $('#download-pdf-btn').attr('href', downloadUrl);
+                $('#pdf-viewer-modal').modal('show');
+            }
+
+       
         } else {
-            alert('Tidak ada dokumen PDF yang tersedia');
+            alert('Tidak ada dokumen PDF/Excel yang tersedia');
         }
-        });
+    });
 
         // Reset iframe saat modal ditutup
         $('#pdf-viewer-modal').on('hidden.bs.modal', function () {
             $('#pdf-viewer-iframe').attr('src', '');
         });
+    
+    function updateViewButton(fileName) {
+        const fileExtension = fileName.split('.').pop().toLowerCase();
+        const excelExtensions = ['xlsx', 'xls', 'xlsm', 'xlsb', 'csv'];
+        
+        if (excelExtensions.includes(fileExtension)) {
+            $('#view-pdf-btn').html('<i class="fa fa-download"></i> Download File');
+        } else if (fileExtension === 'pdf') {
+            $('#view-pdf-btn').html('<i class="fa fa-eye"></i> Lihat File');
+        } else {
+            $('#view-pdf-btn').html('<i class="fa fa-download"></i> Download File');
+        }
+    }
 
     function validateFileSize(inputId, maxSizeMB) {
         const input = document.getElementById(inputId);
@@ -680,7 +722,7 @@
         return true;
     }
     document.getElementById('file_doc_edit').addEventListener('change', function() {
-        validateFileSize('file_doc_edit', 5); // 5MB max
+        validateFileSize('file_doc_edit', 10); // 10mb
     });
 
     function closeDocumentModal() {

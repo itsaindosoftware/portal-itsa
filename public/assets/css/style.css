@@ -1519,6 +1519,8 @@ h6 .badge {
   width: 100%;
   height: 115px;
   background-color: #6777ef;
+  /* 3abaf4 */
+   /* background-color: #6777ef; */
   z-index: -1; }
 
 .navbar {
@@ -2578,8 +2580,14 @@ body.layout-3 .main-footer {
   display: inline-block;
   width: 100%;
   text-align: center;
-  height: 60px;
-  line-height: 60px; }
+  height: 70px;
+  line-height: 60px; 
+   background-color: #5c6ad7;
+   /* 30a9e1 */
+   /* 6777ef */
+   padding: 0 20px;
+  position: relative; 
+  }
   .main-sidebar .sidebar-brand.sidebar-brand-sm {
     display: none; }
   .main-sidebar .sidebar-brand a {
@@ -2587,7 +2595,9 @@ body.layout-3 .main-footer {
     text-transform: uppercase;
     letter-spacing: 1.5px;
     font-weight: 700;
-    color: #000; }
+    color: #ffffff; 
+    /* color: #000; */
+  }
 .main-sidebar .sidebar-user {
   display: inline-block;
   width: 100%;
@@ -2606,8 +2616,10 @@ body.layout-3 .main-footer {
     display: block; }
     .main-sidebar .sidebar-menu li.menu-header {
       padding: 3px 15px;
-      color: #bcc1c6;
+      color: #000000;
       font-size: 10px;
+      font-weight: bold;
+          /* color: #bcc1c6; */
       text-transform: uppercase;
       letter-spacing: 1.3px;
       font-weight: 600; }
@@ -2621,7 +2633,8 @@ body.layout-3 .main-footer {
       padding: 0 20px;
       width: 100%;
       letter-spacing: .3px;
-      color: #868e96;
+      color: #030303;
+      /* color: #868e96; */
       text-decoration: none; }
       .main-sidebar .sidebar-menu li a .badge {
         float: right;
@@ -2803,5 +2816,223 @@ body:not(.sidebar-mini) .sidebar-style-2 .sidebar-menu li.active ul.dropdown-men
   100% {
     -webkit-transform: scale(1.2, 1.2);
     opacity: 0.0; } }
+
+
+    /* Background penanda khusus untuk Dashboard saja */
+.sidebar-menu li#dashboard-link {
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    border-radius: 8px;
+    margin: 4px 12px;
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+}
+
+.sidebar-menu li#dashboard-link a {
+    color: white !important;
+    background: transparent;
+    border-radius: 8px;
+}
+
+/* .sidebar-menu li#dashboard-link a i {
+    color: white !important;
+} */
+ .sidebar-menu li.active {
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    border-radius: 8px;
+    margin: 4px 12px;
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+}
+
+.sidebar-menu li.active a {
+    color: white !important;
+}
+
+.sidebar-menu li.active a i {
+    color: white !important;
+}
+
+.main-sidebar .sidebar-brand .brand-link {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: #000000;
+  width: 100%;
+  justify-content: left;
+}
+
+.main-sidebar .sidebar-brand .brand-image {
+  width: 35px;
+  height: 35px;
+  margin-right: 10px;
+  border-radius: 50%; /* Membuat logo bulat */
+  object-fit: cover;
+  background-color: #ffffff; /* Background putih untuk logo */
+  padding: 2px;
+}
+
+.main-sidebar .sidebar-brand .brand-text {
+  font-size: 16px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: #f7f7f7;
+}
+
+#table-request-manage {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+#table-request-manage th,
+#table-request-manage td {
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+}
+
+#table-request-manage th {
+  background-color: #5c6ad7;
+  /* 30a9e1 */
+  /* 5c6ad7 */
+  text-align: left;
+  color: #ffffff;
+}
+
+#table-request-manage tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+#table-users-manage {
+  width: 100%;
+  border-collapse: collapse;
+}
+#table-users-manage th,
+#table-users-manage td {
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+}
+
+#table-users-manage th {
+  background-color: #30a9e1;
+  color: #ffffff;
+}
+
+/* #table-users-manage tr:nth-child(even) {
+  background-color: #f2f2f2;
+} */
+
+#table-module-manage {
+  width: 100%;
+  border-collapse: collapse;
+}
+#table-module-manage th,
+#table-module-manage td {
+  padding: 12px 15px; 
+  border: 1px solid #ddd;
+}
+#table-module-manage th {
+  background-color: #30a9e1;
+  color: #ffffff;
+}
+
+#table-permission-manage {
+  width: 100%;
+  border-collapse: collapse;  
+}
+#table-permission-manage th,
+#table-permission-manage td {
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+}
+#table-permission-manage th {
+  background-color: #30a9e1;
+  color: #ffffff;
+}
+
+#table-role-manage {
+  width: 100%;
+  border-collapse: collapse;
+}
+#table-role-manage th,
+#table-role-manage td {
+  padding: 12px 15px;   
+  border: 1px solid #ddd;
+}
+#table-role-manage th {
+  background-color: #30a9e1;
+  color: #ffffff;
+}
+
+#table-company-manage {
+  width: 100%;
+  border-collapse: collapse;
+}
+#table-company-manage th,
+#table-company-manage td {
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+}   
+#table-company-manage th {
+  background-color: #30a9e1;
+  color: #ffffff;
+}
+#table-department-manage {
+  width: 100%;
+  border-collapse: collapse;
+
+}
+#table-department-manage th,
+#table-department-manage td { 
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+}   
+#table-department-manage th {
+  background-color: #30a9e1;
+  color: #ffffff;
+}
+
+#table-position-manage {
+  width: 100%;
+  border-collapse: collapse;  
+}
+#table-position-manage th,
+#table-position-manage td { 
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+}
+#table-position-manage th {
+  background-color: #30a9e1;
+  color: #ffffff;
+}
+
+#table-news-manage {
+  width: 100%;
+  border-collapse: collapse;
+}
+#table-news-manage th,
+#table-news-manage td {
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+}
+#table-news-manage th {
+  background-color: #30a9e1;
+  color: #ffffff;
+}
+
+#table-service-manage {
+  width: 100%;
+  border-collapse: collapse;  
+}
+#table-service-manage th,
+#table-service-manage td {
+  padding: 12px 15px;   
+  border: 1px solid #ddd;
+}
+#table-service-manage th {
+  background-color: #30a9e1;
+  color: #ffffff;   
+}
+
+/* #table-permission-manage tr:nth-child(even) {
+  background-color: #f2f2f2;
+} */
 
 /*# sourceMappingURL=style.css.map */

@@ -113,14 +113,25 @@
                                     </div>
                                 </div>
 
-                                <div class="col-md-6">
+                                <div class="col-md-3">
                                     <div class="form-group">
-                                        <label class="font-weight-bold">Rev No</label>
+                                        <label class="font-weight-bold">Rev No Before</label>
                                         <div class="input-group">
                                             <div class="input-group-prepend">
                                                 <span class="input-group-text"><i class="fa fa-file"></i></span>
                                             </div>
-                                            <input type="number" class="form-control" name="rev_no" id="rev_no" required placeholder="Rev No.">
+                                            <input type="number" class="form-control" name="rev_no_before" id="rev_no_before" required placeholder="Rev No.">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label class="font-weight-bold">Rev No After</label>
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="fa fa-file"></i></span>
+                                            </div>
+                                            <input type="number" class="form-control" name="rev_no_after" id="rev_no_after" placeholder="Disi Oleh Syd" readonly>
                                         </div>
                                     </div>
                                 </div>
@@ -153,10 +164,16 @@
                                 <div class="form-group">
                                     <label class="font-weight-bold">Upload Document</label>
                                     <div class="custom-file">
-                                        <input type="file" class="custom-file-input" id="file_doc" name="file_doc" accept=".pdf" required>
-                                        <label class="custom-file-label" for="file_doc">Pilih file PDF</label>
+                                        <input type="file" 
+                                        class="custom-file-input" 
+                                        id="file_doc" 
+                                        name="file_doc" 
+                                         accept=".pdf,.xlsx,.xls" required>
+                                        <label class="custom-file-label" for="file_doc">Pilih file PDF/Excel</label>
                                     </div>
-                                    <small class="form-text text-muted">Format yang diterima: PDF. Maksimal ukuran: 5MB</small>
+                                    <small class="form-text text-muted">
+                                        Format yang didukung: PDF (maks. 5MB), Excel .xlsx/.xls (maks. 10MB)
+                                    </small>
                                 </div>
                             </div>
                         </div>

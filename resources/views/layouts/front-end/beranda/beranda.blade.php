@@ -4,7 +4,7 @@
 
 @section('content')
   {{-- HERO SECTION --}}
-  <section class="hero parallax-section" id="beranda">
+  {{-- <section class="hero parallax-section" id="beranda">
     <div class="container">
       <div class="hero-content">
         <h1 class="display-3 fw-bold">Welcome to Portal ITSA</h1>
@@ -12,7 +12,18 @@
         <a href="{{ route('service') }}" class="btn btn-primary btn-lg mt-4">Explore Services</a>
       </div>
     </div>
-  </section>
+  </section> --}}
+  <section class="hero parallax-section" id="beranda" style="position: relative; height: 100vh; overflow: hidden;">
+  <div class="slideshow-bg"></div>
+  <div class="container position-relative" style="z-index: 2;">
+    <div class="hero-content text-white text-center" style="padding-top: 150px;">
+      <h1 class="display-3 fw-bold">Welcome to Portal ITSA</h1>
+      <p class="lead">Integrated platform for Document Action Request System and Digital Asset Registration of PT Indonesia Thai Summit Auto.</p>
+      <a href="{{ route('service') }}" class="btn btn-primary btn-lg mt-4">Explore Services</a>
+    </div>
+  </div>
+</section>
+
 
   {{-- SERVICE --}}
   <section class="features section-padding bg-light" id="layanan">
@@ -41,11 +52,11 @@
               <p class="text-center">{{ $item->description }}</p>
               <div class="text-center">
                    @if ($loop->index == '0')
-                      <a href="{{ url('login') }}" class="btn btn-primary mt-3" target="_blank">
+                      <a href="{{ route('service') }}" class="btn btn-primary mt-3" target="_blank">
                         <i class="fas fa-external-link-alt me-2"></i>Access
                       </a>
                    @elseif ($loop->index == '1')
-                      <a href="{{ url('/login-digitalassets') }}" class="btn btn-primary mt-3" target="_blank">
+                      <a href="{{ route('service') }}" class="btn btn-primary mt-3" target="_blank">
                         <i class="fas fa-external-link-alt me-2"></i>Access
                       </a>
                    @endif
@@ -164,7 +175,7 @@
                   </div>
                   <h3 class="fw-bold mb-3" style="color: #333; line-height: 1.3;">{{ $featuredNews->title }}</h3>
                   <p style="color: #666; line-height: 1.6; margin-bottom: 20px;">{{ Str::limit(strip_tags($featuredNews->description), 150) }}</p>
-                  <a href="{{ route('news.show', $featuredNews->id) }}" class="btn" style="background: linear-gradient(135deg, #007bff, #0056b3); color: white; border: none; padding: 12px 25px; border-radius: 25px; text-decoration: none; font-weight: 600; transition: transform 0.3s ease;">Read More <i class="fas fa-arrow-right ms-2"></i></a>
+                  <a href="{{ route('news.show', base64_encode($featuredNews->id)) }}" class="btn" style="background: linear-gradient(135deg, #007bff, #0056b3); color: white; border: none; padding: 12px 25px; border-radius: 25px; text-decoration: none; font-weight: 600; transition: transform 0.3s ease;">Read More <i class="fas fa-arrow-right ms-2"></i></a>
                 </div>
               </div>
             </div>
@@ -219,7 +230,7 @@
               </div>
               <h5 class="fw-bold mb-3" style="color: #333; line-height: 1.3;">{{ $item->title }}</h5>
               <p style="color: #666; line-height: 1.6; font-size: 0.95rem;">{{ Str::limit(strip_tags($item->description), 100) }}</p>
-              <a href="{{ route('news.show', $item->id) }}" style="color: #007bff; text-decoration: none; font-weight: 600; font-size: 0.9rem;">Read More <i class="fas fa-chevron-right ms-1"></i></a>
+              <a href="{{ route('news.show', base64_encode($item->id)) }}" style="color: #007bff; text-decoration: none; font-weight: 600; font-size: 0.9rem;">Read More <i class="fas fa-chevron-right ms-1"></i></a>
             </div>
           </div>
         </div>
@@ -261,9 +272,9 @@
     <div class="container">
       <div class="row justify-content-center">
         <div class="col-lg-8 text-center">
-          <h2 class="fw-bold mb-4">Contact Us</h2>
+          <h2 class="fw-bold mb-4">Contact Information</h2>
           <div class="divider mx-auto my-4"></div>
-          <p class="lead mb-5">Have questions about our services? Feel free to contact us using any of the methods below</p>
+          <p class="lead mb-5">Ext Phone</p>
         </div>
       </div>
 
