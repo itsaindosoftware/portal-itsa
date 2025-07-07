@@ -20,9 +20,6 @@
 		<button type="button" class="btn btn-icon icon-left btn-primary" id="show-create-masterdocs"><i class="fas fa-plus"></i> Add Documents </button>
 	</div>
      @endpermission
-
-
-
 	<div class="section-body">
         <div class="row">
 			<div class="col-12">
