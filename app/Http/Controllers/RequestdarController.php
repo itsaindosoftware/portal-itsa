@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Hash;
 use Symfony\Component\HttpFoundation\FileBag;
 use Yajra\DataTables\DataTables;
 use App\Mail\SendnotifRequestDar;
+use App\Mail\SendnotifrejectDar;
 use Illuminate\Support\Facades\Mail;
 use Carbon\Carbon;
 use Validator;
@@ -780,13 +781,21 @@ class RequestdarController extends Controller
     {
         if (Auth::user()->hasPermission(['manager-dar-system', 'approved-by1', 'rejected-appr1'])) {
 
+            $getData = $this->getDataForEmail($id);
             DB::connection('portal-itsa')->table('request_dar')->where('id', $id)->update([
                 'approval_date1' => date('Y-m-d H:i:s'),
                 'approval_status1' => '2',
                 'remark_approval_by1' => $request->reject_reason
             ]);
 
-
+            $this->sendRejectEmail(
+                $getData['dataEmail'],
+                $request->input('remarks', ''),
+                Auth::user()->name,
+                'manager',
+                $getData['roleDisplayName'],
+                date('Y-m-d H:i:s')
+            );
 
             return response()->json([
                 'status' => true
@@ -819,12 +828,21 @@ class RequestdarController extends Controller
     public function rejectedAppr2(Request $request, $id)
     {
         if (Auth::user()->hasPermission(['manager-dar-system', 'approved-by2', 'rejected-appr2'])) {
+            $getData = $this->getDataForEmail($id);
+
             DB::connection('portal-itsa')->table('request_dar')->where('id', $id)->update([
                 'approval_date2' => date('Y-m-d H:i:s'),
                 'approval_status2' => '2',
                 'remark_approval_by2' => $request->reject_reason
             ]);
-
+            $this->sendRejectEmail(
+                $getData['dataEmail'],
+                $request->input('remarks', ''),
+                Auth::user()->name,
+                'manager',
+                $getData['roleDisplayName'],
+                date('Y-m-d H:i:s')
+            );
             return response()->json([
                 'status' => true
             ]);
@@ -858,11 +876,21 @@ class RequestdarController extends Controller
     public function rejectedAppr3(Request $request, $id)
     {
         if (Auth::user()->hasPermission(['manager-dar-system', 'approved-by3', 'rejected-appr3'])) {
+            $getData = $this->getDataForEmail($id);
+
             DB::connection('portal-itsa')->table('request_dar')->where('id', $id)->update([
                 'approval_date3' => date('Y-m-d H:i:s'),
                 'approval_status3' => '2',
                 'remark_approval_by3' => $request->reject_reason
             ]);
+            $this->sendRejectEmail(
+                $getData['dataEmail'],
+                $request->input('remarks', ''),
+                Auth::user()->name,
+                'manager',
+                $getData['roleDisplayName'],
+                date('Y-m-d H:i:s')
+            );
 
             return response()->json([
                 'status' => true
@@ -895,6 +923,13 @@ class RequestdarController extends Controller
     {
 
         Mail::to('it-03@thaisummit.co.id')->send(new SendnotifRequestDar($dataDar, $remarks, $approverName, $userRole, $getDisplayname, $approvalDate));
+        return "email successfully sending.";
+
+    }
+    private function sendRejectEmail($dataDar, $remarks, $approverName, $userRole, $getDisplayname, $approvalDate)
+    {
+
+        Mail::to('it-03@thaisummit.co.id')->send(new SendnotifrejectDar($dataDar, $remarks, $approverName, $userRole, $getDisplayname, $approvalDate));
         return "email successfully sending.";
 
     }
