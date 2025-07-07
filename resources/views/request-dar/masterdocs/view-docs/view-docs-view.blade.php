@@ -11,7 +11,7 @@
                 <iframe id="pdf-viewer-iframe-view" style="width: 100%; height: 100%; border: none;"></iframe>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" onclick="closeDocumentModalview()" data-dismiss="modal">Tutup</button>
+                <button type="button" class="btn btn-secondary" onclick="closeDocumentModalview()" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>

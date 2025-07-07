@@ -73,7 +73,8 @@
                                             <div class="input-group-prepend">
                                                 <span class="input-group-text"><i class="fa fa-file"></i></span>
                                             </div>
-                                            file-storagefile-storage
+                                            {{-- file-storagefile-storage --}}
+                                            <input type="hidden" id="file-storage-edit">
                                             <input type="text" class="form-control" id="current_file_name" placeholder="No file selected" readonly>
                                              {{-- <span class="text-muted ml-2" id="pdf-file-name"></span> --}}
                                             <div class="input-group-append">
@@ -138,7 +139,7 @@
                 $('#edit_file_doc').next('.custom-file-label').text('Choose new file...');
                 $('#current_file_name').val('');
             }
-             function closeDocumentModal() {
+             function closeDocumentModalEdit() {
                 $('#pdf-viewer-modal').modal('hide');
                 setTimeout(function() {
                     $('#edit-documents-master').modal('show');

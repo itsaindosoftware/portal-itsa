@@ -7,6 +7,8 @@
 @section('css')
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/Datatables/dataTables.bootstrap4.min.css') }}">
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/custom-edit.css') }}">
+
+</style>
 @endsection
 @section('content')
 
@@ -14,20 +16,55 @@
 
 <section class="section">
     @permission('create-masterdocs')
-	<div class="section-header">
-		<a href="#" class="btn btn-icon icon-left btn-primary" id="show-create-masterdocs"><i class="fas fa-plus"></i> Add Documents </a>
-		<div class="section-header-breadcrumb">
-			<div class="breadcrumb-item active"><a href="#">Dashboard</a></div>
-			<div class="breadcrumb-item"><a href="#">Add Documents</a></div>
-			{{-- <div class="breadcrumb-item">DataTables</div> --}}
-		</div>
+	<div class="card-header">
+		<button type="button" class="btn btn-icon icon-left btn-primary" id="show-create-masterdocs"><i class="fas fa-plus"></i> Add Documents </button>
 	</div>
-       @endpermission
+     @endpermission
 
 
 
 	<div class="section-body">
-
+        <div class="row">
+			<div class="col-12">
+				<div class="card">
+					<div class="card-header">
+						<h4>Filter</h4>
+						<div class="card-header-action">
+							<a data-collapse="#filter-collapse" class="btn btn-icon btn-info" href="#"><i class="fas fa-minus"></i></a>
+						</div>
+					</div>
+					<div class="collapse show" id="filter-collapse">
+						<div class="card-body">
+							<form id="filter-form">
+								<div class="row">
+									<div class="col-md-3">
+										<div class="form-group">
+											<label>Type Documents</label>
+											<select class="form-control select2" name="type_docs" id="type_docs">
+												<option value="">All Docs</option>
+												<option value="procedure">Procedure</option>
+												<option value="workinstruction">Work Instruction</option>
+											</select>
+										</div>
+									</div>
+									<div class="col-md-3">
+										<div class="form-group mt-4 pt-1">
+											<button type="button" class="btn btn-primary" id="btn-filter">
+												<i class="fas fa-filter"></i> Apply Filter
+											</button>
+											<button type="button" class="btn btn-light" id="btn-reset">
+												<i class="fas fa-undo"></i> Reset
+											</button>
+										</div>
+									</div>
+								</div>
+                                <input type="hidden" name="group_by" id="group_by" value="department">
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
 		<div class="row">
 			<div class="col-12">
 				<div class="card">
@@ -44,16 +81,18 @@
 	                        </button>
 	                    </div>
 	                     @endif
+                         {{-- <a href="#" class="btn btn-icon icon-left btn-primary" id="show-create-masterdocs"><i class="fas fa-plus"></i> Add Documents </a> --}}
 						<div class="table-responsive">
+                            
 							<table class="table table-bordered dataTable no-footer" id="table-master-manage" width="100%" role="grid" aria-describedby="table-1_info">
 								<thead>
 									<tr>
 										<th width="7%">No.</th>
 										<th class="text-center">Title</th>
-								        <th class="text-center">Description</th>
+								        {{-- <th class="text-center">Description</th> --}}
                                         <th class="text-center">Type Document</th>
                                         <th class="text-center">Documents File</th>
-										<th class="text-center" width="15%">Action</th>
+										<th class="text-center" width="10%">Action</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -72,7 +111,6 @@
 @include('request-dar.masterdocs.create')
 @include('request-dar.masterdocs.edit')
 @include('request-dar.masterdocs.show')
-
 @include('request-dar.masterdocs.view-docs.view-docs-edit')
 @include('request-dar.masterdocs.view-docs.view-docs-view')
 <script src="{{ asset('assets/Datatables/jquery.dataTables.min.js') }}"></script>
@@ -95,6 +133,9 @@ $(document).ready(function(){
 			deferRender:true,
 			ajax: {
 				url: "{{ route('masterdocs.index') }}",
+                data: function(d) {
+                    d.type_docs = $('#type_docs').val();
+                }
 			},
 			order: [[ 0, 'desc']],
 			responsive: true,
@@ -107,7 +148,7 @@ $(document).ready(function(){
 				className: 'text-center'
 			},
 			{ data: 'title', name: 'title', className: 'text-center' },
-			{ data: 'description', name: 'description', className:'text-center' },
+			//{ data: 'description', name: 'description', className:'text-center' },
             { data: 'type_doc', name: 'type_doc',className: 'text-center' },
             { data: 'file', name: 'file',className: 'text-center' },
 			{ data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-center' }
@@ -115,6 +156,7 @@ $(document).ready(function(){
 	//
       });
         $(document).on('click','#show-create-masterdocs', function(){
+            // e.preventDefault();
             $('#add-documents-master').modal('show');
                 // validateForm()
 
@@ -152,13 +194,10 @@ $(document).ready(function(){
 
                     showNotification('success', response.message);
 
-                    resetForm();
+                    // resetForm();
                     $('#documentsForm input, #documentsForm textarea, #documentsForm select').prop('disabled', false);
 
-                    if (typeof refreshDataTable === 'function') {
-                        refreshDataTable();
-
-                    }
+                    
 
                 } else {
                     showNotification('error', response.message);
@@ -189,13 +228,15 @@ $(document).ready(function(){
 
     function resetForm() {
         $('#add-documents-master').modal('hide');
+        if (typeof refreshDataTable === 'function') {
+            table.DataTable().ajax.reload(null, false);
+
+        }
         $('#documentsForm')[0].reset();
         $('.custom-file-label').text('Pilih file PDF/Excel');
         $('#documentsForm input, #documentsForm textarea, #documentsForm select').prop('disabled', false);
     }
-    function refreshDataTable() {
-        $('#table-master-manage').DataTable().ajax.reload();
-    }
+ 
 
 });
     $(document).on('click','#show-data-masterdocs', function(e){
@@ -310,7 +351,7 @@ $(document).ready(function(){
                 $('#edit_title').val(response.title);
                 $('#edit_description').val(response.description);
                 $('#edit_type_docs').val(response.type_doc).trigger('change');
-                $('#file-storage').val(response.file);
+                $('#file-storage-edit').val(response.file);
                 if (response.file) {
                         const fileName = response.file.split('/').pop();
                         $('#current_file_name').val(fileName);
@@ -337,7 +378,7 @@ $(document).ready(function(){
       $(document).on('click', '#view_current_file', function() {
         const documentId = $(this).data('document-id');
         // alert(documentId)
-        let urlFiledoc = $('#file-storage').val();
+        let urlFiledoc = $('#file-storage-edit').val();
         // alert(urlFiledoc)
 
         // alert(urlFiledoc)
@@ -361,7 +402,7 @@ $(document).ready(function(){
 
                 const downloadUrl = `${window.location.origin}/download-document-master/${documentId}`;
                 $('#download-pdf-btn').attr('href', downloadUrl);
-                $('#pdf-viewer-modal').modal('show');
+                $('#pdf-viewer-modal-edit').modal('show');
             }
 
 
@@ -514,6 +555,14 @@ $(document).ready(function(){
 			    }
 			});
     })
+    $('#btn-filter').click(function() {
+		table.ajax.reload();
+	});
+    $('#btn-reset').click(function() {
+        // $('#editDocumentsForm')[0].reset();
+        $('#type_docs').val('');
+        table.ajax.reload();
+    });
 // $(document).on('click','#show-create-dar', function(e){
 //         e.preventDefault();
 //         resetForm();

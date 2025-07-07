@@ -26,30 +26,34 @@ class MasterDocController extends Controller
     {
         $user = Auth::user();
         if ($user->hasPermission('manage-masterdocs')) {
-          if ($request->ajax()) {
-              $data = Masterdocs::query();
-              return DataTables::of($data)
-               ->addColumn('action', function($data){
-                   return view('datatables._action-masterdocs', [
-                       'model'=> $data,
-                       'edit_url'=> route('masterdocs.edit', $data->id),
-                       'show_url'=> route('masterdocs.show', $data->id),
-                       'delete_url'=> route('masterdocs.destroy', $data->id),
-                   ]);
-               })
-                ->editColumn('file', function($row) {
-                    return view('datatables._show-file',[
-                        'data'=> $row
-                    ]);
-                })
-                ->editColumn('description', function($row) {
-                    return strlen($row->description) > 50 ?
+            if ($request->ajax()) {
+                $data = Masterdocs::query();
+                if ($request->has('type_docs') && !empty($request->type_docs)) {
+                    $data->where('master_documents.type_doc', $request->type_docs);
+                }
+
+                return DataTables::of($data)
+                    ->addColumn('action', function ($data) {
+                        return view('datatables._action-masterdocs', [
+                            'model' => $data,
+                            'edit_url' => route('masterdocs.edit', $data->id),
+                            'show_url' => route('masterdocs.show', $data->id),
+                            'delete_url' => route('masterdocs.destroy', $data->id),
+                        ]);
+                    })
+                    ->editColumn('file', function ($row) {
+                        return view('datatables._show-file', [
+                            'data' => $row
+                        ]);
+                    })
+                    ->editColumn('description', function ($row) {
+                        return strlen($row->description) > 50 ?
                             substr($row->description, 0, 50) . '...' :
                             $row->description;
-                })
-                ->editColumn('type_doc', function($row) {
+                    })
+                    ->editColumn('type_doc', function ($row) {
                         $badgeClass = '';
-                        switch(strtolower($row->type_doc)) {
+                        switch (strtolower($row->type_doc)) {
                             case 'procedure':
                                 $badgeClass = 'badge-success';
                                 break;
@@ -59,18 +63,18 @@ class MasterDocController extends Controller
                             default:
                                 $badgeClass = 'badge-secondary';
                         }
-                        return '<span class="badge '.$badgeClass.'">'.$row->type_doc.'</span>';
+                        return '<span class="badge ' . $badgeClass . '">' . $row->type_doc . '</span>';
                     })
-               ->editColumn('created_at', function($data){
-                   return \Carbon\Carbon::parse($data->created_at)->format('Y-m-d');
-               })
-               ->rawColumns(['action', 'file', 'type_doc'])
-               ->make(true);
+                    ->editColumn('created_at', function ($data) {
+                        return \Carbon\Carbon::parse($data->created_at)->format('Y-m-d');
+                    })
+                    ->rawColumns(['action', 'file', 'type_doc'])
+                    ->make(true);
 
 
             }
             return view('request-dar.masterdocs.index');
-          }
+        }
     }
 
     /**
@@ -92,7 +96,7 @@ class MasterDocController extends Controller
     public function store(Request $request)
     {
         // dd($request->all());
-        $user=Auth::user();
+        $user = Auth::user();
         if ($user->hasPermission('create-masterdocs')) {
             $data = new Masterdocs;
             $data->title = $request->get('title');
@@ -114,8 +118,8 @@ class MasterDocController extends Controller
             $data->save();
 
             return response()->json([
-                'success'=> true,
-                'message'=> 'Data documents succesfully added'
+                'success' => true,
+                'message' => 'Data documents succesfully added'
             ], 200);
         }
     }
@@ -128,9 +132,9 @@ class MasterDocController extends Controller
      */
     public function show($id)
     {
-        $user=Auth::user();
+        $user = Auth::user();
         $id = base64_decode($id);
-        if ($user->hasPermission('manage-masterdocs','show-masterdocs')) {
+        if ($user->hasPermission('manage-masterdocs', 'show-masterdocs')) {
             $data = Masterdocs::find($id);
             return response()->json($data);
         }
@@ -144,9 +148,9 @@ class MasterDocController extends Controller
      */
     public function edit($id)
     {
-        $user=Auth::user();
+        $user = Auth::user();
         $id = base64_decode($id);
-        if ($user->hasPermission('manage-masterdocs','edit-masterdocs')) {
+        if ($user->hasPermission('manage-masterdocs', 'edit-masterdocs')) {
             $data = Masterdocs::find($id);
             return response()->json($data);
         }
@@ -162,44 +166,44 @@ class MasterDocController extends Controller
     public function update(Request $request, $id)
     {
         // dd($request->all());
-        $user=Auth::user();
-        if ($user->hasPermission('manage-masterdocs','edit-masterdocs')) {
-              $data = Masterdocs::find($id);
-              if (!$data) {
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'Data MasterDocs Not found'
-                    ], 404);
+        $user = Auth::user();
+        if ($user->hasPermission('manage-masterdocs', 'edit-masterdocs')) {
+            $data = Masterdocs::find($id);
+            if (!$data) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Data MasterDocs Not found'
+                ], 404);
+            }
+            $data->title = empty($request->title) ? $data->title : $request->title;
+            $data->description = empty($request->description) ? $data->description : $request->description;
+            $data->type_doc = empty($request->type_docs) ? $data->type_doc : $request->type_docs;
+            if ($request->hasFile('file_doc')) {
+                $oldFilePath = $data->file;
+
+                $originalFileName = $request->file('file_doc')->getClientOriginalName();
+                $fileName = time() . '_' . $originalFileName;
+
+                $uploadPath = 'reqdar/master-documents/' . date('Y-m');
+
+                $filePath = $request->file('file_doc')->storeAs(
+                    'public/' . $uploadPath,
+                    $fileName
+                );
+                $data->file = $filePath;
+
+                // Delete old file if it exists
+                if (!empty($oldFilePath) && Storage::exists($oldFilePath)) {
+                    Storage::delete($oldFilePath);
                 }
-                $data->title = empty($request->title) ? $data->title : $request->title;
-                $data->description = empty($request->description) ? $data->description : $request->description;
-                $data->type_doc = empty($request->type_docs) ? $data->type_doc : $request->type_docs;
-                if ($request->hasFile('file_doc')) {
-                    $oldFilePath = $data->file;
-
-                    $originalFileName = $request->file('file_doc')->getClientOriginalName();
-                    $fileName = time() . '_' . $originalFileName;
-
-                    $uploadPath = 'reqdar/master-documents/' . date('Y-m');
-
-                    $filePath = $request->file('file_doc')->storeAs(
-                        'public/' . $uploadPath,
-                        $fileName
-                    );
-                    $data->file = $filePath;
-
-                    // Delete old file if it exists
-                    if (!empty($oldFilePath) && Storage::exists($oldFilePath)) {
-                        Storage::delete($oldFilePath);
-                    }
-                }
+            }
 
 
-                $data->save();
+            $data->save();
 
-                  return response()->json([
-                    'status' => true
-                ], 200);
+            return response()->json([
+                'status' => true
+            ], 200);
 
         }
     }
@@ -212,14 +216,14 @@ class MasterDocController extends Controller
      */
     public function destroy($id)
     {
-        $user=Auth::user();
-        if ($user->hasPermission('manage-masterdocs','destroy-masterdocs')) {
-            $data=Masterdocs::find($id);
+        $user = Auth::user();
+        if ($user->hasPermission('manage-masterdocs', 'destroy-masterdocs')) {
+            $data = Masterdocs::find($id);
             $data->delete();
 
 
             return response()->json([
-                'success'=>true
+                'success' => true
             ]);
         }
     }
