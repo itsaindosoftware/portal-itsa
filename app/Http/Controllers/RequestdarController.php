@@ -27,6 +27,26 @@ class RequestdarController extends Controller
     {
         Carbon::setLocale('id');
     }
+    private function baseQuery()
+    {
+        $data = Requestdar::query()->leftJoin('users', 'request_dar.user_id', '=', 'users.id')
+            ->leftJoin('departments', 'request_dar.dept_id', '=', 'departments.id')
+            ->leftJoin('companys', 'request_dar.company_id', '=', 'companys.id')
+            ->leftJoin('positions', 'request_dar.position_id', '=', 'positions.id')
+            ->leftJoin('type_of_reqforms', 'request_dar.typereqform_id', '=', 'type_of_reqforms.id')
+            ->leftJoin('request_desc', 'request_dar.request_desc_id', '=', 'request_desc.id')
+            ->select(
+                'request_dar.*',
+                'request_dar.id as reqdar_id',
+                'users.*',
+                'departments.description as department',
+                'companys.company_desc as company',
+                'positions.position_desc as position',
+                'type_of_reqforms.request_type as reqtype',
+                'request_desc.request_descript'
+            );
+        return $data;
+    }
     public function index(Request $request)
     {
         if (!Auth::user()->hasPermission('manage-dar-system') && !Auth::user()->hasRole('admin') && !Auth::user()->hasRole('user-employee') && !Auth::user()->hasRole('manager') && !Auth::user()->hasRole('sysdev') && !Auth::user()->hasRole('manager-it')) {
@@ -39,22 +59,7 @@ class RequestdarController extends Controller
         if ($request->ajax()) {
             if (Auth::user()->hasPermission('manage-dar-system')) {
                 if (Auth::user()->hasRole('admin')) {
-                    $data = Requestdar::query()->leftJoin('users', 'request_dar.user_id', '=', 'users.id')
-                        ->leftJoin('departments', 'request_dar.dept_id', '=', 'departments.id')
-                        ->leftJoin('companys', 'request_dar.company_id', '=', 'companys.id')
-                        ->leftJoin('positions', 'request_dar.position_id', '=', 'positions.id')
-                        ->leftJoin('type_of_reqforms', 'request_dar.typereqform_id', '=', 'type_of_reqforms.id')
-                        ->leftJoin('request_desc', 'request_dar.request_desc_id', '=', 'request_desc.id')
-                        ->select(
-                            'request_dar.*',
-                            'request_dar.id as reqdar_id',
-                            'users.*',
-                            'departments.description as department',
-                            'companys.company_desc as company',
-                            'positions.position_desc as position',
-                            'type_of_reqforms.request_type as reqtype',
-                            'request_desc.request_descript'
-                        );
+                    $data = $this->baseQuery();
                     if ($request->has('date_range') && !empty($request->date_range)) {
                         $dateRange = explode(' - ', $request->date_range);
                         if (count($dateRange) == 2) {
@@ -92,45 +97,13 @@ class RequestdarController extends Controller
                         }
 
                     }
-
+                    $data->get();
                 } elseif (Auth::user()->hasRole('user-employee')) {
-                    $data = DB::connection('portal-itsa')->table('request_dar')->leftJoin('users', 'request_dar.user_id', '=', 'users.id')
-                        ->leftJoin('departments', 'request_dar.dept_id', '=', 'departments.id')
-                        ->leftJoin('companys', 'request_dar.company_id', '=', 'companys.id')
-                        ->leftJoin('positions', 'request_dar.position_id', '=', 'positions.id')
-                        ->leftJoin('type_of_reqforms', 'request_dar.typereqform_id', '=', 'type_of_reqforms.id')
-                        ->leftJoin('request_desc', 'request_dar.request_desc_id', '=', 'request_desc.id')
-                        ->select(
-                            'request_dar.*',
-                            'request_dar.id as reqdar_id',
-                            'users.*',
-                            'departments.description as department',
-                            'companys.company_desc as company',
-                            'positions.position_desc as position',
-                            'type_of_reqforms.request_type as reqtype',
-                            'request_desc.request_descript'
-                        )
-                        ->where('request_dar.nik_req', Auth::user()->nik)->get();
+                    $data = $this->baseQuery();
+                    $data->where('request_dar.nik_req', Auth::user()->nik)->get();
                 } elseif (Auth::user()->hasRole('manager')) {
-
-                    $data = DB::connection('portal-itsa')->table('request_dar')->leftJoin('users', 'request_dar.user_id', '=', 'users.id')
-                        ->leftJoin('departments', 'request_dar.dept_id', '=', 'departments.id')
-                        ->leftJoin('companys', 'request_dar.company_id', '=', 'companys.id')
-                        ->leftJoin('positions', 'request_dar.position_id', '=', 'positions.id')
-                        ->leftJoin('type_of_reqforms', 'request_dar.typereqform_id', '=', 'type_of_reqforms.id')
-                        ->leftJoin('request_desc', 'request_dar.request_desc_id', '=', 'request_desc.id')
-                        ->select(
-                            'request_dar.*',
-                            'request_dar.id as reqdar_id',
-                            'users.*',
-                            'departments.description as department',
-                            'companys.company_desc as company',
-                            'positions.position_desc as position',
-                            'type_of_reqforms.request_type as reqtype',
-                            'request_desc.request_descript'
-                        )
-                        // ->where('request_dar.nik_atasan', Auth::user()->nik)
-                        ->where('request_dar.dept_id', Auth::user()->department_id);
+                    $data = $this->baseQuery()->where('request_dar.dept_id', Auth::user()->department_id);
+                    // ->where('request_dar.nik_atasan', Auth::user()->nik)
                     // ss
                     if ($request->has('date_range') && !empty($request->date_range)) {
                         $dateRange = explode(' - ', $request->date_range);
@@ -164,22 +137,7 @@ class RequestdarController extends Controller
 
                     $data = $data->get();
                 } elseif (Auth::user()->hasRole('sysdev')) {
-                    $data = DB::connection('portal-itsa')->table('request_dar')->leftJoin('users', 'request_dar.user_id', '=', 'users.id')
-                        ->leftJoin('departments', 'request_dar.dept_id', '=', 'departments.id')
-                        ->leftJoin('companys', 'request_dar.company_id', '=', 'companys.id')
-                        ->leftJoin('positions', 'request_dar.position_id', '=', 'positions.id')
-                        ->leftJoin('type_of_reqforms', 'request_dar.typereqform_id', '=', 'type_of_reqforms.id')
-                        ->leftJoin('request_desc', 'request_dar.request_desc_id', '=', 'request_desc.id')
-                        ->select(
-                            'request_dar.*',
-                            'request_dar.id as reqdar_id',
-                            'users.*',
-                            'departments.description as department',
-                            'companys.company_desc as company',
-                            'positions.position_desc as position',
-                            'type_of_reqforms.request_type as reqtype',
-                            'request_desc.request_descript'
-                        );
+                    $data = $this->baseQuery();
 
                     if ($request->has('date_range') && !empty($request->date_range)) {
                         $dateRange = explode(' - ', $request->date_range);
@@ -223,22 +181,7 @@ class RequestdarController extends Controller
 
                     $data = $data->get();
                 } elseif (Auth::user()->hasRole('manager-it')) {
-                    $data = DB::connection('portal-itsa')->table('request_dar')->leftJoin('users', 'request_dar.user_id', '=', 'users.id')
-                        ->leftJoin('departments', 'request_dar.dept_id', '=', 'departments.id')
-                        ->leftJoin('companys', 'request_dar.company_id', '=', 'companys.id')
-                        ->leftJoin('positions', 'request_dar.position_id', '=', 'positions.id')
-                        ->leftJoin('type_of_reqforms', 'request_dar.typereqform_id', '=', 'type_of_reqforms.id')
-                        ->leftJoin('request_desc', 'request_dar.request_desc_id', '=', 'request_desc.id')
-                        ->select(
-                            'request_dar.*',
-                            'request_dar.id as reqdar_id',
-                            'users.*',
-                            'departments.description as department',
-                            'companys.company_desc as company',
-                            'positions.position_desc as position',
-                            'type_of_reqforms.request_type as reqtype',
-                            'request_desc.request_descript'
-                        );
+                    $data = $this->baseQuery();
 
                     if ($request->has('date_range') && !empty($request->date_range)) {
                         $dateRange = explode(' - ', $request->date_range);
