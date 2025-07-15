@@ -61,3 +61,113 @@
     width: 95%;
   }
 }
+
+/* Styling untuk details control button */
+td.details-control {
+    cursor: pointer;
+    width: 30px;
+    text-align: center;
+    background-color: #fff;
+    border: 1px solid #dee2e6;
+}
+
+/* Menggunakan Font Awesome icons */
+td.details-control:before {
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    content: "\f067"; /* fa-plus */
+    color: #007bff;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+/* Styling untuk row yang sudah di-expand */
+tr.shown td.details-control:before {
+    content: "\f068"; /* fa-minus */
+    color: #dc3545;
+}
+
+/* Styling untuk row details container */
+.row-details-container {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    margin: 10px 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    border-left: 3px solid #007bff;
+}
+
+.row-details-container table {
+    margin-bottom: 0;
+}
+
+.row-details-container td {
+    padding: 8px 12px;
+    border: none;
+    vertical-align: top;
+}
+
+.row-details-container td:first-child {
+    width: 150px;
+    font-weight: 600;
+    color: #495057;
+    white-space: nowrap;
+}
+
+.row-details-container td:last-child {
+    color: #6c757d;
+    word-wrap: break-word;
+}
+
+/* Hover effect */
+td.details-control:hover {
+    background-color: #f8f9fa;
+}
+
+td.details-control:hover:before {
+    color: #0056b3;
+}
+
+/* Responsive */
+.table-responsive {
+    overflow-x: auto;
+}
+
+#table-request-manage {
+    width: 100%;
+    min-width: 1200px;
+}
+
+/* Animation */
+.row-details-container {
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+    .row-details-container .col-md-6 {
+        margin-bottom: 15px;
+    }
+    
+    .row-details-container td:first-child {
+        width: 120px;
+        font-size: 13px;
+    }
+    
+    .row-details-container td:last-child {
+        font-size: 13px;
+    }
+}
+
+/* </style> */

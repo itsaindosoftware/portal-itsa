@@ -144,10 +144,10 @@ $(document).ready(function(){
 				searchable: false,
 				className: 'text-center'
 			},
-			{ data: 'title', name: 'title', className: 'text-center' },
+			{ data: 'title', name: 'title', className: 'text-left' },
 			//{ data: 'description', name: 'description', className:'text-center' },
             { data: 'type_doc', name: 'type_doc',className: 'text-center' },
-            { data: 'file', name: 'file',className: 'text-center' },
+            { data: 'file', name: 'file',className: 'text-left' },
 			{ data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-center' }
 			]
 	//

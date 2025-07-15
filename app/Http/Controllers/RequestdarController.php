@@ -800,7 +800,8 @@ class RequestdarController extends Controller
             DB::connection('portal-itsa')->table('request_dar')->where('id', $id)->update([
                 'approval_date3' => date('Y-m-d H:i:s'),
                 'approval_status3' => '1',
-                'remark_approval_by3' => $request->input('remarks', '')
+                'remark_approval_by3' => $request->input('remarks', ''),
+                'status' => '2',
             ]);
             $this->sendApprovalEmail(
                 $getData['dataEmail'],

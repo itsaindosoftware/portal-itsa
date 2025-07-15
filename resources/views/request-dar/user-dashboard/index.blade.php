@@ -10,6 +10,8 @@
 @section('css')
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/Datatables/dataTables.bootstrap4.min.css') }}">
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/custom-edit.css') }}">
+{{-- <style> --}}
+
 @endsection
 @section('content')
 
@@ -48,17 +50,18 @@
 							<table class="table table-bordered dataTable no-footer" id="table-request-manage" width="100%" role="grid" aria-describedby="table-1_info">
 								<thead>
 									<tr>
-										<th width="7%">No.</th>
+                                        <th class="text-center">Details</th>
+										<th>No.</th>
 										<th class="text-center">Date</th>
 								        <th class="text-center">NIK/Nama</th>
-                                        <th class="text-center">Position</th>
-                                        <th class="text-center">Department</th>
+                                        <th class="text-center">Name Doc</th>
+                                        {{-- <th class="text-center">Department</th>
                                         <th class="text-center">Company</th>
-                                        <th class="text-center">Request Type</th>
-                                        <th class="text-center">ApprovalBy1</th>
+                                        <th class="text-center">Request Type</th> --}}
+                                        {{-- <th class="text-center">ApprovalBy1</th>
                                         <th class="text-center">ApprovalBy2</th>
-                                        <th class="text-center">ApprovalBy3</th>
-										<th class="text-center" width="15%">Action</th>
+                                        <th class="text-center">ApprovalBy3</th> --}}
+										<th class="text-center"">Action</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -84,45 +87,110 @@
 <script>
 $(document).ready(function(){
         // $('.addrm').prop('disabled', true);
-
+        function format(d) {
+            return '<div class="row-details-container" style="padding: 20px; background-color: #f8f9fa; margin: 10px 0;">' +
+                '<div class="row">' +
+                    '<div class="col-md-6">' +
+                        '<table class="table table-sm table-borderless">' +
+                            '<tr><td><strong>NIK/Name:</strong></td><td>' + (d.nik_req || '-') + '</td></tr>' +
+                            '<tr><td><strong>Position:</strong></td><td>' + (d.position || '-') + '</td></tr>' +
+                            '<tr><td><strong>Department:</strong></td><td>' + (d.department || '-') + '</td></tr>' +
+                            '<tr><td><strong>Request Type:</strong></td><td>' + (d.reqtype || '-') + '</td></tr>' +
+                            '<tr><td><strong>Document Name:</strong></td><td>' + (d.name_doc || '-') + '</td></tr>' +
+                            '<tr><td><strong>Rev No Before:</strong></td><td>' + (d.rev_no_before || '-') + '</td></tr>' +
+                            '<tr><td><strong>Approval 1 (Dept head):</strong></td><td>' + (d.approval_status1 || '-') + '</td></tr>' +
+                            '<tr><td><strong>Approval 2 (Syd&IT):</strong></td><td>' + (d.approval_status2 || '-') + '</td></tr>' +
+                            '<tr><td><strong>Approval 3 (DeptHead Syd&IT):</strong></td><td>' + (d.approval_status3 || '-') + '</td></tr>' +
+                        '</table>' +
+                    '</div>' +
+                    '<div class="col-md-6">' +
+                        '<table class="table table-sm table-borderless">' +
+                            '<tr><td><strong>No Doc:</strong></td><td>' + (d.no_doc || '-') + '</td></tr>' +
+                            '<tr><td><strong>DAR Number:</strong></td><td>' + (d.number_dar || '-') + '</td></tr>' +
+                            '<tr><td><strong>Storage Type:</strong></td><td>' + (d.storage_type || '-') + '</td></tr>' +
+                            '<tr><td><strong>Pages:</strong></td><td>' + (d.storage_type || '-') + '</td></tr>' +
+                            '<tr><td><strong>Reason:</strong></td><td>' + (d.reason || '-') + '</td></tr>' +
+                            '<tr><td><strong>Rev No After:</strong></td><td>' + (d.rev_no_before || '-') + '</td></tr>' +
+                            '<tr><td><strong>Status Transaction:</strong></td><td>' + (d.status || '-') + '</td></tr>' +
+                        '</table>' +
+                    '</div>' +
+                '</div>' +
+            '</div>';
+        }
 		var table = $('#table-request-manage').DataTable({
-			"columnDefs": [{
-				"searchable": false,
-				"orderable": false,
-				"targets": 0,
-				render: function(data, type, row, meta) {
-					return meta.row + meta.settings._iDisplayStart + 1;
-				},
-			}],
+			   "columnDefs": [{
+                "searchable": false,
+                "orderable": false,
+                "targets": 0,
+                "className": 'details-control',
+                "defaultContent": '',
+                "width": "30px"
+            }, {
+                "searchable": false,
+                "orderable": false,
+                "targets": 1,
+                render: function(data, type, row, meta) {
+                    return meta.row + meta.settings._iDisplayStart + 1;
+                },
+            }],
 			processing: true,
 			serverSide: true,
 			deferRender:true,
 			ajax: {
 				url: "{{ route('requestdar.index') }}",
 			},
-			order: [[ 0, 'desc']],
-			responsive: true,
+			order: [[ 1, 'desc']],
+			responsive: false,
+            // scrollX: false,
 			columns: [
+            {
+                "className": 'details-control',
+                "orderable": false,
+                "searchable": false,
+                "data": null,
+                "defaultContent": '',
+                "width": "30px"
+            },
 			{
 				data: null,
 				name: null,
 				orderable: false,
 				searchable: false,
-				className: 'text-center'
+				className: 'text-center',
+                width:'50px'
 			},
 			{ data: 'created_date', name: 'created_date', className: 'text-center' },
 			{ data: 'nik_req', name: 'nik_req', className:'text-center' },
-            { data: 'position', name: 'position',className: 'text-center' },
-            { data: 'department', name: 'department',className: 'text-center' },
-            { data: 'position', name: 'position',className: 'text-center' },
-            { data: 'reqtype', name: 'reqtype',className: 'text-center' },
-            { data: 'approval_status1', name: 'approval_status1',className: 'text-center' },
-            { data: 'approval_status2', name: 'approval_status2',className: 'text-center' },
-            { data: 'approval_status3', name: 'approval_status3',className: 'text-center' },
+            // { data: 'position', name: 'position',className: 'text-center' },
+            // { data: 'department', name: 'department',className: 'text-center' },
+            // { data: 'position', name: 'position',className: 'text-center' },
+            { data: 'name_doc', name: 'name_doc',className: 'text-center' },
+            // { data: 'approval_status1', name: 'approval_status1',className: 'text-center' },
+            // { data: 'approval_status2', name: 'approval_status2',className: 'text-center' },
+            // { data: 'approval_status3', name: 'approval_status3',className: 'text-center' },
 			{ data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-center' }
 			]
 	//
 });
+$('#table-request-manage tbody').on('click', 'td.details-control', function () {
+        var tr = $(this).closest('tr');
+        var row = table.row(tr);
+ 
+        if (row.child.isShown()) {
+            // This row is already open - close it
+            row.child.hide();
+            tr.removeClass('shown');
+        } else {
+            // Open this row
+            row.child(format(row.data())).show();
+            tr.addClass('shown');
+        }
+    });
+     table.on('responsive-display', function (e, datatable, row, showHide, update) {
+        if (showHide) {
+            row.child(format(row.data())).show();
+        }
+    });
 
 $(document).on('click','#show-create-dar', function(e){
         e.preventDefault();
