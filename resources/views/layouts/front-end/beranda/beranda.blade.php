@@ -128,7 +128,7 @@
               <div class="row align-items-center">
                 <div class="col-md-6 mb-3 mb-md-0">
                   <div class="search-box position-relative">
-                    <input type="text" name="search" class="form-control" placeholder="Search news..." value="{{ $search }}" style="padding: 12px 20px 12px 45px; border: 2px solid #e9ecef; border-radius: 25px; font-size: 0.95rem;">
+                    <input type="text" name="search" class="form-control" placeholder="Search news..." value="{{ $search ?? ' ' }}" style="padding: 12px 20px 12px 45px; border: 2px solid #e9ecef; border-radius: 25px; font-size: 0.95rem;">
                     <i class="fas fa-search position-absolute" style="left: 15px; top: 50%; transform: translateY(-50%); color: #6c757d;"></i>
                   </div>
                 </div>
