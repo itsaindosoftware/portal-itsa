@@ -10,6 +10,8 @@
 @section('css')
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/Datatables/dataTables.bootstrap4.min.css') }}">
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/custom-edit.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ asset('bootstrap5/css/daterangepicker.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ asset('bootstrap5/css/bootstrap-datetimepicker.min.css') }}">
 {{-- <style> --}}
 
 @endsection
@@ -29,7 +31,71 @@
 	</div>
 
 	<div class="section-body">
-
+           <div class="row">
+			<div class="col-12">
+				<div class="card">
+					<div class="card-header">
+						<h4>Filter</h4>
+						<div class="card-header-action">
+							<a data-collapse="#filter-collapse" class="btn btn-icon btn-info" href="#"><i class="fas fa-minus"></i></a>
+						</div>
+					</div>
+					<div class="collapse show" id="filter-collapse">
+						<div class="card-body">
+							<form id="filter-form">
+								<div class="row">
+									<div class="col-md-4">
+										<div class="form-group">
+											<label>Date Range</label>
+											<div class="input-group">
+												<div class="input-group-prepend">
+													<div class="input-group-text">
+														<i class="fas fa-calendar"></i>
+													</div>
+												</div>
+												<input type="text" placeholder="Select date range" class="form-control daterange-picker" name="date_range" id="date_range">
+											</div>
+										</div>
+									</div>
+                                    <div class="col-md-4">
+										<div class="form-group">
+											<label>Request Type</label>
+											<select class="form-control" name="reqtype" id="reqtype">
+												<option value="">All Request Types</option>
+												@foreach ($reqTypes as $types )
+                                                   <option value="{{ $types->id }}">{{ $types->request_type }}</option>
+                                                @endforeach
+											</select>
+										</div>
+									</div>
+                                    <div class="col-md-4">
+										<div class="form-group">
+											<label>Status</label>
+											<select class="form-control select2" name="status" id="status">
+												<option value="">All Statuses</option>
+												<option value="1">Open</option>
+												<option value="2">Close</option>
+											</select>
+										</div>
+									</div>
+                                    	<div class="col-md-3">
+										<div class="form-group mt-4 pt-1">
+											<button type="button" class="btn btn-primary" id="btn-filter">
+												<i class="fas fa-filter"></i> Apply Filter
+											</button>
+											<button type="button" class="btn btn-light" id="btn-reset">
+												<i class="fas fa-undo"></i> Reset
+											</button>
+										</div>
+									</div>
+								</div>
+                                <input type="hidden" name="group_by" id="group_by" value="department">
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
 		<div class="row">
 			<div class="col-12">
 				<div class="card">
@@ -55,9 +121,9 @@
 										<th class="text-center">Date</th>
 								        <th class="text-center">NIK/Nama</th>
                                         <th class="text-center">Name Doc</th>
-                                        {{-- <th class="text-center">Department</th>
-                                        <th class="text-center">Company</th>
-                                        <th class="text-center">Request Type</th> --}}
+                                        <th class="text-center">Status</th>
+                                        {{-- <th class="text-center">Company</th>
+                                        <th class="text-center">Request Type</th> --}} 
                                         {{-- <th class="text-center">ApprovalBy1</th>
                                         <th class="text-center">ApprovalBy2</th>
                                         <th class="text-center">ApprovalBy3</th> --}}
@@ -84,8 +150,24 @@
 @include('request-dar.user-dashboard.view-docs.view-docs-view')
 <script src="{{ asset('assets/Datatables/jquery.dataTables.min.js') }}"></script>
 <script src="{{ asset('assets/Datatables/dataTables.bootstrap4.min.js') }}"></script>
+<script src="{{ asset('bootstrap5/js/moment.min.js') }}"></script>
+<script src="{{ asset('bootstrap5/js/daterangepicker.min.js') }}"></script>
 <script>
 $(document).ready(function(){
+       	$('.daterange-picker').daterangepicker({
+			locale: {format: 'YYYY-MM-DD'},
+			drops: 'down',
+			opens: 'right',
+			autoUpdateInput: false,
+		});
+
+		$('.daterange-picker').on('apply.daterangepicker', function(ev, picker) {
+			$(this).val(picker.startDate.format('YYYY-MM-DD') + ' - ' + picker.endDate.format('YYYY-MM-DD'));
+		});
+
+		$('.daterange-picker').on('cancel.daterangepicker', function(ev, picker) {
+			$(this).val('');
+		});
         // $('.addrm').prop('disabled', true);
         function format(d) {
             return '<div class="row-details-container" style="padding: 20px; background-color: #f8f9fa; margin: 10px 0;">' +
@@ -138,6 +220,17 @@ $(document).ready(function(){
 			deferRender:true,
 			ajax: {
 				url: "{{ route('requestdar.index') }}",
+                data: function(d){
+                    // Get filter values
+                    var dateRange = $('#date_range').val();
+                    var reqType = $('#reqtype').val();
+                    var status = $('#status').val();
+
+                    // Add filter values to the request data
+                    d.date_range = dateRange;
+                    d.reqtype = reqType;
+                    d.status = status;
+                }
 			},
 			order: [[ 1, 'desc']],
 			responsive: false,
@@ -165,7 +258,7 @@ $(document).ready(function(){
             // { data: 'department', name: 'department',className: 'text-center' },
             // { data: 'position', name: 'position',className: 'text-center' },
             { data: 'name_doc', name: 'name_doc',className: 'text-center' },
-            // { data: 'approval_status1', name: 'approval_status1',className: 'text-center' },
+            { data: 'status', name: 'status',className: 'text-center' },
             // { data: 'approval_status2', name: 'approval_status2',className: 'text-center' },
             // { data: 'approval_status3', name: 'approval_status3',className: 'text-center' },
 			{ data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-center' }
@@ -191,7 +284,9 @@ $('#table-request-manage tbody').on('click', 'td.details-control', function () {
             row.child(format(row.data())).show();
         }
     });
-
+  $('#btn-filter').click(function() {
+		table.ajax.reload();
+	});
 $(document).on('click','#show-create-dar', function(e){
         e.preventDefault();
         resetForm();

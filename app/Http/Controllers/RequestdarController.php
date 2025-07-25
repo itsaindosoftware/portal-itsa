@@ -100,6 +100,20 @@ class RequestdarController extends Controller
                     $data->get();
                 } elseif (Auth::user()->hasRole('user-employee')) {
                     $data = $this->baseQuery();
+                    if ($request->has('date_range') && !empty($request->date_range)) {
+                        $dateRange = explode(' - ', $request->date_range);
+                        if (count($dateRange) == 2) {
+                            $data->whereBetween('request_dar.created_date', [$dateRange[0], $dateRange[1]]);
+                        }
+                    }
+                    if ($request->has('reqtype') && !empty($request->reqtype)) {
+                        $data->where('request_dar.typereqform_id', $request->reqtype);
+                    }
+                    if ($request->has('status') && !empty($request->status)) {
+                        $data->where('request_dar.status', $request->status);
+
+                    }
+
                     $data->where('request_dar.nik_req', Auth::user()->nik)->get();
                 } elseif (Auth::user()->hasRole('manager')) {
                     $data = $this->baseQuery()->where('request_dar.dept_id', Auth::user()->department_id);
@@ -334,7 +348,7 @@ class RequestdarController extends Controller
             ->select('id', 'position_desc as position')
             ->get();
         if (Auth::user()->hasRole('user-employee')) {
-            return view('request-dar.user-dashboard.index', compact('reqTypes', 'requestDesc', 'department'));
+            return view('request-dar.user-dashboard.index', compact('reqTypes', 'requestDesc', 'department', 'company', 'position'));
         } elseif (Auth::user()->hasRole('manager')) {
             return view('request-dar.user-approved1.index', compact('reqTypes', 'requestDesc', 'department'));
         } elseif (Auth::user()->hasRole('sysdev')) {

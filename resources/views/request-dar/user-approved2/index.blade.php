@@ -148,12 +148,13 @@
 										<th class="text-center">Date</th>
 								        <th class="text-center">NIK/Nama</th>
                                         <th class="text-center">Doc Name</th>
-                                        {{-- <th class="text-center">Department</th>
-                                        <th class="text-center">Company</th>
+										<th class="text-center">Status</th>
+                                        {{-- {{-- <th class="text-center">Department</th> --}}
+                                        {{-- <th class="text-center">Company</th>
                                         <th class="text-center">Request Type</th>
                                         <th class="text-center">ApprovalBy1</th>
                                         <th class="text-center">ApprovalBy2</th>
-                                        <th class="text-center">ApprovalBy3</th> --}}
+                                        <th class="text-center">ApprovalBy3</th> --}} 
 										<th class="text-center" width="15%">Action</th>
 									</tr>
 								</thead>
@@ -328,7 +329,7 @@ $(document).ready(function(){
                     {data: 'created_date', name: 'created_date', className: 'text-center'},
                     {data: 'nik_req', name: 'nik_req', className: 'text-center'},
                     {data: 'name_doc', name: 'name_doc', className: 'text-center'},
-                    // {data: 'department', name: 'department', className: 'text-center'},
+                    {data: 'status', name: 'status', className: 'text-center'},
                     // {data: 'company', name: 'company', className: 'text-center'},
                     // {data: 'reqtype', name: 'reqtype', className: 'text-center'},
                     // {data: 'approval_status1', name: 'approval_status1', className: 'text-center'},
