@@ -69,6 +69,17 @@
 											</select>
 										</div>
 									</div>
+									<div class="col-md-4">
+										<div class="form-group">
+											<label>Status Transaction</label>
+											<select class="form-control" name="stat-transac" id="stat-transac">
+												<option value="">All Status</option>
+                                                <option value="open">Open</option>
+												<option value="close">Closed</option>
+												<!-- Position options will be loaded dynamically -->
+											</select>
+										</div>
+									</div>
 									<div class="col-md-8">
 										<div class="form-group mt-4 pt-1">
 											<button type="button" class="btn btn-primary" id="btn-filter">
@@ -212,6 +223,7 @@ $(document).ready(function(){
 					d.nik_name = $('#nik_name').val();
 					d.reqtype = $('#reqtype').val();
 					d.status = $('#status').val();
+					d.statustransac = $('#stat-transac').val();
 				}
 			},
 			order: [[ 0, 'desc']],

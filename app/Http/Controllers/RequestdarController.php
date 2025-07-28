@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Mail\SendnotiftoMgrSysdev;
 use App\Requestdar;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -11,6 +12,8 @@ use Symfony\Component\HttpFoundation\FileBag;
 use Yajra\DataTables\DataTables;
 use App\Mail\SendnotifRequestDar;
 use App\Mail\SendnotifrejectDar;
+use App\Mail\SendNotifikasiApplyDar;
+use App\Mail\SendnotiftoSysdev;
 use Illuminate\Support\Facades\Mail;
 use Carbon\Carbon;
 use Validator;
@@ -148,6 +151,14 @@ class RequestdarController extends Controller
                         }
 
                     }
+                    if ($request->has('statustransac') && !empty($request->statustransac)) {
+                        if ($request->statustransac == 'open') {
+                            $data->where('request_dar.status', '1');
+                        } elseif ($request->statustransac == 'close') {
+                            $data->where('request_dar.status', '2');
+                        }
+
+                    }
 
                     $data = $data->get();
                 } elseif (Auth::user()->hasRole('sysdev')) {
@@ -192,6 +203,25 @@ class RequestdarController extends Controller
                         }
 
                     }
+                    if ($request->has('status') && !empty($request->status)) {
+                        if ($request->status == 'Pending') {
+                            $data->where('request_dar.approval_status3', '0');
+                        } elseif ($request->status == 'Approved') {
+                            $data->where('request_dar.approval_status3', '1');
+                        } else {
+                            $data->where('request_dar.approval_status3', '2');
+                        }
+
+                    }
+                    if ($request->has('statustransac') && !empty($request->statustransac)) {
+                        if ($request->statustransac == 'open') {
+                            $data->where('request_dar.status', '1');
+                        } elseif ($request->statustransac == 'close') {
+                            $data->where('request_dar.status', '2');
+                        }
+
+                    }
+
 
                     $data = $data->get();
                 } elseif (Auth::user()->hasRole('manager-it')) {
@@ -224,6 +254,14 @@ class RequestdarController extends Controller
                     }
                     if ($request->has('department') && !empty($request->department)) {
                         $data->where('request_dar.dept_id', $request->department);
+                    }
+                    if ($request->has('statustransac') && !empty($request->statustransac)) {
+                        if ($request->statustransac == 'open') {
+                            $data->where('request_dar.status', '1');
+                        } elseif ($request->statustransac == 'close') {
+                            $data->where('request_dar.status', '2');
+                        }
+
                     }
 
                     if ($request->has('status') && !empty($request->status)) {
@@ -459,6 +497,39 @@ class RequestdarController extends Controller
                 $requestdar->approval_by3 = 'Manager SysDev & IT';
                 // Save the record
                 $requestdar->save();
+
+                // Send notification email to manager
+                $managerEmail = DB::connection('portal-itsa')->table('role_user')
+                    ->leftJoin('users', 'role_user.user_id', '=', 'users.id')
+                    ->leftJoin('roles', 'role_user.role_id', '=', 'roles.id')
+                    ->where('users.department_id', Auth::user()->department_id)
+                    ->where('roles.name', 'manager')
+                    // ->select('users.email')
+                    ->first();
+
+                $getUserreq = DB::connection('portal-itsa')->table('users')
+                    ->where('nik', Auth::user()->nik)
+                    ->first();
+                // dd($getUserreq);
+                // dd($managerEmail->email);
+                if ($managerEmail && $managerEmail->email) {
+                    $remarks = 'Dokumen DAR baru memerlukan persetujuan Anda';
+                    $approverName = $managerEmail->name ?? 'Manager';
+                    $roleName = 'manager';
+                    $approvalDate = null; // Atau null jika belum di-approve
+                    $test = Mail::to($managerEmail->email)->send(
+                        new SendNotifikasiApplyDar(
+                            $requestdar,
+                            $remarks,
+                            $approverName,
+                            $getUserreq,
+                            $roleName,
+                            $approvalDate
+                        )
+                    );
+                    \Log::info('Email sent successfully');
+                }
+
 
                 // Commit transaction
                 DB::commit();
@@ -720,7 +791,7 @@ class RequestdarController extends Controller
                 'approval_status1' => '1',
                 'remark_approval_by1' => $request->input('remarks', '')
             ]);
-            $this->sendApprovalEmail(
+            $this->sendApprovalEmail2(
                 $getData['dataEmail'],
                 $request->input('remarks', ''),
                 Auth::user()->name,
@@ -769,7 +840,8 @@ class RequestdarController extends Controller
                 'approval_status2' => '1',
                 'remark_approval_by2' => $request->input('remarks', '')
             ]);
-            $this->sendApprovalEmail(
+
+            $this->sendApprovalEmail3(
                 $getData['dataEmail'],
                 $request->input('remarks', ''),
                 Auth::user()->name,
@@ -879,16 +951,111 @@ class RequestdarController extends Controller
     }
     private function sendApprovalEmail($dataDar, $remarks, $approverName, $userRole, $getDisplayname, $approvalDate)
     {
+        $getUserReq = DB::connection('portal-itsa')->table('users')
+            ->where('nik', $dataDar->nik_req)
+            ->first();
 
-        Mail::to('it-03@thaisummit.co.id')->send(new SendnotifRequestDar($dataDar, $remarks, $approverName, $userRole, $getDisplayname, $approvalDate));
+        // $getUserReq->email
+        Mail::to('it-03@thaisummit.co.id')
+            ->send(new SendnotifRequestDar(
+                $dataDar,
+                $remarks,
+                $approverName,
+                $userRole,
+                $getDisplayname,
+                $approvalDate
+            ));
+
+    }
+    private function sendApprovalEmail2($dataDar, $remarks, $approverName, $userRole, $getDisplayname, $approvalDate)
+    {
+        $getUserReq = DB::connection('portal-itsa')->table('users')
+            ->where('nik', $dataDar->nik_req)
+            ->first();
+
+        $sendNotiftoApproval2 = DB::connection('portal-itsa')->table('role_user')
+            ->leftJoin('users', 'role_user.user_id', '=', 'users.id')
+            ->leftJoin('roles', 'role_user.role_id', '=', 'roles.id')
+            ->where('roles.name', 'sysdev')
+            ->select('users.*', 'roles.name as role_name')
+            ->first();
+        // dd($sendNotiftoApproval2);
+
+        // $sendNotiftoApproval2->email
+        Mail::to('it-03@thaisummit.co.id')
+            ->send(new SendnotiftoSysdev(
+                $dataDar,
+                $remarks,
+                $approverName,
+                $approvalDate
+            ));
+
+        // 'it-03@thaisummit.co.id'
+        Mail::to('it-03@thaisummit.co.id')
+            ->send(new SendnotifRequestDar(
+                $dataDar,
+                $remarks,
+                $approverName,
+                $userRole,
+                $getDisplayname,
+                $approvalDate
+            ));
         return "email successfully sending.";
+
+    }
+    private function sendApprovalEmail3($dataDar, $remarks, $approverName, $userRole, $getDisplayname, $approvalDate)
+    {
+        $getUserReq = DB::connection('portal-itsa')->table('users')
+            ->where('nik', $dataDar->nik_req)
+            ->first();
+
+        $sendNotiftoApproval2 = DB::connection('portal-itsa')->table('role_user')
+            ->leftJoin('users', 'role_user.user_id', '=', 'users.id')
+            ->leftJoin('roles', 'role_user.role_id', '=', 'roles.id')
+            ->where('roles.name', 'manager-it')
+            ->select('users.*', 'roles.name as role_name')
+            ->first();
+        // dd($sendNotiftoApproval2);
+
+        // $sendNotiftoApproval2->email
+        Mail::to('it-03@thaisummit.co.id')
+            ->send(new SendnotiftoMgrSysdev(
+                $dataDar,
+                $remarks,
+                $approverName,
+                $approvalDate
+            ));
+
+        //  $getUserReq->email;
+        Mail::to('it-03@thaisummit.co.id')
+            ->send(new SendnotifRequestDar(
+                $dataDar,
+                $remarks,
+                $approverName,
+                $userRole,
+                $getDisplayname,
+                $approvalDate
+            ));
 
     }
     private function sendRejectEmail($dataDar, $remarks, $approverName, $userRole, $getDisplayname, $approvalDate)
     {
+        $getUserReq = DB::connection('portal-itsa')->table('users')
+            ->where('nik', $dataDar->nik_req)
+            ->first();
+        // $getUserReq->email;
 
-        Mail::to('it-03@thaisummit.co.id')->send(new SendnotifrejectDar($dataDar, $remarks, $approverName, $userRole, $getDisplayname, $approvalDate));
-        return "email successfully sending.";
+        Mail::to('it-03@thaisummit.co.id')->send(
+            new SendnotifrejectDar(
+                $dataDar,
+                $remarks,
+                $approverName,
+                $userRole,
+                $getDisplayname,
+                $approvalDate
+            )
+        );
+
 
     }
     private function getDisplayNameRole()

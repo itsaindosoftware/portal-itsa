@@ -106,6 +106,17 @@
 										</div>
 									</div>
 									<div class="col-md-3">
+										<div class="form-group">
+											<label>Status Transaction</label>
+											<select class="form-control" name="stat-transac" id="stat-transac">
+												<option value="">All Status</option>
+                                                <option value="open">Open</option>
+												<option value="close">Closed</option>
+												<!-- Position options will be loaded dynamically -->
+											</select>
+										</div>
+									</div>
+									<div class="col-md-3">
 										<div class="form-group mt-4 pt-1">
 											<button type="button" class="btn btn-primary" id="btn-filter">
 												<i class="fas fa-filter"></i> Apply Filter
@@ -311,6 +322,7 @@ $(document).ready(function(){
                         d.position = $('#position').val();
                         d.company = $('#company').val();
                         d.department = $('#department').val();
+						d.statustransac = $('#stat-transac').val();
                         d.group_by = 'department'; // Always group by department
                     }
                 },

@@ -26,7 +26,9 @@
                     data-id="{{ $model->reqdar_id }}"
                     row-approve-manager="{{ $model->approval_date1 }}"
                     row-approve-sysdev="{{ $model->approval_date2 }}"
-                    row-approve-mgrit="{{ $model->approval_date3 }}">
+                    row-approve-mgrit="{{ $model->approval_date3 }}"
+                    row-approve-status3="{{ $model->approval_status3 }}"
+                    >
                     <i class="fas fa-ban text-danger"></i> Rejected
                 </a>
             @endpermission

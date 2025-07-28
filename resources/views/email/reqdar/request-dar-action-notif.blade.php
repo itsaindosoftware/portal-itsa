@@ -85,6 +85,7 @@
     </style>
 </head>
 <body>
+  
     <div class="header">
         <h2>Document Action Request Approved</h2>
     </div>
@@ -145,7 +146,7 @@
         <p>Best regards,<br>
         PORTAL ITSA SYSTEM</p>
     </div>
-    
+
     <div class="footer">
         <p>This is an automated email from the PORTAL ITSA SYSTEM.</p>
     </div>
