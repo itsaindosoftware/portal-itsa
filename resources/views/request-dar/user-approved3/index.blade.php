@@ -230,7 +230,7 @@ $(document).ready(function(){
                             '<tr><td><strong>Storage Type:</strong></td><td>' + (d.storage_type || '-') + '</td></tr>' +
                             '<tr><td><strong>Pages:</strong></td><td>' + (d.storage_type || '-') + '</td></tr>' +
                             '<tr><td><strong>Reason:</strong></td><td>' + (d.reason || '-') + '</td></tr>' +
-                            '<tr><td><strong>Rev No After:</strong></td><td>' + (d.rev_no_before || '-') + '</td></tr>' +
+                            '<tr><td><strong>Rev No After:</strong></td><td>' + (d.rev_no_after || '-') + '</td></tr>' +
                             '<tr><td><strong>Status Transaction:</strong></td><td>' + (d.status || '-') + '</td></tr>' +
                         '</table>' +
                     '</div>' +

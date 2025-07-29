@@ -212,7 +212,7 @@
                     </div>
                     <div class="detail-item">
                         <span class="label">Tanggal Pengajuan</span>
-                        <span class="value">{{ $dataDar->created_at ?? 'N/A' }}</span>
+                        <span class="value">{{ $dataDar->created_date ?? 'N/A' }}</span>
                     </div>
                     <div class="detail-item">
                         <span class="label">Status</span>

@@ -14,6 +14,8 @@ use App\Mail\SendnotifRequestDar;
 use App\Mail\SendnotifrejectDar;
 use App\Mail\SendNotifikasiApplyDar;
 use App\Mail\SendnotiftoSysdev;
+use App\Mail\NotifikasiWhenReviseForm;
+use App\Mail\NotifikasiWhenReviseUpdateForm;
 use Illuminate\Support\Facades\Mail;
 use Carbon\Carbon;
 use Validator;
@@ -705,6 +707,72 @@ class RequestdarController extends Controller
 
                 $data->save();
 
+                //send notification to requestor form success update
+                $getUserreq = DB::connection('portal-itsa')->table('request_dar')
+                    ->leftJoin('users', 'request_dar.user_id', '=', 'users.id')
+                    ->where('request_dar.id', $id)
+                    ->select('users.email', 'users.name', 'users.nik', 'request_dar.*')
+                    ->first();
+
+                //get role SYD
+                $getRoleSyd = DB::connection('portal-itsa')->table('role_user')
+                    ->leftJoin('users', 'role_user.user_id', '=', 'users.id')
+                    ->leftJoin('roles', 'role_user.role_id', '=', 'roles.id')
+                    ->where('roles.name', 'sysdev')
+                    ->select('users.email', 'users.name', 'roles.name as role_name')
+                    ->get();
+
+                // $get complete table dar
+                $getDataDar = $this->getDataDar($id);
+                $getRoleDisplayName = $this->getDisplayNameRole();
+                // $getDataRole=
+                // $remarks = 'Dokumen DAR telah berhasil diperbarui Oleh SYD';
+                $approverName = Auth::user()->name;
+
+                if ($getRoleDisplayName) {
+                    $roleName = $getRoleDisplayName->role_name;
+                    if ($roleName == 'sysdev') {
+                        $remarks = 'Formulir DAR Anda telah direvisi oleh SysDev. Silakan periksa dan update sesuai catatan revisi.';
+                        if ($getUserreq && $getUserreq->request_desc_id == 2 || $getUserreq->request_desc_id == 3) {
+                            // $getUserreq->email
+                            Mail::to('it-03@thaisummit.co.id')->send(
+                                new NotifikasiWhenReviseForm(
+                                    $data,
+                                    $remarks,
+                                    $approverName,
+                                    $getUserreq->nik,
+                                    $getDataDar
+                                )
+                            );
+                        }
+                    } elseif ($roleName == 'user-employee') {
+                        $remarks = 'Requestor telah berhasil melakukan revisi pada formulir DAR dan siap untuk direview kembali.';
+                        if ($getRoleSyd->isNotEmpty()) {
+                            foreach ($getRoleSyd as $sysdevUser) {
+                                Mail::to('it-03@thaisummit.co.id')->send( // Kirim ke SysDev
+                                    new NotifikasiWhenReviseUpdateForm(
+                                        $data,
+                                        $remarks,
+                                        $approverName,
+                                        $getUserreq,
+                                        $getDataDar // Kirim object lengkap
+                                    )
+                                );
+                            }
+                        }
+                        // $getRoleSyd->email
+                        // Mail::to('it-03@thaisummit.co.id')->send(
+                        //     new NotifikasiWhenReviseUpdateForm(
+                        //         $data,
+                        //         $remarks,
+                        //         $approverName,
+                        //         $getUserreq
+                        //     )
+                        // );
+                    }
+                }
+
+
                 DB::commit();
 
                 return response()->json([
@@ -726,7 +794,27 @@ class RequestdarController extends Controller
             return view('error.403');
         }
     }
-
+    private function getDataDar($id)
+    {
+        return DB::connection('portal-itsa')->table('request_dar')
+            ->leftJoin('users', 'request_dar.user_id', '=', 'users.id')
+            ->leftJoin('departments', 'request_dar.dept_id', '=', 'departments.id')
+            ->leftJoin('companys', 'request_dar.company_id', '=', 'companys.id')
+            ->leftJoin('positions', 'request_dar.position_id', '=', 'positions.id')
+            ->leftJoin('type_of_reqforms', 'request_dar.typereqform_id', '=', 'type_of_reqforms.id')
+            ->leftJoin('request_desc', 'request_dar.request_desc_id', '=', 'request_desc.id')
+            ->select(
+                'request_dar.*',
+                'request_dar.id as reqdar_id',
+                'users.*',
+                'departments.description as department',
+                'companys.company_desc as company',
+                'positions.position_desc as position',
+                'type_of_reqforms.request_type as reqtype',
+                'request_desc.request_descript'
+            )
+            ->where('request_dar.id', $id)->first();
+    }
     /**
      * Remove the specified resource from storage.
      *
@@ -1064,7 +1152,7 @@ class RequestdarController extends Controller
         $query = DB::connection('portal-itsa')->table('users as a')
             ->leftJoin('role_user as b', 'b.user_id', '=', 'a.id')
             ->leftJoin('roles as c', 'b.role_id', '=', 'c.id')
-            ->select('c.display_name')
+            ->select('c.display_name', 'c.name as role_name')
             ->where('a.id', $user_id)
             ->first();
         return $query;
