@@ -479,7 +479,8 @@ class RequestdarController extends Controller
                 $requestdar->user_id = Auth::user()->id;
                 $requestdar->typereqform_id = $request->typereqform_id;
                 $requestdar->request_desc_id = $request->request_desc_id;
-                $requestdar->dept_id = $request->dept_id;
+                // $requestdar->dept_id = $request->dept_id;
+                $requestdar->dept_id = Auth::user()->department_id;
                 $requestdar->name_doc = $request->name_doc;
                 $requestdar->no_doc = $request->no_doc;
                 $requestdar->qty_pages = $request->qty_pages;
@@ -669,7 +670,7 @@ class RequestdarController extends Controller
                     ], 404);
                 }
 
-                $data->dept_id = empty($request->dept_id) ? $data->dept_id : $request->dept_id;
+                // $data->dept_id = empty($request->dept_id) ? $data->dept_id : $request->dept_id;
                 $data->name_doc = empty($request->name_doc) ? $data->name_doc : $request->name_doc;
                 $data->no_doc = empty($request->no_doc) ? $data->no_doc : $request->no_doc;
                 $data->qty_pages = empty($request->qty_pages) ? $data->qty_pages : $request->qty_pages;
@@ -1193,6 +1194,25 @@ class RequestdarController extends Controller
         }
 
         return response()->download($fullPath, $originalFileName);
+    }
+
+    public function loockupDocument(Request $request)
+    {
+        if ($request->ajax()) {
+            $masterDocs = DB::connection('portal-itsa')
+                ->table('master_documents')
+                ->select('id', 'title', 'description', 'type_doc');
+
+            if ($request->has('filterType') && !empty($request->filterType)) {
+                $masterDocs->where('type_doc', $request->filterType);
+            }
+
+            $masterDocs->get();
+
+            return DataTables::of($masterDocs)
+                ->addIndexColumn()
+                ->make(true);
+        }
     }
 
 }

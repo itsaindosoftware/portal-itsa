@@ -406,8 +406,7 @@ $(document).on('click','#show-create-dar', function(e){
         }
 
         // Check specific fields
-        if (!$('#dept-id').val() ||
-            !$('#name-doc').val().trim() ||
+        if (!$('#name-doc').val().trim() ||
             !$('#no-doc').val().trim() ||
             !$('#qty-pages').val() ||
             !$('#reason').val().trim() ||
@@ -531,7 +530,7 @@ $(document).on('click','#show-create-dar', function(e){
         }
     });
 
-
+    
 
 
 

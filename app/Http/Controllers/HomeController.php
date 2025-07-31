@@ -489,12 +489,18 @@ class HomeController extends Controller
         $userNik = Auth::user()->nik;
         $requestCount = Requestdar::where('nik_req', $userNik)->count();
         $userInfo = $this->getUserInfo($userNik);
-        $monthlyRequests = $this->getMonthlyUserRequests($userNik);
+        // $monthlyRequests = $this->getMonthlyUserRequests($userNik);
+        $totalRequests = $this->getTotalRequests();
+        $lastUpdateRequest = $this->getLastUpdateRequest();
+        $totalDocs = $this->getMasterDocsCount();
 
         return view('users-dashboard.user-employe.home', [
             'data' => $requestCount,
             'users' => $userInfo,
-            'monthlyRequests' => $monthlyRequests
+            'totalRequests' => $totalRequests,
+            'lastUpdateRequest' => $lastUpdateRequest,
+            'totalDocs' => $totalDocs
+            // 'monthlyRequests' => $monthlyRequests
         ]);
     }
 
@@ -690,11 +696,30 @@ class HomeController extends Controller
             ->first();
     }
 
-    private function getMonthlyUserRequests($nik)
+    // private function getMonthlyUserRequests($nik)
+    // {
+    //     return Requestdar::where('nik_req', $nik)
+    //         ->whereMonth('created_date', date('m'))
+    //         ->whereYear('created_date', date('Y'))
+    //         ->count();
+    // }
+    private function getTotalRequests()
     {
-        return Requestdar::where('nik_req', $nik)
-            ->whereMonth('created_date', date('m'))
-            ->whereYear('created_date', date('Y'))
+        return Requestdar::count();
+    }
+
+    /**
+     * Get last updated request
+     */
+    private function getLastUpdateRequest()
+    {
+        return Requestdar::orderBy('updated_bydate_1', 'desc')->first();
+    }
+
+    private function getMasterDocsCount()
+    {
+        return DB::connection('portal-itsa')
+            ->table('master_documents')
             ->count();
     }
 

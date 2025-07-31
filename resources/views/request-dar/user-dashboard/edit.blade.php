@@ -195,7 +195,7 @@
                     <fieldset class="border p-3 mb-4 rounded">
                         <legend class="w-auto px-2 text-info font-weight-bold h6">Informasi Dokumen</legend>
                         <div class="row">
-                            <div class="col-md-6">
+                            {{-- <div class="col-md-6">
                                 <div class="form-group">
                                     <label class="font-weight-bold">Dari Department/Bagian</label>
                                     <div class="input-group">
@@ -210,19 +210,8 @@
                                         </select>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label class="font-weight-bold">Nama Dokumen</label>
-                                    <div class="input-group">
-                                        <div class="input-group-prepend">
-                                            <span class="input-group-text"><i class="fa fa-file"></i></span>
-                                        </div>
-                                        <input type="text" class="form-control" name="name_doc" id="name-doc-edit" placeholder="Masukkan nama dokumen" required>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
+                            </div> --}}
+                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label class="font-weight-bold">Nomor Dokumen</label>
                                     <div class="input-group">
@@ -235,6 +224,18 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
+                                    <label class="font-weight-bold">Nama Dokumen</label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="fa fa-file"></i></span>
+                                        </div>
+                                        <input type="text" class="form-control" name="name_doc" id="name-doc-edit" placeholder="Masukkan nama dokumen" required>
+                                    </div>
+                                </div>
+                            </div>
+                           
+                            <div class="col-md-6">
+                                <div class="form-group">
                                     <label class="font-weight-bold">Jumlah Halaman</label>
                                     <div class="input-group">
                                         <div class="input-group-prepend">
@@ -244,21 +245,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label class="font-weight-bold">Alasan Perubahan Dokumen</label>
-                                        <div class="input-group">
-                                            <div class="input-group-prepend"  style="height: auto;">
-                                                <span class="input-group-text" style="height: 100%; display: flex; align-items: center; border-top-right-radius: 0; border-bottom-right-radius: 0;"><i class="fa fa-pencil-alt"></i></span>
-                                            </div>
-                                            <textarea class="form-control" id="reason-edit" name="reason" rows="3" placeholder="Jelaskan alasan perubahan dokumen" required style="resize: vertical; min-height: 100px; border-top-left-radius: 0; border-bottom-left-radius: 0;"></textarea>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-3">
+                              <div class="col-md-3">
                                     <div class="form-group">
                                         <label class="font-weight-bold">Rev No Before</label>
                                         <div class="input-group">
@@ -280,6 +267,21 @@
                                         </div>
                                     </div>
                                 </div>
+                        </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="font-weight-bold">Alasan Perubahan Dokumen</label>
+                                        <div class="input-group">
+                                            <div class="input-group-prepend"  style="height: auto;">
+                                                <span class="input-group-text" style="height: 100%; display: flex; align-items: center; border-top-right-radius: 0; border-bottom-right-radius: 0;"><i class="fa fa-pencil-alt"></i></span>
+                                            </div>
+                                            <textarea class="form-control" id="reason-edit" name="reason" rows="3" placeholder="Jelaskan alasan perubahan dokumen" required style="resize: vertical; min-height: 100px; border-top-left-radius: 0; border-bottom-left-radius: 0;"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+
+                              
                             </div>
                     </fieldset>
 
@@ -414,7 +416,7 @@
             }
 
             // Department
-            $('#dept-id-edit').val(response.dept_id);
+            // $('#dept-id-edit').val(response.dept_id);
 
             // Document information
             $('#name-doc-edit').val(response.name_doc);

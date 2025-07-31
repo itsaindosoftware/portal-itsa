@@ -61,6 +61,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('rejected2/requestdar/{param}', 'RequestDarController@rejectedAppr2')->name('requestdar.rejectedAppr2');
     Route::post('approved3/requestdar/{param}', 'RequestDarController@approvedBy3')->name('requestdar.approvedby3');
     Route::post('rejected3/requestdar/{param}', 'RequestDarController@rejectedAppr3')->name('requestdar.rejectedAppr3');
+    Route::get('lookup-document', 'RequestDarController@loockupDocument')->name('requestdar.lookupdokumen');
     Route::resource('newsbe', 'NewsbeController');
     Route::resource('servicebe', 'ServicebeController');
 
