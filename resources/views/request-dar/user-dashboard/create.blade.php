@@ -347,8 +347,13 @@
                     var match = data.title.match(/^([A-Z]{2}-\d{2}-\d{3})\s+(.+)$/);
 
                     if (match) {
-                        $('#no-doc').val(match[1]);
-                        $('#name-doc').val(match[2]);
+                        var noDoc = match[1];
+                        var nameDocRaw = match[2];
+                        var nameDoc = $('<textarea/>').html(nameDocRaw).text();
+                        // $('#name-doc').val(match[2]);
+                         $('#no-doc').val(noDoc);
+                         $('#name-doc').val(nameDoc);
+                        
                     } else {
                         $('#no-doc').val('');
                         $('#name-doc').val('');
