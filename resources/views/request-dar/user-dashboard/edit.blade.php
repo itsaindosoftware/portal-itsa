@@ -1,7 +1,7 @@
 <div class="modal fade" tabindex="-1" id="edit-reqdar" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
-            <div class="modal-header bg-info text-white">
+            <div class="modal-header bg-primary text-white">
                 <h5 class="modal-title edit">EDIT REQUEST DAR</h5>
                 <p id="by_add"></p>
                 <button type="button" onclick="" class="close text-white" data-dismiss="modal"><span>&times;</span></button>
@@ -13,12 +13,12 @@
                     @method('PUT')
                     <input type="hidden" id="id-reqdar-form">
                     <fieldset class="border p-3 mb-4 rounded">
-                        <legend class="w-auto px-2 text-info font-weight-bold h6">Informasi Approval</legend>
+                        <legend class="w-auto px-2 text-primary font-weight-bold h6">Informasi Approval</legend>
 
                         <!-- Progress Bar Status Approval -->
                         <div class="approval-progress mb-4">
                             <div class="progress" style="height: 8px;">
-                                <div class="progress-bar progress-bar-striped progress-bar-animated bg-info" role="progressbar"
+                                <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary" role="progressbar"
                                      style="width: 100%"
                                      aria-valuenow="100"
                                      aria-valuemin="0" aria-valuemax="100"></div>
@@ -37,7 +37,7 @@
                                     </span> --}}
                                 </div>
                                 <div class="approval-arrow d-flex align-items-center">
-                                    <i class="fa fa-long-arrow-alt-right text-info fa-2x"></i>
+                                    <i class="fa fa-long-arrow-alt-right text-primary fa-2x"></i>
                                 </div>
                                 <div class="approval-step text-center">
                                     <div class="approval-icon rounded-circle bg-success border d-flex justify-content-center align-items-center mx-auto mb-2" style="width: 60px; height: 60px;">
@@ -49,7 +49,7 @@
                                     </span> --}}
                                 </div>
                                 <div class="approval-arrow d-flex align-items-center">
-                                    <i class="fa fa-long-arrow-alt-right text-info fa-2x"></i>
+                                    <i class="fa fa-long-arrow-alt-right text-primary fa-2x"></i>
                                 </div>
                                 <div class="approval-step text-center">
                                     <div class="approval-icon rounded-circle bg-success border d-flex justify-content-center align-items-center mx-auto mb-2" style="width: 60px; height: 60px;">
@@ -157,7 +157,7 @@
                     </fieldset>
                     <!-- Fieldset untuk Request Type dan Description -->
                     <fieldset class="border p-3 mb-4 rounded">
-                        <legend class="w-auto px-2 text-info font-weight-bold h6">Tipe & Deskripsi Permintaan</legend>
+                        <legend class="w-auto px-2 text-primary font-weight-bold h6">Tipe & Deskripsi Permintaan</legend>
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="form-group">
@@ -193,7 +193,7 @@
 
                     <!-- Fieldset untuk Data Dokumen -->
                     <fieldset class="border p-3 mb-4 rounded">
-                        <legend class="w-auto px-2 text-info font-weight-bold h6">Informasi Dokumen</legend>
+                        <legend class="w-auto px-2 text-primary font-weight-bold h6">Informasi Dokumen</legend>
                         <div class="row">
                             {{-- <div class="col-md-6">
                                 <div class="form-group">
@@ -220,6 +220,9 @@
                                         </div>
                                         <input type="text" class="form-control" name="no_doc" id="no-doc-edit" placeholder="Masukkan nomor dokumen" required>
                                     </div>
+                                    <small class="form-text text-muted ml-1">
+                                        <i class="fa fa-info-circle mr-1"></i>Tekan <strong>Enter</strong> untuk mencari dokumen
+                                    </small>
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -287,7 +290,7 @@
 
                     <!-- Fieldset untuk Alasan dan Detail Tambahan -->
                     <fieldset class="border p-3 mb-4 rounded">
-                        <legend class="w-auto px-2 text-info font-weight-bold h6">Alasan & Detail Tambahan</legend>
+                        <legend class="w-auto px-2 text-primary font-weight-bold h6">Alasan & Detail Tambahan</legend>
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
@@ -338,8 +341,8 @@
                 <button type="button" class="btn btn-info editfrm">
                     <i class="ti-check"></i> Update
                 </button>
-                  <button type="button" class="btn btn-secondary" data-dismiss="modal">
-                    <i class="ti-close"></i> Tutup
+                  <button type="button" class="btn btn-danger" data-dismiss="modal">
+                    <i class="ti-close"></i> Close
                 </button>
                 </div>
             </div>
@@ -350,7 +353,94 @@
         </div>
     </div>
 </div>
+<div class="modal fade" tabindex="-1" id="document-lookup-edit" tabindex="-1" role="dialog" data-backdrop="false" data-keyboard="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">
+                    <i class="fa fa-search mr-2"></i>Lookup Dokumen
+                </h5>
+                <button type="button" class="close text-white" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Search Filter -->
+                <div class="row mb-3">
+                    <div class="col-md-8">
+                         <select class="form-control" id="filter-type">
+                            <option value="">Semua Tipe</option>
+                            <option value="workinstruction">Work Instruction</option>
+                            <option value="procedure">Procedure</option>
+                        </select>
+                        {{-- <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="fa fa-search"></i></span>
+                            </div>
+                            <input type="text" class="form-control" id="search-document" placeholder="Cari berdasarkan nomor atau nama dokumen...">
+                        </div> --}}
+                    </div>
+                    {{-- <div class="col-md-4">
+                        <select class="form-control" id="filter-type">
+                            <option value="">Semua Tipe</option>
+                            <option value="workinstruction">Work Instruction</option>
+                            <option value="procedure">Procedure</option>
+                        </select>
+                    </div> --}}
+                </div>
 
+                <!-- Loading Indicator -->
+                <div id="loading-lookup" class="text-center" style="display: none;">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                    <p class="mt-2">Mencari dokumen...</p>
+                </div>
+                <div class="mb-2">
+                <small class="text-muted">
+                    <i class="fa fa-info-circle text-primary mr-1"></i>
+                    Pilih data dan klik pada datanya untuk memilih dokumen.
+                </small>
+            </div>
+                <!-- Document Table -->
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped table-bordered" id="document-table-edit">
+                        <thead class="thead-light">
+                            <tr>
+                                <th width="5%">#</th>
+                                <th width="20%">Title</th>
+                                <th width="35%">Description</th>
+                                <th width="10%">Type Documents</th>
+                                {{-- <th width="10%">Aksi</th> --}}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Data akan di-load via JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- No Data Message -->
+                <div id="no-data-message" class="text-center py-4" style="display: none;">
+                    <i class="fa fa-folder-open fa-3x text-muted mb-3"></i>
+                    <p class="text-muted">Tidak ada dokumen yang ditemukan</p>
+                </div>
+
+                <!-- Pagination -->
+                <nav aria-label="Document pagination" id="pagination-container" style="display: none;">
+                    <ul class="pagination justify-content-center" id="pagination">
+                        <!-- Pagination akan di-generate via JavaScript -->
+                    </ul>
+                </nav>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">
+                    <i class="fa fa-times mr-1"></i>Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 <!-- Script for file input -->
 @push('js')
 <script>
@@ -364,6 +454,74 @@
             });
         }
     });
+
+    $(document).ready(function(e){
+        $('#no-doc-edit').on('keypress', function(e) {
+            if (e.which == 13) {
+                e.preventDefault();
+
+                openDocumentLookupEdit();
+            }
+        });
+
+       let lookupData;
+       function openDocumentLookupEdit() {
+            $('#document-lookup-edit').appendTo('body').modal('show');
+
+            if ($.fn.DataTable.isDataTable('#document-table-edit')) {
+                lookupData = $('#document-table-edit').DataTable();
+                lookupData.ajax.reload();
+            } else {
+                lookupData = $('#document-table-edit').DataTable({
+                    processing: true,
+                    serverSide: true,
+                    ajax: {
+                        url: "{{ route('requestdar.lookupdokumen') }}",
+                        data: function(d) {
+                            d.filterType = $('#filter-type').val();
+                        }
+                    },
+                    columns: [
+                        { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false, className:'text-center' },
+                        { data: 'title', name: 'title' },
+                        { data: 'description', name: 'description' },
+                        { data: 'type_doc', name: 'type_doc' }
+                    ],
+                    bDestroy: true
+                });
+
+                // ONLY bind once!
+                $('#document-table-edit tbody').on('click', 'tr', function () {
+                    var data = lookupData.row(this).data();
+                    var match = data.title.match(/^([A-Z]{2}-\d{2}-\d{3})\s+(.+)$/);
+
+                    if (match) {
+                        var noDoc = match[1];
+                        var nameDocRaw = match[2];
+                        var nameDoc = $('<textarea/>').html(nameDocRaw).text();
+                         $('#no-doc-edit').val(noDoc);
+                         $('#name-doc-edit').val(nameDoc);
+                        
+                    } else {
+                        $('#no-doc-edit').val('');
+                        $('#name-doc-edit').val('');
+                    }
+
+                    $('#document-lookup-edit').modal('hide');
+                });
+            }
+        }
+
+           $('#filter-type').on('change', function() {
+                 $('#document-table-edit').DataTable().ajax.reload();
+            });
+
+            $('#document-lookup-edit').on('hidden.bs.modal', function () {
+                if ($('.modal.show').length > 0) {
+                    $('body').addClass('modal-open'); // menjaga scroll modal utama
+                }
+            });
+    })
 
 
     $(document).on('click','#edit-data-dar', function(e){

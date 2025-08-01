@@ -1,7 +1,7 @@
 <div class="modal fade" tabindex="-1" id="edit-reqdar" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
-            <div class="modal-header bg-info text-white">
+            <div class="modal-header bg-primary text-white">
                 <h5 class="modal-title edit">EDIT REQUEST DAR</h5>
                 <p id="by_add"></p>
                 <button type="button" onclick="" class="close text-white" data-dismiss="modal"><span>&times;</span></button>
@@ -13,12 +13,12 @@
                     <input type="hidden" id="id-reqdar-form">
                     <input type="hidden" id="approval-by1-edit">
                     <fieldset class="border p-3 mb-4 rounded">
-                        <legend class="w-auto px-2 text-info font-weight-bold h6">Informasi Approval</legend>
+                        <legend class="w-auto px-2 text-primary font-weight-bold h6">Informasi Approval</legend>
 
                         <!-- Progress Bar Status Approval -->
                         <div class="approval-progress mb-4">
                             <div class="progress" style="height: 8px;">
-                                <div class="progress-bar progress-bar-striped progress-bar-animated bg-info" role="progressbar"
+                                <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary" role="progressbar"
                                      style="width: 100%"
                                      aria-valuenow="100"
                                      aria-valuemin="0" aria-valuemax="100"></div>
@@ -37,7 +37,7 @@
                                     </span> --}}
                                 </div>
                                 <div class="approval-arrow d-flex align-items-center">
-                                    <i class="fa fa-long-arrow-alt-right text-info fa-2x"></i>
+                                    <i class="fa fa-long-arrow-alt-right text-primary fa-2x"></i>
                                 </div>
                                 <div class="approval-step text-center">
                                     <div class="approval-icon rounded-circle bg-success border d-flex justify-content-center align-items-center mx-auto mb-2" style="width: 60px; height: 60px;">
@@ -49,7 +49,7 @@
                                     </span> --}}
                                 </div>
                                 <div class="approval-arrow d-flex align-items-center">
-                                    <i class="fa fa-long-arrow-alt-right text-info fa-2x"></i>
+                                    <i class="fa fa-long-arrow-alt-right text-primary fa-2x"></i>
                                 </div>
                                 <div class="approval-step text-center">
                                     <div class="approval-icon rounded-circle bg-success border d-flex justify-content-center align-items-center mx-auto mb-2" style="width: 60px; height: 60px;">
@@ -157,7 +157,7 @@
                     </fieldset>
                     <!-- Fieldset untuk Request Type dan Description -->
                     <fieldset class="border p-3 mb-4 rounded">
-                        <legend class="w-auto px-2 text-info font-weight-bold h6">Tipe & Deskripsi Permintaan</legend>
+                        <legend class="w-auto px-2 text-primary font-weight-bold h6">Tipe & Deskripsi Permintaan</legend>
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="form-group">
@@ -193,7 +193,7 @@
 
                     <!-- Fieldset untuk Data Dokumen -->
                     <fieldset class="border p-3 mb-4 rounded">
-                        <legend class="w-auto px-2 text-info font-weight-bold h6">Informasi Dokumen</legend>
+                        <legend class="w-auto px-2 text-primary font-weight-bold h6">Informasi Dokumen</legend>
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
@@ -285,7 +285,7 @@
 
                     <!-- Fieldset untuk Alasan dan Detail Tambahan -->
                     <fieldset class="border p-3 mb-4 rounded">
-                        <legend class="w-auto px-2 text-info font-weight-bold h6">Alasan & Detail Tambahan</legend>
+                        <legend class="w-auto px-2 text-primary font-weight-bold h6">Alasan & Detail Tambahan</legend>
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
@@ -334,8 +334,8 @@
                 <button type="button" class="btn btn-info editfrm">
                     <i class="ti-check"></i> Update
                 </button>
-                  <button type="button" class="btn btn-secondary" data-dismiss="modal">
-                    <i class="ti-close"></i> Tutup
+                  <button type="button" class="btn btn-danger" data-dismiss="modal">
+                    <i class="ti-close"></i> Close
                 </button>
                 </div>
             </div>

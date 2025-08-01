@@ -1,7 +1,7 @@
 <div class="modal fade" tabindex="-1" id="create-reqdar">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
-            <div class="modal-header bg-info text-white">
+            <div class="modal-header bg-primary text-white">
                 <h5 class="modal-title create">FORM PERMOHONAN DOKUMEN ACTION / REQUEST FORM (DAR)</h5>
                 {{-- <p id="by_add"></p> --}}
                 <button type="button" onclick="" class="close text-white" data-dismiss="modal"><span>&times;</span></button>
@@ -12,7 +12,7 @@
 
                     <!-- Fieldset untuk Request Type dan Description -->
                     <fieldset class="border p-3 mb-4 rounded">
-                        <legend class="w-auto px-2 text-info font-weight-bold h6">Tipe & Deskripsi Permintaan</legend>
+                        <legend class="w-auto px-2 text-primary font-weight-bold h6">Tipe & Deskripsi Permintaan</legend>
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="form-group">
@@ -48,7 +48,7 @@
 
                     <!-- Fieldset untuk Data Dokumen -->
                     <fieldset class="border p-3 mb-4 rounded">
-                        <legend class="w-auto px-2 text-info font-weight-bold h6">Informasi Dokumen</legend>
+                        <legend class="w-auto px-2 text-primary font-weight-bold h6">Informasi Dokumen</legend>
                         <div class="row">
                             {{-- <div class="col-md-6">
                                 <div class="form-group">
@@ -142,7 +142,7 @@
 
                     <!-- Fieldset untuk Alasan dan Detail Tambahan -->
                     <fieldset class="border p-3 mb-4 rounded">
-                        <legend class="w-auto px-2 text-info font-weight-bold h6">Alasan & Detail Tambahan</legend>
+                        <legend class="w-auto px-2 text-primary font-weight-bold h6">Alasan & Detail Tambahan</legend>
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
@@ -185,10 +185,10 @@
                 </form>
             </div>
             <div class="modal-footer bg-light">
-                <button type="button" onclick="closeModal()" class="btn btn-secondary">
-                    <i class="ti-close"></i> Tutup
+                <button type="button" onclick="closeModal()" class="btn btn-danger">
+                    <i class="ti-close"></i> Close
                 </button>
-                <button type="button" class="btn btn-info addrm">
+                <button type="button" class="btn btn-primary addrm">
                     <i class="ti-check"></i> Submit
                 </button>
             </div>
@@ -285,18 +285,9 @@
     </div>
 </div>
 
-<!-- Demo untuk menampilkan modal -->
-{{-- <div class="container mt-5">
-    <h4>Demo Document Lookup</h4>
-    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#create-reqdar">
-        Buka Form DAR
-    </button>
-</div> --}}
 
 <!-- Script for file input -->
 @push('js')
-{{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.0/js/bootstrap.bundle.min.js"></script> --}}
 <script>
         // document.addEventListener('DOMContentLoaded', function() {
         //     const fileInput = document.querySelector('.custom-file-input');
@@ -350,7 +341,6 @@
                         var noDoc = match[1];
                         var nameDocRaw = match[2];
                         var nameDoc = $('<textarea/>').html(nameDocRaw).text();
-                        // $('#name-doc').val(match[2]);
                          $('#no-doc').val(noDoc);
                          $('#name-doc').val(nameDoc);
                         

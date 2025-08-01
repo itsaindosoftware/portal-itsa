@@ -228,7 +228,7 @@
             </div>
             @endif
             
-            <div class="approval-info">
+            {{-- <div class="approval-info">
                 <h4 style="margin-top: 0; color: #0c5460;">⚡ Detail Persetujuan</h4>
                 <div class="details-grid" style="margin: 15px 0;">
                     <div style="background: none; padding: 0;">
@@ -253,7 +253,7 @@
                         </div>
                         @endif
                     </div>
-                </div>
+                </div> --}}
                 
                 @if($remarks && $remarks !== '-')
                 <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #bee5eb;">
