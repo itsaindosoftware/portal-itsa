@@ -64,7 +64,7 @@
             @if($lastUpdateRequest)
               <span style="font-size: 20px">{{ \Carbon\Carbon::parse($lastUpdateRequest->updated_bydate_1)->format('Y-m-d H:i') }}</span>
             @else
-              No requests yet
+            <span style="font-size: 20px">No requests yet</span>
             @endif
           </div>
         </div>
