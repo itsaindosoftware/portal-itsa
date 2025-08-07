@@ -39,8 +39,11 @@
 											<label>Type Documents</label>
 											<select class="form-control select2" name="type_docs" id="type_docs">
 												<option value="">All Docs</option>
-												<option value="procedure">Procedure</option>
-												<option value="workinstruction">Work Instruction</option>
+                                                @foreach ($typeDoc as $type )
+                                                    <option value="{{ $type->id }}">{{ $type->request_type }}</option>
+                                                @endforeach
+											
+												{{-- <option value="workinstruction">Work Instruction</option> --}}
 											</select>
 										</div>
 									</div>
@@ -86,8 +89,10 @@
 									<tr>
 										<th width="7%">No.</th>
 										<th class="text-center">Title</th>
-								        {{-- <th class="text-center">Description</th> --}}
+								        <th class="text-center">Department</th>
+                                        <th class="">Effective Date</th>
                                         <th class="text-center">Type Document</th>
+                                        <th class="text-center">Revision Date</th>
                                         <th class="text-center">Documents File</th>
 										<th class="text-center" width="10%">Action</th>
 									</tr>
@@ -145,8 +150,10 @@ $(document).ready(function(){
 				className: 'text-center'
 			},
 			{ data: 'title', name: 'title', className: 'text-left' },
-			//{ data: 'description', name: 'description', className:'text-center' },
-            { data: 'type_doc', name: 'type_doc',className: 'text-center' },
+			{ data: 'dept_name', name: 'dept_name', className:'text-center' },
+            { data: 'effective_date', name: 'effective_date', className:'text-center' },
+            { data: 'type_doc_name', name: 'type_doc_name',className: 'text-center' },
+            { data: 'updated_at', name: 'updated_at',className: 'text-center' },
             { data: 'file', name: 'file',className: 'text-left' },
 			{ data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-center' }
 			]
@@ -190,7 +197,7 @@ $(document).ready(function(){
                     $('#create-reqdar').modal('hide');
 
                     showNotification('success', response.message);
-
+                    table.ajax.reload();
                     // resetForm();
                     $('#documentsForm input, #documentsForm textarea, #documentsForm select').prop('disabled', false);
 
@@ -248,12 +255,15 @@ $(document).ready(function(){
             type: 'GET',
             dataType: 'json',
             success: function(response) {
-                // console.log(response)
+                console.log(response)
                 $('#view-document-modal').modal('show');
                 $('#id-view-docs').val(response.id)
                 $('#view_document_').html(response.title);
                 $('#view_description').html(response.description);
-                $('#view_type_badge').html(response.type_doc)
+                $('#view_type_badge').html(response.type_doc_name);
+                $('#departments-view').html(response.dept_name);
+                $('#effective-date-view').html(response.effective_date);
+                $('#revision-date-view').html(response.updated_at == null ? 'Belum ada revisi': response.updated_at);
                 $('#file-storage-view').val(response.file);
                 if (response.file) {
                     const fileName = response.file.split('/').pop();
@@ -315,7 +325,9 @@ $(document).ready(function(){
         // Check specific fields
         if (!$('#title').val() ||
             !$('#description').val().trim() ||
-            !$('#type-docs').val().trim() ) {
+            !$('#type-docs').val().trim() || 
+            !$('#departments').val().trim() || 
+            !$('#effective-date').val().trim()) {
             isValid = false;
         }
                 // Check file input
@@ -342,12 +354,14 @@ $(document).ready(function(){
             type: 'GET',
             dataType: 'json',
             success: function(response) {
-                // console.log(response)
+                console.log(response)
                 $('#edit-documents-master').modal('show');
                 $('#edit_document_id').val(response.id)
                 $('#edit_title').val(response.title);
                 $('#edit_description').val(response.description);
-                $('#edit_type_docs').val(response.type_doc).trigger('change');
+                $('#edit_type_docs').val(response.type_doc_id).trigger('change');
+                $('#departments-edit').val(response.dept_id).trigger('change');
+                $('#effective-date-edit').val(response.effective_date);
                 $('#file-storage-edit').val(response.file);
                 if (response.file) {
                         const fileName = response.file.split('/').pop();

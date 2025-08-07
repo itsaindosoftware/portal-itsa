@@ -10,10 +10,14 @@ class Masterdocs extends Model
     use HasFactory;
     protected $table = 'master_documents';
 
+    public $timestamps = false;
+
     protected $fillable = [
         'title',
         'description',
         'file',
-        'type_doc'
+        'type_doc_id',
+        'dept_id',
+        'effective_date',
     ];
 }

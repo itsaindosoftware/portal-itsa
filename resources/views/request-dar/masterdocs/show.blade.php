@@ -27,6 +27,18 @@
                                 <td id="view_description">-</td>
                             </tr>
                             <tr>
+                                <th><i class="fas fa-list me-2"></i> Department</th>
+                                <td id="departments-view">-</td>
+                            </tr>
+                            <tr>
+                                <th><i class="fas fa-calendar me-2"></i> Effective Date</th>
+                                <td id="effective-date-view">-</td>
+                            </tr>
+                            <tr>
+                                <th><i class="fas fa-calendar me-2"></i> Revision Date</th>
+                                <td id="revision-date-view">-</td>
+                            </tr>
+                            <tr>
                                 <th><i class="fas fa-paperclip me-2"></i> Attached File</th>
                                 <td>
                                     <input type="hidden" id="file-storage-view">

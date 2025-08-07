@@ -57,13 +57,44 @@
                                                 <span class="input-group-text"><i class="fa fa-list"></i></span>
                                             </div>
                                             <select class="form-control" name="type_docs" id="edit_type_docs" required>
-                                                <option value="">Select Document Type</option>
-                                                <option value="workinstruction">Work Instruction</option>
-                                                <option value="procedure">Procedure</option>
+                                                <option value="">--Select Document Type--</option>
+                                                @foreach ($typeDoc as $type)
+                                                    <option value="{{ $type->id }}">{{ $type->request_type }}</option>
+                                                @endforeach
                                             </select>
                                         </div>
                                     </div>
                                 </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label class="font-weight-bold">Distribution Dept</label>
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="fa fa-list"></i></span>
+                                            </div>
+                                            <select class="form-control" name="departments" id="departments-edit" required>
+                                                <option value="">--Select Departments--</option>
+                                                {{-- <p>{{ $departments }}</p> --}}
+                                                @foreach ($departments as $dept)
+                                                    <option value="{{ $dept->id }}">{{ $dept->description }}</option>
+                                                @endforeach
+                                        
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label class="font-weight-bold">Effective Date</label>
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+                                            </div>
+                                            <input type="date" class="form-control" name="effective_date" id="effective-date-edit" placeholder="Enter Effective Date" required>
+                                        </div>
+                                    </div>
+                                </div>
+
 
                                 <!-- Current File Info -->
                                 <div class="col-md-12">

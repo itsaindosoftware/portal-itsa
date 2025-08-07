@@ -392,7 +392,20 @@ class RequestdarController extends Controller
         } elseif (Auth::user()->hasRole('manager')) {
             return view('request-dar.user-approved1.index', compact('reqTypes', 'requestDesc', 'department'));
         } elseif (Auth::user()->hasRole('sysdev')) {
-            return view('request-dar.user-approved2.index', compact('reqTypes', 'requestDesc', 'department', 'company', 'position'));
+            $dpt = DB::connection('portal-itsa')->table('departments')
+                ->whereNotIn('description', [
+                    'Manager Directure ITSA',
+                    'Manager Directure ITSP',
+                    'Personal Assisten Manager'
+                ])
+                ->get();
+            return view('request-dar.user-approved2.index', [
+                'reqTypes' => $reqTypes,
+                'requestDesc' => $requestDesc,
+                'department' => $dpt,
+                'company' => $company,
+                'position' => $position
+            ]);
         } elseif (Auth::user()->hasRole('manager-it')) {
             return view('request-dar.user-approved3.index', compact('reqTypes', 'requestDesc', 'department', 'company', 'position'));
         } elseif (Auth::user()->hasRole('admin')) {
@@ -625,7 +638,28 @@ class RequestdarController extends Controller
                 )
                 ->where('request_dar.id', $id)->first();
 
+            if (!$data) {
+                return response()->json(['error' => 'Data not found'], 404);
+            }
 
+            $distributionDepts = DB::connection('portal-itsa')
+                ->table('distribution_dar_depts')
+                ->leftJoin('departments', 'distribution_dar_depts.dept_id', '=', 'departments.id')
+                ->select(
+                    'distribution_dar_depts.*',
+                    'departments.description as dept_name'
+                )
+                ->where('distribution_dar_depts.reqdar_id', $id)
+                ->get();
+
+            $data = (array) $data;
+            $data['distribution_depts'] = $distributionDepts;
+            $data['distribution_dept'] = $distributionDepts->pluck('dept_id')->toArray();
+            // $data->distribution_depts = $distributionDepts;
+            if ($distributionDepts->isNotEmpty()) {
+                $data['effective_date'] = $distributionDepts->first()->effective_date;
+            }
+            // dd($data);
             // dd($data);
             return response()->json($data);
         } else {
@@ -708,6 +742,35 @@ class RequestdarController extends Controller
 
                 $data->save();
 
+                if ($request->has('distribution_dept')) {
+                    DB::connection('portal-itsa')
+                        ->table('distribution_dar_depts')
+                        ->where('reqdar_id', $id)
+                        ->delete();
+
+                    $deptDistribution = $request->distribution_dept;
+                    $effectiveDate = $request->effective_date;
+
+                    if (!empty($deptDistribution) && is_array($deptDistribution)) {
+                        $distributionData = [];
+
+                        foreach ($deptDistribution as $deptId) {
+                            $distributionData[] = [
+                                'dept_id' => $deptId,
+                                'reqdar_id' => $id,
+                                'effective_date' => $effectiveDate,
+                                'created_at' => Carbon::now(),
+                                'updated_at' => null
+                            ];
+                        }
+                        if (!empty($distributionData)) {
+                            DB::connection('portal-itsa')
+                                ->table('distribution_dar_depts')
+                                ->insert($distributionData);
+                        }
+                    }
+                }
+
                 //send notification to requestor form success update
                 $getUserreq = DB::connection('portal-itsa')->table('request_dar')
                     ->leftJoin('users', 'request_dar.user_id', '=', 'users.id')
@@ -730,54 +793,56 @@ class RequestdarController extends Controller
                 // $remarks = 'Dokumen DAR telah berhasil diperbarui Oleh SYD';
                 $approverName = Auth::user()->name;
 
-                if ($getRoleDisplayName) {
-                    $roleName = $getRoleDisplayName->role_name;
-                    if ($roleName == 'sysdev') {
-                        $remarks = 'Formulir DAR Anda telah direvisi oleh SysDev. Silakan periksa dan update sesuai catatan revisi.';
-                        if ($getUserreq && $getUserreq->request_desc_id == 2 || $getUserreq->request_desc_id == 3) {
-                            // $getUserreq->email
-                            Mail::to('it-03@thaisummit.co.id')->send(
-                                new NotifikasiWhenReviseForm(
-                                    $data,
-                                    $remarks,
-                                    $approverName,
-                                    $getUserreq->nik,
-                                    $getDataDar
-                                )
-                            );
-                        }
-                    } elseif ($roleName == 'user-employee') {
-                        $remarks = 'Requestor telah berhasil melakukan revisi pada formulir DAR dan siap untuk direview kembali.';
-                        if ($getRoleSyd->isNotEmpty()) {
-                            foreach ($getRoleSyd as $sysdevUser) {
-                                Mail::to('it-03@thaisummit.co.id')->send( // Kirim ke SysDev
-                                    new NotifikasiWhenReviseUpdateForm(
-                                        $data,
-                                        $remarks,
-                                        $approverName,
-                                        $getUserreq,
-                                        $getDataDar // Kirim object lengkap
-                                    )
-                                );
-                            }
-                        }
-                        // $getRoleSyd->email
-                        // Mail::to('it-03@thaisummit.co.id')->send(
-                        //     new NotifikasiWhenReviseUpdateForm(
-                        //         $data,
-                        //         $remarks,
-                        //         $approverName,
-                        //         $getUserreq
-                        //     )
-                        // );
+                // if ($getRoleDisplayName) {
+                $roleName = $getRoleDisplayName->role_name;
+                // if ($roleName == 'sysdev') {
+                // $remarks = 'Formulir DAR Anda telah direvisi oleh SysDev. Silakan periksa dan update sesuai catatan revisi.';
+                if ($getUserreq && $getUserreq->request_desc_id == 2 || $getUserreq->request_desc_id == 3) {
+                    // $getUserreq->email
+                    // Mail::to('it-03@thaisummit.co.id')->send(
+                    //     new NotifikasiWhenReviseForm(
+                    //         $data,
+                    //         $remarks,
+                    //         $approverName,
+                    //         $getUserreq->nik,
+                    //         $getDataDar
+                    //     )
+                    // );
+                    // }
+                    // } elseif ($roleName == 'user-employee') {
+                    $remarks = 'SYD telah berhasil melakukan revisi pada formulir DAR dan siap untuk direview kembali.';
+                    if ($getRoleSyd->isNotEmpty()) {
+                        // $getUserreq->email
+                        // foreach ($getRoleSyd as $sysdevUser) {
+                        Mail::to('it-03@thaisummit.co.id')->send( // Kirim ke SysDev
+                            new NotifikasiWhenReviseUpdateForm(
+                                $data,
+                                $remarks,
+                                $approverName,
+                                $getUserreq,
+                                $getDataDar // Kirim object lengkap
+                            )
+                        );
+                        // }
                     }
+                    // $getRoleSyd->email
+                    // Mail::to('it-03@thaisummit.co.id')->send(
+                    //     new NotifikasiWhenReviseUpdateForm(
+                    //         $data,
+                    //         $remarks,
+                    //         $approverName,
+                    //         $getUserreq
+                    //     )
+                    // );
+                    // }
                 }
 
 
                 DB::commit();
 
                 return response()->json([
-                    'status' => true
+                    'status' => true,
+                    'message' => 'Data berhasil diupdate'
                 ], 200);
             } catch (\Exception $e) {
                 DB::rollback();

@@ -99,7 +99,7 @@
     <div class="card shadow mb-4">
       <div class="card-header py-3 d-flex align-items-center">
         <i class="fas fa-chart-pie mr-2"></i>
-        <h6 class="m-0 font-weight-bold text-primary">Distribusi Department</h6>
+        <h6 class="m-0 font-weight-bold text-primary">Graphic Chart Request By Department</h6>
       </div>
       <div class="card-body">
         <div class="chart-pie">

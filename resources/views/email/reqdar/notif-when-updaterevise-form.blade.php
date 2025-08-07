@@ -109,11 +109,11 @@
     </div>
     
     <div class="content">
-        <p>Dear SysDev Team,</p>
+        <p>Dear Requestor,</p>
         
         <div class="revision-success">
             <h4>🔄 Form Successfully Revised</h4>
-            <p>Requestor telah berhasil melakukan revisi pada formulir Document Action Request dan telah mengirimkan ulang untuk persetujuan Anda.</p>
+            <p>SYD telah berhasil melakukan revisi pada formulir Document Action Request dan telah mengirimkan ulang untuk persetujuan Anda.</p>
         </div>
 
         <div class="info-box">
@@ -124,7 +124,7 @@
             <p><span class="label">Status:</span> <span class="status-updated">✅ Telah Direvisi - Menunggu Review</span></p>
         </div>
 
-        <div class="revision-timeline">
+        {{-- <div class="revision-timeline">
             <h4>📋 Timeline Revisi:</h4>
             <ul style="margin: 10px 0; padding-left: 20px; list-style-type: none;">
                 <li style="margin: 5px 0;">
@@ -140,7 +140,7 @@
                     <span style="color: #2196F3;">🔍</span> <strong>Menunggu Review Ulang:</strong> SysDev Team
                 </li>
             </ul>
-        </div>
+        </div> --}}
 
         <div class="data-details">
             <h4>Detail Formulir yang Telah Direvisi:</h4>
@@ -165,13 +165,13 @@
             <p style="font-style: italic; background-color: white; padding: 10px; border-radius: 5px;">
                 "{{ $remarks }}"
             </p>
-            <small style="color: #666;">
+            {{-- <small style="color: #666;">
                 <em>Catatan di atas adalah permintaan revisi yang telah direspon oleh requestor</em>
-            </small>
+            </small> --}}
         </div>
         @endif
 
-        <div class="action-required">
+        {{-- <div class="action-required">
             <h4>🔍 Tindakan yang Diperlukan:</h4>
             <ol style="margin: 10px 0; padding-left: 20px;">
                 <li><strong>Review formulir yang telah direvisi</strong> dengan detail form di atas</li>
@@ -179,8 +179,8 @@
                 <li><strong>Login ke Portal ITSA</strong> untuk melakukan proses approval</li>
                 <li><strong>Setujui atau berikan feedback tambahan</strong> jika masih ada yang perlu diperbaiki</li>
             </ol>
-        </div>
-
+        </div> --}}
+{{-- 
         <div class="revision-success">
             <p><strong>💡 Informasi:</strong></p>
             <ul style="margin: 10px 0; padding-left: 20px;">
@@ -188,11 +188,11 @@
                 <li>Form telah diperbarui dan siap untuk direview ulang</li>
                 <li>Silakan melakukan approval jika semua persyaratan telah terpenuhi</li>
             </ul>
-        </div>
+        </div> --}}
 
-        <div style="background-color: #e1f5fe; padding: 15px; margin: 15px 0; border-radius: 5px; border-left: 4px solid #01579b;">
+        {{-- <div style="background-color: #e1f5fe; padding: 15px; margin: 15px 0; border-radius: 5px; border-left: 4px solid #01579b;">
             <p><strong>🚀 Next Steps:</strong> Setelah Anda melakukan approval, formulir akan dilanjutkan ke tahap berikutnya dalam workflow DAR atau akan dikirimkan notifikasi completion ke requestor.</p>
-        </div>
+        </div> --}}
         
         <p style="margin-top: 20px;">
             Terima kasih atas perhatian dan kerjasamanya dalam proses review DAR ini.

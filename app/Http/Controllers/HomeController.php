@@ -508,8 +508,8 @@ class HomeController extends Controller
     {
         $user = Auth::user();
         $userInfo = $this->getUserInfo($user->nik);
-        $managerStats = $this->getManagerStatistics($user->nik, $user->department_id);
-
+        $managerStats = $this->getManagerStatistics($user->department_id);
+        // dd($managerStats);
         return view('users-dashboard.user-manager.home', array_merge(
             $managerStats,
             ['users' => $userInfo]
@@ -723,16 +723,19 @@ class HomeController extends Controller
             ->count();
     }
 
-    private function getManagerStatistics($nik, $departmentId)
+    private function getManagerStatistics($departmentId)
     {
-        $baseQuery = Requestdar::where('nik_atasan', $nik)
-            ->where('dept_id', $departmentId);
-
+        // dd($departmentId);
+        $baseQuery = Requestdar::where('dept_id', $departmentId);
+        $pending = (clone $baseQuery)->where('approval_status1', '0')->count();
+        $approved = (clone $baseQuery)->where('approval_status1', '1')->count();
+        $rejected = (clone $baseQuery)->where('approval_status1', '2')->count();
+        // dd($approved);
         return [
             'totalDar' => $baseQuery->count(),
-            'pending' => $baseQuery->where('approval_status1', '0')->count(),
-            'approved' => $baseQuery->where('approval_status1', '1')->count(),
-            'rejected' => $baseQuery->where('approval_status1', '2')->count(),
+            'pending' => $pending,
+            'approved' => $approved,
+            'rejected' => $rejected,
         ];
     }
 

@@ -8,6 +8,9 @@
 <link rel="stylesheet" type="text/css" href="{{ asset('bootstrap5/css/daterangepicker.css') }}">
 <link rel="stylesheet" type="text/css" href="{{ asset('bootstrap5/css/bootstrap-datetimepicker.min.css') }}">
 <link rel="stylesheet" type="text/css" href="{{ asset('bootstrap5/css/rowGroup.bootstrap4.min.css') }}">
+<style>
+	
+</style>
 @endsection
 @section('content')
 
@@ -590,10 +593,73 @@ $(document).ready(function(){
             })
 
         });
-
-
-
-
-})
+   })
+	
+     $(document).on('change', '#select_all_dept_edit', function() { 
+            const isChecked = $(this).is(':checked');
+            $('.dept-checkbox-edit').prop('checked', isChecked);
+            updateSelectedDeptCount();
+            updateDistributionStatus();
+			
+        });
+		 initializeDistributionHandlers();
+    
+		function initializeDistributionHandlers() {
+			// Handle Select All Department
+			// Handle individual department checkboxes
+			$(document).on('change', '.dept-checkbox-edit', function() {
+				updateSelectAllState();
+				updateSelectedDeptCount();
+				updateDistributionStatus();
+			});
+			
+			// Handle effective date change
+			$(document).on('change', '#effective-date-edit', function() {
+				updateDistributionStatus();
+			});
+		}
+		function updateSelectAllState() {
+			const totalDept = $('.dept-checkbox-edit').length;
+			const checkedDept = $('.dept-checkbox-edit:checked').length;
+			
+			if (checkedDept === totalDept && totalDept > 0) {
+				$('#select_all_dept_edit').prop('checked', true).prop('indeterminate', false);
+			} else if (checkedDept === 0) {
+				$('#select_all_dept_edit').prop('checked', false).prop('indeterminate', false);
+			} else {
+				$('#select_all_dept_edit').prop('checked', false).prop('indeterminate', true);
+			}
+		}
+		function updateSelectedDeptCount() {
+			const checkedCount = $('.dept-checkbox-edit:checked').length;
+			const totalCount = $('.dept-checkbox-edit').length;
+			
+			$('#selected-dept-count-edit').text(checkedCount);
+			
+			// Update alert styling based on selection
+			const alertDiv = $('#selected-dept-count-edit').closest('.alert');
+			
+			if (checkedCount === 0) {
+				alertDiv.removeClass('alert-success alert-warning').addClass('alert-info');
+			} else if (checkedCount === totalCount) {
+				alertDiv.removeClass('alert-info alert-warning').addClass('alert-success');
+			} else {
+				alertDiv.removeClass('alert-info alert-success').addClass('alert-warning');
+			}
+		}
+		function updateDistributionStatus() {
+			const selectedDepts = $('.dept-checkbox-edit:checked').length;
+			const effectiveDate = $('#effective-date-edit').val();
+			const statusCard = $('#distribution-status-card');
+			
+			if (selectedDepts > 0 && effectiveDate) {
+				statusCard.show().find('small').html(`
+					<i class="fa fa-check-circle mr-1"></i>
+					Ready untuk distribusi (${selectedDepts} dept, ${formatDate(effectiveDate)})
+				`);
+			} else {
+				statusCard.hide();
+			}
+		}
 </script>
 @endpush

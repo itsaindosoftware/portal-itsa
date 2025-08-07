@@ -15,6 +15,8 @@ use Validator;
 use Illuminate\Support\Facades\Mail;
 // use Storage;
 use App\Masterdocs;
+use App\Department;
+use App\Typereqform;
 class MasterDocController extends Controller
 {
     /**
@@ -27,11 +29,27 @@ class MasterDocController extends Controller
         $user = Auth::user();
         if ($user->hasPermission('manage-masterdocs')) {
             if ($request->ajax()) {
-                $data = Masterdocs::query();
-                if ($request->has('type_docs') && !empty($request->type_docs)) {
-                    $data->where('master_documents.type_doc', $request->type_docs);
+                $data = Masterdocs::query()->leftJoin(
+                    'departments',
+                    'master_documents.dept_id',
+                    '=',
+                    'departments.id'
+                )
+                    ->leftJoin('type_of_reqforms', 'master_documents.type_doc_id', '=', 'type_of_reqforms.id')
+                    ->select(
+                        'master_documents.*',
+                        'departments.description as dept_name',
+                        'type_of_reqforms.request_type as type_doc_name'
+                    );
+
+                if ($user->hasRole('user-employee') && isset($user->dept)) {
+                    $data->where('master_documents.dept_id', $user->dept->id);
                 }
 
+                if ($request->has('type_docs') && !empty($request->type_docs)) {
+                    $data->where('master_documents.type_doc_id', $request->type_docs);
+                }
+                $data->orderBy('master_documents.created_at', 'desc');
                 return DataTables::of($data)
                     ->addColumn('action', function ($data) {
                         return view('datatables._action-masterdocs', [
@@ -46,34 +64,40 @@ class MasterDocController extends Controller
                             'data' => $row
                         ]);
                     })
+                    ->editColumn('updated_at', function ($data) {
+                        if ($data->updated_at) {
+                            return Carbon::parse($data->updated_at0)->format('Y-m-d');
+                        } else {
+                            return '<span class="text-muted"><i>Belum ada revisi</i></span>';
+                        }
+                    })
                     ->editColumn('description', function ($row) {
                         return strlen($row->description) > 50 ?
                             substr($row->description, 0, 50) . '...' :
                             $row->description;
                     })
-                    ->editColumn('type_doc', function ($row) {
-                        $badgeClass = '';
-                        switch (strtolower($row->type_doc)) {
-                            case 'procedure':
-                                $badgeClass = 'badge-success';
-                                break;
-                            case 'workinstruction':
-                                $badgeClass = 'badge-primary';
-                                break;
-                            default:
-                                $badgeClass = 'badge-secondary';
-                        }
-                        return '<span class="badge ' . $badgeClass . '">' . $row->type_doc . '</span>';
-                    })
+                    // ->editColumn('type_doc_id', function ($row) {
+
+                    //     return '<span class="badge badge-warnings">' . $row->type_doc . '</span>';
+                    // })
                     ->editColumn('created_at', function ($data) {
                         return \Carbon\Carbon::parse($data->created_at)->format('Y-m-d');
                     })
-                    ->rawColumns(['action', 'file', 'type_doc'])
+                    ->rawColumns(['action', 'file', 'type_doc_id', 'updated_at'])
                     ->make(true);
 
 
             }
-            return view('request-dar.masterdocs.index');
+
+            $typeDoc = Typereqform::all();
+            $departments = Department::all();
+            // dd($departments);
+            return view('request-dar.masterdocs.index', [
+                'typeDoc' => $typeDoc,
+                'departments' => $departments
+            ]);
+
+
         }
     }
 
@@ -101,7 +125,10 @@ class MasterDocController extends Controller
             $data = new Masterdocs;
             $data->title = $request->get('title');
             $data->description = $request->get('description');
-            $data->type_doc = $request->get('type_docs');
+            $data->type_doc_id = $request->get('type_docs');
+            $data->dept_id = $request->get('departments');
+            $data->effective_date = $request->get('effective_date');
+            $data->created_at = Carbon::now();
             $filePath = '-';
             if ($request->hasFile('file_doc')) {
                 $originalFileName = $request->file('file_doc')->getClientOriginalName();
@@ -135,7 +162,19 @@ class MasterDocController extends Controller
         $user = Auth::user();
         $id = base64_decode($id);
         if ($user->hasPermission('manage-masterdocs', 'show-masterdocs')) {
-            $data = Masterdocs::find($id);
+            // $data = Masterdocs::find($id);
+            $data = Masterdocs::query()->leftJoin(
+                'departments',
+                'master_documents.dept_id',
+                '=',
+                'departments.id'
+            )
+                ->leftJoin('type_of_reqforms', 'master_documents.type_doc_id', '=', 'type_of_reqforms.id')
+                ->select(
+                    'master_documents.*',
+                    'departments.description as dept_name',
+                    'type_of_reqforms.request_type as type_doc_name'
+                )->where('master_documents.id', $id)->first();
             return response()->json($data);
         }
     }
@@ -151,7 +190,19 @@ class MasterDocController extends Controller
         $user = Auth::user();
         $id = base64_decode($id);
         if ($user->hasPermission('manage-masterdocs', 'edit-masterdocs')) {
-            $data = Masterdocs::find($id);
+            $data = Masterdocs::query()->leftJoin(
+                'departments',
+                'master_documents.dept_id',
+                '=',
+                'departments.id'
+            )
+                ->leftJoin('type_of_reqforms', 'master_documents.type_doc_id', '=', 'type_of_reqforms.id')
+                ->select(
+                    'master_documents.*',
+                    'departments.description as dept_name',
+                    'type_of_reqforms.request_type as type_doc_name'
+                )->where('master_documents.id', $id)->first();
+
             return response()->json($data);
         }
     }
@@ -177,7 +228,9 @@ class MasterDocController extends Controller
             }
             $data->title = empty($request->title) ? $data->title : $request->title;
             $data->description = empty($request->description) ? $data->description : $request->description;
-            $data->type_doc = empty($request->type_docs) ? $data->type_doc : $request->type_docs;
+            $data->type_doc_id = empty($request->type_docs) ? $data->type_doc : $request->type_docs;
+            $data->dept_id = empty($request->departments) ? $data->dept_id : $request->departments;
+            $data->effective_date = empty($request->effective_date) ? $data->effective_date : $request->effective_date;
             if ($request->hasFile('file_doc')) {
                 $oldFilePath = $data->file;
 

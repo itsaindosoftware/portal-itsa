@@ -326,9 +326,109 @@
                             </div>
                         </div>
                         </div>
-
-
                     </fieldset>
+                    <fieldset class="border p-3 mb-4 rounded">
+                        <legend class="w-auto px-2 text-primary font-weight-bold h6">Distribusi Department & Effective Date</legend>
+                        
+                        <div class="row">
+                            <!-- Distribusi Department -->
+                            <div class="col-md-8">
+                                <div class="form-group">
+                                    <label class="font-weight-bold">Distribusi Department</label>
+                                    
+                                    <!-- Checkbox Select All -->
+                                    <div class="custom-control custom-checkbox mb-3">
+                                        <input type="checkbox" class="custom-control-input" id="select_all_dept_edit">
+                                        <label class="custom-control-label font-weight-bold text-primary" for="select_all_dept_edit">
+                                            <i class="fa fa-building mr-1"></i>Pilih Semua Department
+                                        </label>
+                                    </div>
+                                    
+                                    <hr class="my-2">
+                                    
+                                    <!-- List Department Checkboxes -->
+                                    <div class="department-checkbox-container">
+                                        <div class="row" id="department-list-edit">
+                                            @foreach($department as $dept)
+                                            <div class="col-md-6 mb-2">
+                                                <div class="custom-control custom-checkbox">
+                                                    <input type="checkbox" 
+                                                        class="custom-control-input dept-checkbox-edit" 
+                                                        name="distribution_dept[]" 
+                                                        id="dept_{{ $dept->id }}_edit" 
+                                                        value="{{ $dept->id }}"
+                                                        >
+                                                    <label class="custom-control-label" for="dept_{{ $dept->id }}_edit">
+                                                        <i class="fa fa-building mr-2 text-muted"></i>{{ $dept->description }}
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Selected Department Count -->
+                                    <div class="mt-3">
+                                        <div class="alert alert-info">
+                                            <i class="fa fa-info-circle mr-2"></i>
+                                            <strong><span id="selected-dept-count-edit">0</span></strong> department terpilih dari <strong>{{ count($department) }}</strong> total department
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Effective Date -->
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="font-weight-bold">Effective Date</label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text bg-primary text-white">
+                                                <i class="fa fa-calendar"></i>
+                                            </span>
+                                        </div>
+                                        <input type="date" 
+                                            class="form-control" 
+                                            name="effective_date" 
+                                            id="effective-date-edit" 
+                                            >
+                                    </div>
+                                    <small class="form-text text-muted mt-2">
+                                        <i class="fa fa-info-circle mr-1"></i>Tanggal efektif berlakunya dokumen
+                                    </small>
+                                </div>
+                                
+                                <!-- Distribusi Info Card -->
+                                <div class="card border-primary mt-4">
+                                    <div class="card-header bg-primary text-white text-center">
+                                        <h6 class="mb-0">
+                                            <i class="fa fa-share-alt mr-2"></i>Distribusi Info
+                                        </h6>
+                                    </div>
+                                    <div class="card-body text-center">
+                                        <i class="fa fa-arrow-circle-down fa-3x text-primary mb-3"></i>
+                                        <p class="text-muted mb-0">
+                                            Dokumen akan didistribusikan ke department yang dipilih setelah mendapat approval lengkap
+                                        </p>
+                                    </div>
+                                </div>
+                                
+                                <!-- Status Distribution -->
+                                <div class="mt-3">
+                                    <div class="card border-success" id="distribution-status-card" style="display: none;">
+                                        <div class="card-body p-2 text-center">
+                                            <small class="text-success">
+                                                <i class="fa fa-check-circle mr-1"></i>
+                                                Ready untuk distribusi
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+                    
+           
                 </form>
                 <div class="modal-footer bg-light">
                 <button type="button" class="btn btn-info editfrm">
@@ -507,6 +607,8 @@
                 }
             }
 
+            populateDistributionData(response);
+
             updateApprovalStatus(response);
 
             $('#reqdarForm input, #reqdarForm select, #reqdarForm textarea').prop('disabled', true);
@@ -522,6 +624,33 @@
     });
 
     }
+
+    function populateDistributionData(response)
+    {
+        //  console.log(response)
+         $('.dept-checkbox-edit').prop('checked', false);
+         $('#select_all_dept_edit').prop('checked', false).prop('indeterminate', false);
+         if (response.effective_date) {
+             $('#effective-date-edit').val(response.effective_date);
+         }
+        if (response.distribution_dept && Array.isArray(response.distribution_dept)) {
+            response.distribution_dept.forEach(function(deptId) {
+                $(`#dept_${deptId}_edit`).prop('checked', true);
+            });
+            
+            console.log('Selected departments:', response.distribution_dept);
+        }
+        if (response.distribution_depts && Array.isArray(response.distribution_depts)) {
+            response.distribution_depts.forEach(function(distDept) {
+                $(`#dept_${distDept.dept_id}_edit`).prop('checked', true);
+            });
+        }
+        // Update UI states
+        updateSelectAllState();
+        updateSelectedDeptCount();
+    }
+    
+
     function updateViewButton(fileName) {
         const fileExtension = fileName.split('.').pop().toLowerCase();
         const excelExtensions = ['xlsx', 'xls', 'xlsm', 'xlsb', 'csv'];
@@ -640,6 +769,26 @@
             route_replace = route.replace(':param', id);
 
             var formData = new FormData($('#reqdarFormEdit')[0]);
+            var selectedDeptdist = [];
+            $('#dept-checkbox-edit:checked').each(function(){
+                var deptId = $(this).val();
+                if (deptId) {
+                    selectedDeptdist.push(deptId)
+                }
+            });
+
+            if (selectedDeptdist.length > 0) {
+                selectedDeptdist.forEach(function(deptId, index){
+                    formData.append('dept_distribution[' + index + ']', deptId);
+                });
+            }
+
+            var effectiveDateDept = $('#effective-date-edit').val();
+            if (effectiveDateDept) {
+                formData.append('effective_date', effectiveDateDept);
+            }
+
+            formData.append('_method', 'PUT');
 
             $.ajax({
                 url: route_replace,
@@ -648,21 +797,53 @@
                 contentType: false,
                 processData: false,
                 cache: false,
+                beforeSend: function() {
+                    $('.editfrm').prop('disabled', true).text('Updating...');
+                },
                 success: function(response) {
-                if (response.status == true) {
-                    Swal.fire({
-                            icon: 'success',
-                            title: 'Success!',
-                            text: 'Berhasil Mengubah data',
-                            showConfirmButton: true,
-                        }).then(function(){
-                            $('#edit-reqdar').modal('hide')
-                            $('#table-request-manage').DataTable().ajax.reload();
-                        });
+                    if (response.status == true) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success!',
+                                text: response.message || 'Berhasil mengubah data',
+                                showConfirmButton: true,
+                            }).then(function() {
+                                $('#edit-reqdar').modal('hide');
+                                $('#table-request-manage').DataTable().ajax.reload();
+                            });
 
-                } else {
-                    alert('error')
-                }
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error!',
+                            text: response.message || 'Terjadi kesalahan saat mengupdate data',
+                        });
+                    }
+                },
+                error: function(xhr, status, error){
+                        console.error('Update error:', xhr.responseText);
+                        let errorMessage = 'Terjadi kesalahan saat mengupdate data';
+                        if (xhr.responseJSON && xhr.responseJSON.errors) {
+                            // Handle validation errors
+                            let errors = xhr.responseJSON.errors;
+                            let errorList = [];
+                            Object.keys(errors).forEach(function(key) {
+                                errorList.push(errors[key].join(', '));
+                            });
+                            
+                            errorMessage = errorList.join('\n');
+                        } else if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errorMessage = xhr.responseJSON.message;
+                        }
+                        
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error!',
+                            text: errorMessage,
+                        });
+                },
+                complete: function(){
+                    $('.editfrm').prop('disabled', false).text('Update');
                 }
             });
         })
@@ -737,6 +918,11 @@
             $('#edit-reqdar').css('overflow-y', 'auto');
         }, 300);
     }
+
+  
+    
+
+
 
 
 </script>

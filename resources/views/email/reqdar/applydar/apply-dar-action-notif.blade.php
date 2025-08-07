@@ -264,9 +264,9 @@
             </div> 
             
             <div class="action-button">
-                {{-- <a href="{{ url('/dar/approval/' . $dataDar->id) }}" target="_blank">
+                <a href="#" target="_blank">
                     🔍 Lihat Detail & Approve
-                </a> --}}
+                </a>
             </div>
             
             <div style="background-color: #e9ecef; padding: 15px; border-radius: 5px; margin-top: 20px;">
