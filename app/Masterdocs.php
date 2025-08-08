@@ -19,5 +19,7 @@ class Masterdocs extends Model
         'type_doc_id',
         'dept_id',
         'effective_date',
+        'is_archived',
+        'archived_date',
     ];
 }

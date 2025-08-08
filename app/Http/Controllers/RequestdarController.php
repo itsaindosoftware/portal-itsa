@@ -677,7 +677,7 @@ class RequestdarController extends Controller
      */
     public function update(Request $request, $id)
     {
-        // dd($request->all());
+
 
         if (Auth::user()->hasPermission('edit-dar')) {
             try {
@@ -1279,5 +1279,7 @@ class RequestdarController extends Controller
                 ->make(true);
         }
     }
+
+
 
 }

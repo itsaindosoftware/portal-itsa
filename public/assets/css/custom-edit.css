@@ -36,6 +36,15 @@
     width: 95%;
   }
 }
+#document-lookup-fromreq-modal .modal-lg {
+   max-width: 95%; /* Membuat modal hampir selebar layar */
+   width: 1000px;
+}
+@media (max-width: 1500px) {
+  #document-lookup-modal .modal-lg {
+    width: 95%;
+  }
+}
 @media (max-width: 768px) {
     #pdf-viewer-modal .modal-dialog {
         max-width: 100%;
@@ -179,6 +188,44 @@ td.details-control:hover:before {
         font-size: 13px;
     }
 }
+/* <style> */
+/* Custom styles for department checkboxes */
+.dept-checkbox:checked + .form-check-label {
+    color: #17a2b8;
+    font-weight: 500;
+}
 
+.form-check-input:focus {
+    border-color: #17a2b8;
+    box-shadow: 0 0 0 0.2rem rgba(23, 162, 184, 0.25);
+}
+
+.form-check-label {
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.form-check-label:hover {
+    color: #17a2b8;
+}
+
+/* Scrollbar styling for department list */
+.border::-webkit-scrollbar {
+    width: 6px;
+}
+
+.border::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.border::-webkit-scrollbar-thumb {
+    background: #17a2b8;
+    border-radius: 3px;
+}
+
+.border::-webkit-scrollbar-thumb:hover {
+    background: #138496;
+}
 
 /* </style> */

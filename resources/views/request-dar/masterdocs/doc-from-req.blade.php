@@ -1,8 +1,8 @@
-<div class="modal fade" id="add-documents-master">
+<div class="modal fade" id="add-documents-from-req">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title">ADD DOCUMENTS MASTER</h5>
+                    <h5 class="modal-title">ADD DOCUMENTS FROM REQUEST</h5>
                     <button type="button" onclick="closeModal()" class="close text-white" data-dismiss="modal">
                         <span>&times;</span>
                     </button>
@@ -13,7 +13,7 @@
 
                         <!-- Document Information -->
                         <fieldset class="border p-3 mb-4 rounded">
-                            <legend class="w-auto px-2 text-info font-weight-bold h6">Document Information</legend>
+                            <legend class="w-auto px-2 font-weight-bold h6">Document Information</legend>
 
                             <div class="row">
                                 <!-- Title -->
@@ -24,7 +24,7 @@
                                             <div class="input-group-prepend">
                                                 <span class="input-group-text"><i class="fa fa-heading"></i></span>
                                             </div>
-                                            <input type="text" class="form-control" name="title" id="title" placeholder="Enter document title" required>
+                                            <input type="text" class="form-control" name="title" id="title-from-req" placeholder="Tekan Enter Untuk Mencari Document" required>
                                         </div>
                                     </div>
                                 </div>
@@ -155,7 +155,7 @@
                                 </div>
                             </div>
                         </fieldset>
-                        <input type="hidden" name="status-doc" value="new" id="status-doc">
+                         <input type="hidden" name="status-doc" value="archived" id="status-doc">
                     </form>
                 </div>
                 <div class="modal-footer bg-light">

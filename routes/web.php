@@ -89,5 +89,6 @@ Route::group(['middleware' => ['auth']], function () {
     Route::resource('masterdocs', 'MasterDocController');
     Route::get('view-document-master/{param}', 'MasterDocController@viewDocument')->name('masterdocs.view-document');
     Route::get('/download-document-master/{param}', 'MasterDocController@downloadDocument')->name('masterdocs.downloadDocument');
+    Route::get('lookup-document-reqdar', 'MasterDocController@loockupDocument')->name('lookupdokumendar');
 
 });

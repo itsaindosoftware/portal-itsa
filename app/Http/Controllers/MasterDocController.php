@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Masterdocs;
 use App\Department;
 use App\Typereqform;
+use App\Requestdar;
 class MasterDocController extends Controller
 {
     /**
@@ -29,6 +30,7 @@ class MasterDocController extends Controller
         $user = Auth::user();
         if ($user->hasPermission('manage-masterdocs')) {
             if ($request->ajax()) {
+                // dd($request->get('status'));
                 $data = Masterdocs::query()->leftJoin(
                     'departments',
                     'master_documents.dept_id',
@@ -36,6 +38,7 @@ class MasterDocController extends Controller
                     'departments.id'
                 )
                     ->leftJoin('type_of_reqforms', 'master_documents.type_doc_id', '=', 'type_of_reqforms.id')
+                    // ->leftJoin('distribution_dar_depts','master_documents.')
                     ->select(
                         'master_documents.*',
                         'departments.description as dept_name',
@@ -48,6 +51,11 @@ class MasterDocController extends Controller
 
                 if ($request->has('type_docs') && !empty($request->type_docs)) {
                     $data->where('master_documents.type_doc_id', $request->type_docs);
+                }
+                if ($request->get('status') == 'new') {
+                    $data->where('is_archived', 'new');
+                } elseif ($request->get('status') == 'archived') {
+                    $data->where('is_archived', 'archived');
                 }
                 $data->orderBy('master_documents.created_at', 'desc');
                 return DataTables::of($data)
@@ -90,7 +98,12 @@ class MasterDocController extends Controller
             }
 
             $typeDoc = Typereqform::all();
-            $departments = Department::all();
+            $departments = DB::connection('portal-itsa')->table('departments')->whereNotIn('description', [
+                'Manager Directure ITSA',
+                'Manager Directure ITSP',
+                'Personal Assisten Manager',
+                'Personal Assistant'
+            ])->get();
             // dd($departments);
             return view('request-dar.masterdocs.index', [
                 'typeDoc' => $typeDoc,
@@ -129,6 +142,7 @@ class MasterDocController extends Controller
             $data->dept_id = $request->get('departments');
             $data->effective_date = $request->get('effective_date');
             $data->created_at = Carbon::now();
+            $data->is_archived = 'new';
             $filePath = '-';
             if ($request->hasFile('file_doc')) {
                 $originalFileName = $request->file('file_doc')->getClientOriginalName();
@@ -344,5 +358,45 @@ class MasterDocController extends Controller
         }
 
         return response()->download($fullPath, $originalFileName);
+    }
+    private function baseQuery()
+    {
+        $data = Requestdar::query()->leftJoin('users', 'request_dar.user_id', '=', 'users.id')
+            ->leftJoin('departments', 'request_dar.dept_id', '=', 'departments.id')
+            ->leftJoin('companys', 'request_dar.company_id', '=', 'companys.id')
+            ->leftJoin('positions', 'request_dar.position_id', '=', 'positions.id')
+            ->leftJoin('type_of_reqforms', 'request_dar.typereqform_id', '=', 'type_of_reqforms.id')
+            ->leftJoin('request_desc', 'request_dar.request_desc_id', '=', 'request_desc.id')
+            ->select(
+                'request_dar.*',
+                'request_dar.id as reqdar_id',
+                'request_dar.file_doc as file',
+                'departments.description as department',
+                'companys.company_desc as company',
+                'positions.position_desc as position',
+                'type_of_reqforms.request_type as reqtype',
+                'request_desc.request_descript',
+                DB::raw('(SELECT GROUP_CONCAT(dept_id) FROM distribution_dar_depts WHERE reqdar_id = request_dar.id) as distribution_dept_ids'),
+            );
+        return $data;
+    }
+
+    public function loockupDocument(Request $request)
+    {
+        // if ($request->ajax()) {
+        $query = $this->baseQuery()->where('request_dar.approval_status3', '=', '1')
+            ->where('request_dar.status', '=', '2');
+        // dd($query);
+        return DataTables::of($query)
+            ->addIndexColumn()
+            ->editColumn('file', function ($row) {
+                return view('datatables._show-file', [
+                    'data' => $row
+                ]);
+            })
+            ->make(true);
+        // }
+
+
     }
 }
