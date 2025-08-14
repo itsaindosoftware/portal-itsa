@@ -158,7 +158,7 @@
                 <p>As the final approver, please review the complete document request and provide your final approval through the PORTAL ITSA SYSTEM. Upon your approval, the document action request will be completed and processed.</p>
             </div>
               <div class="action-button">
-                <a href="https://192.168.1.7:9002/service" target="_blank">
+                <a href="https://192.168.1.7:8080/service" target="_blank">
                     🔍 Lihat Detail & Approve
                 </a>
             </div>
