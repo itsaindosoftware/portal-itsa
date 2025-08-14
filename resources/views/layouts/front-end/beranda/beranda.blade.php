@@ -376,11 +376,11 @@
                 <span style="background: linear-gradient(135deg, #28a745, #20c997); color: white; padding: 0.25rem 0.75rem; border-radius: 15px; font-size: 0.875rem; font-weight: 600;">108</span>
               </li>
               <li style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid #f8f9fa;">
-                <span style="color: #495057; font-weight: 500;">Dede Konal</span>
+                <span style="color: #495057; font-weight: 500;">Dede, Ronal</span>
                 <span style="background: linear-gradient(135deg, #28a745, #20c997); color: white; padding: 0.25rem 0.75rem; border-radius: 15px; font-size: 0.875rem; font-weight: 600;">242</span>
               </li>
               <li style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0;">
-                <span style="color: #495057; font-weight: 500;">Didin Rico</span>
+                <span style="color: #495057; font-weight: 500;">Didin,Wildan</span>
                 <span style="background: linear-gradient(135deg, #28a745, #20c997); color: white; padding: 0.25rem 0.75rem; border-radius: 15px; font-size: 0.875rem; font-weight: 600;">251</span>
               </li>
             </ul>
@@ -397,11 +397,11 @@
             </h5>
             <ul style="list-style: none; padding: 0; margin: 0;">
               <li style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid #f8f9fa;">
-                <span style="color: #495057; font-weight: 500;">Miftah</span>
+                <span style="color: #495057; font-weight: 500;">Andi</span>
                 <span style="background: linear-gradient(135deg, #28a745, #20c997); color: white; padding: 0.25rem 0.75rem; border-radius: 15px; font-size: 0.875rem; font-weight: 600;">245</span>
               </li>
               <li style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid #f8f9fa;">
-                <span style="color: #495057; font-weight: 500;">Theresia Sisca</span>
+                <span style="color: #495057; font-weight: 500;">Theresia, Sisca</span>
                 <span style="background: linear-gradient(135deg, #28a745, #20c997); color: white; padding: 0.25rem 0.75rem; border-radius: 15px; font-size: 0.875rem; font-weight: 600;">262</span>
               </li>
               <li style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0;">
@@ -427,7 +427,7 @@
                 <span style="background: linear-gradient(135deg, #28a745, #20c997); color: white; padding: 0.25rem 0.75rem; border-radius: 15px; font-size: 0.875rem; font-weight: 600;">-</span>
               </li>
               <li style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0;">
-                <span style="color: #495057; font-weight: 500;">Susi Yolanda</span>
+                <span style="color: #495057; font-weight: 500;">Susi</span>
                 <span style="background: linear-gradient(135deg, #28a745, #20c997); color: white; padding: 0.25rem 0.75rem; border-radius: 15px; font-size: 0.875rem; font-weight: 600;">-</span>
               </li>
             </ul>
