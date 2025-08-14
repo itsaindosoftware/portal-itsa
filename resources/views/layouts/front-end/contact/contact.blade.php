@@ -109,11 +109,11 @@
                             <h5><i class="fas fa-shopping-cart me-2"></i>Purchasing</h5>
                             <ul class="dept-list">
                                 <li class="dept-item">
-                                    <span class="dept-name">Nizar</span>
+                                    <span class="dept-name">Rico Prasetya</span>
                                     <span class="ext-number">120</span>
                                 </li>
                                 <li class="dept-item">
-                                    <span class="dept-name">Dewi,Yogi</span>
+                                    <span class="dept-name">Dewi,Evi</span>
                                     <span class="ext-number">575</span>
                                 </li>
                             </ul>
@@ -124,10 +124,6 @@
                         <div class="department-card">
                             <h5><i class="fas fa-bullhorn me-2"></i>Marketing</h5>
                             <ul class="dept-list">
-                                <li class="dept-item">
-                                    <span class="dept-name">Yudha</span>
-                                    <span class="ext-number">241</span>
-                                </li>
                                 <li class="dept-item">
                                     <span class="dept-name">Amir</span>
                                     <span class="ext-number">-</span>
@@ -145,7 +141,7 @@
                                     <span class="ext-number">122</span>
                                 </li>
                                 <li class="dept-item">
-                                    <span class="dept-name">Reni, Roni, Wasis</span>
+                                    <span class="dept-name">Reni, Roni, Wasis, Feri</span>
                                     <span class="ext-number">241</span>
                                 </li>
                             </ul>
@@ -161,7 +157,7 @@
                                     <span class="ext-number">245</span>
                                 </li>
                                 <li class="dept-item">
-                                    <span class="dept-name">Theresia Sisca</span>
+                                    <span class="dept-name">Theresia,Sisca</span>
                                     <span class="ext-number">262</span>
                                 </li>
                                 <li class="dept-item">
@@ -169,7 +165,7 @@
                                     <span class="ext-number">262</span>
                                 </li>
                                 <li class="dept-item">
-                                    <span class="dept-name">Fakhurrohman</span>
+                                    <span class="dept-name">Fakhurrohman, Teguh</span>
                                     <span class="ext-number">290</span>
                                 </li>
                             </ul>
@@ -197,15 +193,15 @@
                             <h5><i class="fas fa-tools me-2"></i>PPIC & MTC</h5>
                             <ul class="dept-list">
                                 <li class="dept-item">
-                                    <span class="dept-name">Restu</span>
+                                    <span class="dept-name">Edward</span>
                                     <span class="ext-number">131</span>
                                 </li>
                                 <li class="dept-item">
-                                    <span class="dept-name">Yudha, Ayu, Menic</span>
+                                    <span class="dept-name">Yudha, Ayu</span>
                                     <span class="ext-number">-</span>
                                 </li>
                                 <li class="dept-item">
-                                    <span class="dept-name">Maman, Novan</span>
+                                    <span class="dept-name">Ma'mun, Novan</span>
                                     <span class="ext-number">-</span>
                                 </li>
                             </ul>
@@ -225,7 +221,7 @@
                                     <span class="ext-number">-</span>
                                 </li>
                                 <li class="dept-item">
-                                    <span class="dept-name">Susi,Yolanda</span>
+                                    <span class="dept-name">Susi</span>
                                     <span class="ext-number">-</span>
                                 </li>
                             </ul>
