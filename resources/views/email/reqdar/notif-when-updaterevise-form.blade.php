@@ -113,7 +113,7 @@
         
         <div class="revision-success">
             <h4>🔄 Form Successfully Revised</h4>
-            <p>SYD telah berhasil melakukan revisi pada formulir Document Action Request dan telah mengirimkan ulang untuk persetujuan Anda.</p>
+            <p>SYD telah berhasil melakukan revisi pada formulir Document Action Request.</p>
         </div>
 
         <div class="info-box">

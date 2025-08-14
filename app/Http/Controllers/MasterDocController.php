@@ -32,21 +32,31 @@ class MasterDocController extends Controller
             if ($request->ajax()) {
                 // dd($request->get('status'));
                 $data = Masterdocs::query()->leftJoin(
-                    'departments',
-                    'master_documents.dept_id',
+                    'distribution_dar_depts',
+                    'distribution_dar_depts.master_docs_id',
                     '=',
-                    'departments.id'
+                    'master_documents.id'
                 )
                     ->leftJoin('type_of_reqforms', 'master_documents.type_doc_id', '=', 'type_of_reqforms.id')
                     // ->leftJoin('distribution_dar_depts','master_documents.')
                     ->select(
-                        'master_documents.*',
-                        'departments.description as dept_name',
-                        'type_of_reqforms.request_type as type_doc_name'
+                        'master_documents.title',
+                        // 'master_documents.*',
+                        // 'departments.description as dept_name',
+                        // 'type_of_reqforms.request_type as type_doc_name',
+                        DB::raw('MAX(master_documents.id) as id'),
+                        // DB::raw('MAX(master_documents.dept_id) as dept_id'),
+                        // DB::raw('MAX(departments.description) as dept_name'),
+                        DB::raw('MAX(master_documents.type_doc_id) as type_doc_id'),
+                        DB::raw('MAX(type_of_reqforms.request_type) as type_doc_name'),
+                        DB::raw('MAX(master_documents.file) as file'),
+                        DB::raw('MAX(master_documents.effective_date) as effective_date'),
+                        DB::raw('MAX(master_documents.archived_date) as archived_date'),
+                        DB::raw('MAX(master_documents.created_at) as created_at')
                     );
 
                 if ($user->hasRole('user-employee') && isset($user->dept)) {
-                    $data->where('master_documents.dept_id', $user->dept->id);
+                    $data->where('distribution_dar_depts.dept_id', $user->dept->id)->where('is_archived', 'new');
                 }
 
                 if ($request->has('type_docs') && !empty($request->type_docs)) {
@@ -57,7 +67,8 @@ class MasterDocController extends Controller
                 } elseif ($request->get('status') == 'archived') {
                     $data->where('is_archived', 'archived');
                 }
-                $data->orderBy('master_documents.created_at', 'desc');
+                $data->groupBy('master_documents.title')
+                    ->orderBy('created_at', 'desc');
                 return DataTables::of($data)
                     ->addColumn('action', function ($data) {
                         return view('datatables._action-masterdocs', [
@@ -135,18 +146,51 @@ class MasterDocController extends Controller
         // dd($request->all());
         $user = Auth::user();
         if ($user->hasPermission('create-masterdocs')) {
-            $data = new Masterdocs;
-            $data->title = $request->get('title');
-            $data->description = $request->get('description');
-            $data->type_doc_id = $request->get('type_docs');
-            $data->dept_id = $request->get('departments');
-            $data->effective_date = $request->get('effective_date');
-            $data->created_at = Carbon::now();
-            $data->is_archived = 'new';
-            $filePath = '-';
-            if ($request->hasFile('file_doc')) {
+
+            $rules = [
+                'title' => 'required|string|max:255',
+                'description' => 'required|string',
+                'type_docs' => 'required|exists:type_of_reqforms,id',
+                'effective_date' => 'required|date',
+                'is_archived' => 'required|in:new,archived',
+            ];
+            if (
+                $request->is_archived === 'new' ||
+                ($request->is_archived === 'archived' && !$request->existing_file_path)
+            ) {
+                $rules['file_doc'] = 'required|file|mimes:pdf,xlsx,xls,doc,docx|max:10240';
+            } elseif ($request->has('file_doc') && $request->file_doc) {
+                $rules['file_doc'] = 'file|mimes:pdf,xlsx,xls,doc,docx|max:10240';
+            }
+
+            $request->validate($rules);
+
+            $filePath = null;
+            $originalFileName = null;
+
+            if (
+                $request->is_archived === 'archived' &&
+                $request->use_existing_file === '1' &&
+                $request->existing_file_path &&
+                !$request->replace_existing_file
+            ) {
+
+                // Use existing file from request DAR
+                $filePath = $request->existing_file_path;
+                $originalFileName = $request->existing_file_name;
+
+                // Verify that the file actually exists
+                $cleanPath = str_replace('public/', '', $filePath);
+                if (!Storage::disk('public')->exists($cleanPath)) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'File dari request tidak ditemukan: ' . $originalFileName
+                    ], 400);
+                }
+
+            } elseif ($request->hasFile('file_doc') && $request->is_archived === 'new') {
                 $originalFileName = $request->file('file_doc')->getClientOriginalName();
-                $fileName = time() . '_' . $originalFileName;
+                $fileName = $originalFileName;
 
                 $uploadPath = 'reqdar/master-documents/' . date('Y-m');
 
@@ -154,13 +198,52 @@ class MasterDocController extends Controller
                     'public/' . $uploadPath,
                     $fileName
                 );
+
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'File upload diperlukan'
+                ], 400);
             }
+
+            $getDistributiondepartments = count($request->departments);
+
+            $data = new Masterdocs;
+            $data->title = $request->get('title');
+            $data->description = $request->get('description');
+            $data->type_doc_id = $request->get('type_docs');
+            $data->effective_date = $request->get('effective_date');
+            $data->created_at = Carbon::now();
+            $data->is_archived = $request->is_archived;
             $data->file = $filePath;
+            $data->archived_date = $request->get('effective_date');
             $data->save();
+
+            if ($request->is_archived == 'new') {
+                for ($i = 0; $i < $getDistributiondepartments; $i++) {
+                    DB::connection('portal-itsa')
+                        ->table('distribution_dar_depts')
+                        ->insert([
+                            'dept_id' => $request->departments[$i],
+                            'reqdar_id' => null,
+                            'master_docs_id' => $data->id,
+                            'effective_date' => $data->effective_date,
+                            'created_at' => Carbon::now()
+                        ]);
+                }
+            } elseif ($request->is_archived == 'archived') {
+                DB::connection('portal-itsa')->table('distribution_dar_depts')
+                    ->where('reqdar_id', $request->reqdar_id)
+                    ->update([
+                        'master_docs_id' => $data->id
+                    ]);
+            }
+
+
 
             return response()->json([
                 'success' => true,
-                'message' => 'Data documents succesfully added'
+                'message' => 'Data documents succesfully added',
             ], 200);
         }
     }
@@ -177,19 +260,43 @@ class MasterDocController extends Controller
         $id = base64_decode($id);
         if ($user->hasPermission('manage-masterdocs', 'show-masterdocs')) {
             // $data = Masterdocs::find($id);
-            $data = Masterdocs::query()->leftJoin(
-                'departments',
-                'master_documents.dept_id',
-                '=',
-                'departments.id'
-            )
+            $data = Masterdocs::query()
                 ->leftJoin('type_of_reqforms', 'master_documents.type_doc_id', '=', 'type_of_reqforms.id')
                 ->select(
                     'master_documents.*',
-                    'departments.description as dept_name',
+                    'master_documents.id as id',
                     'type_of_reqforms.request_type as type_doc_name'
                 )->where('master_documents.id', $id)->first();
-            return response()->json($data);
+
+            $distributionDepts = DB::connection('portal-itsa')
+                ->table('distribution_dar_depts')
+                ->leftJoin('departments', 'distribution_dar_depts.dept_id', '=', 'departments.id')
+                ->select(
+                    'distribution_dar_depts.*',
+                    'departments.description as dept_name'
+                )
+                ->where('distribution_dar_depts.master_docs_id', $id)
+                ->get();
+
+            // $data = (array) $data;
+            $responseData = [
+                'id' => $data->id,
+                'title' => $data->title,
+                'description' => $data->description,
+                'file' => $data->file,
+                'type_doc_id' => $data->type_doc_id,
+                'type_doc_name' => $data->type_doc_name,
+                'effective_date' => $data->effective_date,
+                'is_archived' => $data->is_archived,
+                'archived_date' => $data->archived_date,
+                'created_at' => $data->created_at,
+                'updated_at' => $data->updated_at,
+                'distribution_depts' => $distributionDepts,
+                'distribution_dept' => $distributionDepts->pluck('dept_id')->toArray()
+            ];
+            // dd($responseData);
+            // $data['distribution_depts'] = $distributionD
+            return response()->json($responseData);
         }
     }
 
@@ -204,20 +311,44 @@ class MasterDocController extends Controller
         $user = Auth::user();
         $id = base64_decode($id);
         if ($user->hasPermission('manage-masterdocs', 'edit-masterdocs')) {
-            $data = Masterdocs::query()->leftJoin(
-                'departments',
-                'master_documents.dept_id',
-                '=',
-                'departments.id'
-            )
+            $data = Masterdocs::query()
                 ->leftJoin('type_of_reqforms', 'master_documents.type_doc_id', '=', 'type_of_reqforms.id')
                 ->select(
                     'master_documents.*',
-                    'departments.description as dept_name',
+                    'master_documents.id as id',
                     'type_of_reqforms.request_type as type_doc_name'
                 )->where('master_documents.id', $id)->first();
 
-            return response()->json($data);
+            $distributionDepts = DB::connection('portal-itsa')
+                ->table('distribution_dar_depts')
+                ->leftJoin('departments', 'distribution_dar_depts.dept_id', '=', 'departments.id')
+                ->select(
+                    'distribution_dar_depts.*',
+                    'departments.description as dept_name'
+                )
+                ->where('distribution_dar_depts.master_docs_id', $id)
+                ->get();
+
+            // $data = (array) $data;
+            $responseData = [
+                'id' => $data->id,
+                'title' => $data->title,
+                'description' => $data->description,
+                'file' => $data->file,
+                'type_doc_id' => $data->type_doc_id,
+                'type_doc_name' => $data->type_doc_name,
+                'effective_date' => $data->effective_date,
+                'is_archived' => $data->is_archived,
+                'archived_date' => $data->archived_date,
+                'created_at' => $data->created_at,
+                'updated_at' => $data->updated_at,
+                'distribution_depts' => $distributionDepts,
+                'distribution_dept' => $distributionDepts->pluck('dept_id')->toArray()
+            ];
+            // $data['distribution_depts'] = $distributionDepts;
+            // $data['distribution_dept'] = $distributionDepts->pluck('dept_id')->toArray();
+            // dd($data);
+            return response()->json($responseData);
         }
     }
 
@@ -233,6 +364,23 @@ class MasterDocController extends Controller
         // dd($request->all());
         $user = Auth::user();
         if ($user->hasPermission('manage-masterdocs', 'edit-masterdocs')) {
+            $rules = [
+                'title' => 'required|string|max:255',
+                'description' => 'required|string',
+                'type_docs' => 'required|exists:type_of_reqforms,id',
+                'effective_date' => 'required|date',
+                'is_archived' => 'required|in:new,archived',
+                'departments' => 'required|array|min:1',
+                // 'departments.*' => 'exists:departments,id'
+            ];
+
+            // Add file validation if file is being uploaded
+            if ($request->hasFile('file_doc')) {
+                $rules['file_doc'] = 'file|mimes:pdf,xlsx,xls,doc,docx|max:10240';
+            }
+
+            $request->validate($rules);
+            // dd($id);
             $data = Masterdocs::find($id);
             if (!$data) {
                 return response()->json([
@@ -240,37 +388,72 @@ class MasterDocController extends Controller
                     'message' => 'Data MasterDocs Not found'
                 ], 404);
             }
-            $data->title = empty($request->title) ? $data->title : $request->title;
-            $data->description = empty($request->description) ? $data->description : $request->description;
-            $data->type_doc_id = empty($request->type_docs) ? $data->type_doc : $request->type_docs;
-            $data->dept_id = empty($request->departments) ? $data->dept_id : $request->departments;
-            $data->effective_date = empty($request->effective_date) ? $data->effective_date : $request->effective_date;
-            if ($request->hasFile('file_doc')) {
-                $oldFilePath = $data->file;
+            try {
 
-                $originalFileName = $request->file('file_doc')->getClientOriginalName();
-                $fileName = time() . '_' . $originalFileName;
+                DB::beginTransaction();
+                $data->title = empty($request->title) ? $data->title : $request->title;
+                $data->description = empty($request->description) ? $data->description : $request->description;
+                $data->type_doc_id = empty($request->type_docs) ? $data->type_doc : $request->type_docs;
+                // $data->dept_id = empty($request->departments) ? $data->dept_id : $request->departments;
+                $data->effective_date = empty($request->effective_date) ? $data->effective_date : $request->effective_date;
+                if ($request->hasFile('file_doc')) {
+                    $oldFilePath = $data->file;
 
-                $uploadPath = 'reqdar/master-documents/' . date('Y-m');
+                    $originalFileName = $request->file('file_doc')->getClientOriginalName();
+                    $fileName = $originalFileName;
+                    $uploadPath = 'reqdar/master-documents/' . date('Y-m');
 
-                $filePath = $request->file('file_doc')->storeAs(
-                    'public/' . $uploadPath,
-                    $fileName
-                );
-                $data->file = $filePath;
+                    $filePath = $request->file('file_doc')->storeAs(
+                        'public/' . $uploadPath,
+                        $fileName
+                    );
+                    $data->file = $filePath;
 
-                // Delete old file if it exists
-                if (!empty($oldFilePath) && Storage::exists($oldFilePath)) {
-                    Storage::delete($oldFilePath);
+                    // Delete old file if it exists
+                    if (!empty($oldFilePath) && Storage::exists($oldFilePath)) {
+                        Storage::delete($oldFilePath);
+                    }
                 }
+
+
+                $data->save();
+                //delete first
+                DB::connection('portal-itsa')
+                    ->table('distribution_dar_depts')
+                    ->where('master_docs_id', $id)
+                    ->delete();
+
+                $distributionsDept = [];
+                foreach ($request->departments as $deptId) {
+                    $distributionsDept[] = [
+                        'dept_id' => $deptId,
+                        'master_docs_id' => $data->id,
+                        'effective_date' => $request->effective_date,
+                        'created_at' => Carbon::now(),
+                        'updated_at' => Carbon::now()
+                    ];
+                }
+                if (!empty($distributionData)) {
+                    DB::connection('portal-itsa')
+                        ->table('distribution_dar_depts')
+                        ->insert($distributionData);
+                }
+                DB::commit();
+
+                return response()->json([
+                    'status' => true,
+                    'success' => true,
+                ], 200);
+
+            } catch (\Exception $e) {
+                DB::rollback();
+
+                return response()->json([
+                    'success' => false,
+                    'status' => false,
+                    'message' => 'Error updating document: ' . $e->getMessage()
+                ], 500);
             }
-
-
-            $data->save();
-
-            return response()->json([
-                'status' => true
-            ], 200);
 
         }
     }
@@ -367,6 +550,7 @@ class MasterDocController extends Controller
             ->leftJoin('positions', 'request_dar.position_id', '=', 'positions.id')
             ->leftJoin('type_of_reqforms', 'request_dar.typereqform_id', '=', 'type_of_reqforms.id')
             ->leftJoin('request_desc', 'request_dar.request_desc_id', '=', 'request_desc.id')
+            // ->leftJoin('distribution_dar_depts', 'distribution_dar_depts.reqdar_id', '=', 'request_dar.id')
             ->select(
                 'request_dar.*',
                 'request_dar.id as reqdar_id',
@@ -377,25 +561,34 @@ class MasterDocController extends Controller
                 'type_of_reqforms.request_type as reqtype',
                 'request_desc.request_descript',
                 DB::raw('(SELECT GROUP_CONCAT(dept_id) FROM distribution_dar_depts WHERE reqdar_id = request_dar.id) as distribution_dept_ids'),
+                DB::raw('(SELECT GROUP_CONCAT(DISTINCT effective_date) FROM distribution_dar_depts WHERE reqdar_id = request_dar.id) as eff_dates')
             );
         return $data;
     }
 
     public function loockupDocument(Request $request)
     {
-        // if ($request->ajax()) {
-        $query = $this->baseQuery()->where('request_dar.approval_status3', '=', '1')
-            ->where('request_dar.status', '=', '2');
-        // dd($query);
-        return DataTables::of($query)
-            ->addIndexColumn()
-            ->editColumn('file', function ($row) {
-                return view('datatables._show-file', [
-                    'data' => $row
-                ]);
-            })
-            ->make(true);
-        // }
+        // dd($request->filterType);
+        if ($request->ajax()) {
+            $query = $this->baseQuery()
+                ->where('request_dar.approval_status3', '=', '1')
+                ->where('request_dar.status', '=', '2');
+
+
+            if ($request->has('filterType') && !empty($request->filterType)) {
+                $query->where('request_dar.typereqform_id', $request->filterType);
+            }
+            // $query->groupBy('distribution_dar_depts.reqdar_id');
+            // dd($query);
+            return DataTables::of($query)
+                ->addIndexColumn()
+                ->editColumn('file', function ($row) {
+                    return view('datatables._show-file', [
+                        'data' => $row
+                    ]);
+                })
+                ->make(true);
+        }
 
 
     }

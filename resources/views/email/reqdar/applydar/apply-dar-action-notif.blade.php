@@ -111,7 +111,7 @@
         }
         .action-button a {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            color: black;
             padding: 12px 30px;
             text-decoration: none;
             border-radius: 25px;
@@ -228,32 +228,7 @@
             </div>
             @endif
             
-            {{-- <div class="approval-info">
-                <h4 style="margin-top: 0; color: #0c5460;">⚡ Detail Persetujuan</h4>
-                <div class="details-grid" style="margin: 15px 0;">
-                    <div style="background: none; padding: 0;">
-                        <div class="detail-item">
-                            <span class="label">Approver yang Diperlukan</span>
-                            <span class="value">{{ $approverName ?? 'Manager' }}</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="label">Role</span>
-                            <span class="value">{{ $roleName ?? 'Manager' }}</span>
-                        </div>
-                    </div>
-                 <div style="background: none; padding: 0;">
-                        <div class="detail-item">
-                            <span class="label">Tanggal Persetujuan</span>
-                            <span class="value">{{ $approvalDate ?? 'Pending'}}</span> 
-                        </div>
-                        @if($dataDar->storage_type)
-                        <div class="detail-item">
-                            <span class="label">Tipe Penyimpanan</span>
-                            <span class="value">{{ ucfirst($dataDar->storage_type) }}</span>
-                        </div>
-                        @endif
-                    </div>
-                </div> --}}
+      
                 
                 @if($remarks && $remarks !== '-')
                 <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #bee5eb;">
@@ -264,7 +239,7 @@
             </div> 
             
             <div class="action-button">
-                <a href="#" target="_blank">
+                <a href="http://127.0.0.1:8000/service" target="_blank">
                     🔍 Lihat Detail & Approve
                 </a>
             </div>

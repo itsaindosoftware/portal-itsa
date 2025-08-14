@@ -17,7 +17,7 @@ class Masterdocs extends Model
         'description',
         'file',
         'type_doc_id',
-        'dept_id',
+        // 'dept_id',
         'effective_date',
         'is_archived',
         'archived_date',

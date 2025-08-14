@@ -713,7 +713,7 @@ class HomeController extends Controller
      */
     private function getLastUpdateRequest()
     {
-        return Requestdar::orderBy('updated_bydate_1', 'desc')->first();
+        return Requestdar::where('user_id', Auth::user()->id)->orderBy('updated_bydate_1', 'desc')->first();
     }
 
     private function getMasterDocsCount()

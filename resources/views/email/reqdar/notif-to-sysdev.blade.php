@@ -76,6 +76,23 @@
             background-color: #e8f5e8;
             border-left: 4px solid #4CAF50;
         }
+        .action-button {
+            text-align: center;
+            margin: 30px 0;
+        }
+        .action-button a {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: black;
+            padding: 12px 30px;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 600;
+            display: inline-block;
+            transition: transform 0.2s;
+        }
+        .action-button a:hover {
+            transform: translateY(-2px);
+        }
 
         @media (max-width: 600px) {
             .transfer-grid {
@@ -124,6 +141,12 @@
             <div class="notification-box">
                 <p><strong>Next Steps:</strong></p>
                 <p>Please review the document request details above and proceed with approval or rejection through the PORTAL ITSA SYSTEM.</p>
+            </div>
+
+              <div class="action-button">
+                <a href="http://127.0.0.1:8000/service" target="_blank">
+                    🔍 Lihat Detail & Approve
+                </a>
             </div>
             
             <p>Best regards,<br>

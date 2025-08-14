@@ -458,7 +458,7 @@ class RequestdarController extends Controller
                 'qty_pages' => 'required|integer|min:1',
                 'reason' => 'required|string',
                 'rev_no_before' => 'required|integer|min:0',
-                'storage_type' => 'required|in:month,year',
+                // 'storage_type' => 'required|in:month,year',
                 'file_doc' => 'required|file|mimes:pdf,xlsx,xls|max:10240', // 5MB max 5120 
             ]);
             try {
@@ -467,7 +467,7 @@ class RequestdarController extends Controller
 
                 // Generate unique file name
                 $originalFileName = $request->file('file_doc')->getClientOriginalName();
-                $fileName = time() . '_' . $originalFileName;
+                $fileName = $originalFileName;
 
                 // Define upload path within the storage directory
                 $uploadPath = 'dar_documents/' . date('Y-m');
@@ -500,7 +500,7 @@ class RequestdarController extends Controller
                 $requestdar->reason = $request->reason;
                 $requestdar->rev_no_before = $request->rev_no_before;
                 $requestdar->rev_no_after = $request->rev_no_after;
-                $requestdar->storage_type = $request->storage_type;
+                // $requestdar->storage_type = NULL;
                 $requestdar->file_doc = $filePath;
                 $requestdar->status = '1'; // Default status
                 $requestdar->created_by = Auth::user()->nik;
@@ -711,7 +711,7 @@ class RequestdarController extends Controller
                 $data->reason = empty($request->reason) ? $data->reason : $request->reason;
                 $data->rev_no_before = empty($request->rev_no_before) ? $data->rev_no_before : $request->rev_no_before;
                 $data->rev_no_after = empty($request->rev_no_after) ? $data->rev_no_after : $request->rev_no_after;
-                $data->storage_type = empty($request->storage_type) ? $data->storage_type : $request->storage_type;
+                // $data->storage_type = empty($request->storage_type) ? $data->storage_type : $request->storage_type;
                 $data->typereqform_id = empty($request->typereqform_id) ? $data->typereqform_id : $request->typereqform_id;
                 $data->request_desc_id = empty($request->request_desc_id) ? $data->request_desc_id : $request->request_desc_id;
                 $data->approval_by1 = 'Manager';
@@ -760,6 +760,7 @@ class RequestdarController extends Controller
                                 'reqdar_id' => $id,
                                 'effective_date' => $effectiveDate,
                                 'created_at' => Carbon::now(),
+                                'master_docs_id' => null,
                                 'updated_at' => null
                             ];
                         }
@@ -813,17 +814,17 @@ class RequestdarController extends Controller
                     $remarks = 'SYD telah berhasil melakukan revisi pada formulir DAR dan siap untuk direview kembali.';
                     if ($getRoleSyd->isNotEmpty()) {
                         // $getUserreq->email
-                        // foreach ($getRoleSyd as $sysdevUser) {
-                        Mail::to('it-03@thaisummit.co.id')->send( // Kirim ke SysDev
-                            new NotifikasiWhenReviseUpdateForm(
-                                $data,
-                                $remarks,
-                                $approverName,
-                                $getUserreq,
-                                $getDataDar // Kirim object lengkap
-                            )
-                        );
-                        // }
+                        foreach ($getRoleSyd as $sysdevUser) {
+                            Mail::to($sysdevUser->email)->send( // Kirim ke SysDev
+                                new NotifikasiWhenReviseUpdateForm(
+                                    $data,
+                                    $remarks,
+                                    $approverName,
+                                    $getUserreq,
+                                    $getDataDar // Kirim object lengkap
+                                )
+                            );
+                        }
                     }
                     // $getRoleSyd->email
                     // Mail::to('it-03@thaisummit.co.id')->send(
@@ -1110,7 +1111,7 @@ class RequestdarController extends Controller
             ->first();
 
         // $getUserReq->email
-        Mail::to('it-03@thaisummit.co.id')
+        Mail::to($getUserReq->email)
             ->send(new SendnotifRequestDar(
                 $dataDar,
                 $remarks,
@@ -1132,20 +1133,23 @@ class RequestdarController extends Controller
             ->leftJoin('roles', 'role_user.role_id', '=', 'roles.id')
             ->where('roles.name', 'sysdev')
             ->select('users.*', 'roles.name as role_name')
-            ->first();
+            ->get();
         // dd($sendNotiftoApproval2);
 
         // $sendNotiftoApproval2->email
-        Mail::to('it-03@thaisummit.co.id')
-            ->send(new SendnotiftoSysdev(
-                $dataDar,
-                $remarks,
-                $approverName,
-                $approvalDate
-            ));
+        foreach ($sendNotiftoApproval2 as $sysdevEmail) {
+            Mail::to($sysdevEmail->email)
+                ->send(new SendnotiftoSysdev(
+                    $dataDar,
+                    $remarks,
+                    $approverName,
+                    $approvalDate
+                ));
+        }
+
 
         // 'it-03@thaisummit.co.id'
-        Mail::to('it-03@thaisummit.co.id')
+        Mail::to($getUserReq->email)
             ->send(new SendnotifRequestDar(
                 $dataDar,
                 $remarks,
@@ -1172,7 +1176,7 @@ class RequestdarController extends Controller
         // dd($sendNotiftoApproval2);
 
         // $sendNotiftoApproval2->email
-        Mail::to('it-03@thaisummit.co.id')
+        Mail::to($sendNotiftoApproval2->email)
             ->send(new SendnotiftoMgrSysdev(
                 $dataDar,
                 $remarks,
@@ -1181,7 +1185,7 @@ class RequestdarController extends Controller
             ));
 
         //  $getUserReq->email;
-        Mail::to('it-03@thaisummit.co.id')
+        Mail::to($getUserReq->email)
             ->send(new SendnotifRequestDar(
                 $dataDar,
                 $remarks,
@@ -1199,7 +1203,7 @@ class RequestdarController extends Controller
             ->first();
         // $getUserReq->email;
 
-        Mail::to('it-03@thaisummit.co.id')->send(
+        Mail::to($getUserReq->email)->send(
             new SendnotifrejectDar(
                 $dataDar,
                 $remarks,
@@ -1266,16 +1270,23 @@ class RequestdarController extends Controller
         if ($request->ajax()) {
             $masterDocs = DB::connection('portal-itsa')
                 ->table('master_documents')
-                ->select('id', 'title', 'description', 'type_doc');
-
+                ->leftJoin('type_of_reqforms', 'master_documents.type_doc_id', '=', 'type_of_reqforms.id')
+                ->select('master_documents.id', 'master_documents.title', 'master_documents.description', 'type_of_reqforms.request_type as type_doc')
+                ->where('master_documents.is_archived', 'new');
+            // ->where;
+            // dd($request->filterType);
             if ($request->has('filterType') && !empty($request->filterType)) {
-                $masterDocs->where('type_doc', $request->filterType);
+                $masterDocs->where('master_documents.type_doc_id', $request->filterType);
             }
 
             $masterDocs->get();
 
             return DataTables::of($masterDocs)
                 ->addIndexColumn()
+                ->editColumn('type_doc', function ($data) {
+                    return '<span class="badge badge-warning">' . $data->type_doc . '</span>';
+                })
+                ->rawColumns(['type_doc'])
                 ->make(true);
         }
     }

@@ -2919,8 +2919,8 @@ body:not(.sidebar-mini) .sidebar-style-2 .sidebar-menu li.active ul.dropdown-men
 }
 
 #table-users-manage th {
-  background-color: #30a9e1;
-  color: #ffffff;
+  background-color: #f2f2f2;
+  color: #1c1b1b;
 }
 
 /* #table-users-manage tr:nth-child(even) {
@@ -2937,8 +2937,8 @@ body:not(.sidebar-mini) .sidebar-style-2 .sidebar-menu li.active ul.dropdown-men
   border: 1px solid #ddd;
 }
 #table-module-manage th {
-  background-color: #30a9e1;
-  color: #ffffff;
+  background-color: #f2f2f2;
+  color: #191818;
 }
 
 #table-permission-manage {
@@ -2951,8 +2951,8 @@ body:not(.sidebar-mini) .sidebar-style-2 .sidebar-menu li.active ul.dropdown-men
   border: 1px solid #ddd;
 }
 #table-permission-manage th {
-  background-color: #30a9e1;
-  color: #ffffff;
+  background-color: #f2f2f2;
+  color: #1a1818;
 }
 
 #table-role-manage {
@@ -2965,8 +2965,8 @@ body:not(.sidebar-mini) .sidebar-style-2 .sidebar-menu li.active ul.dropdown-men
   border: 1px solid #ddd;
 }
 #table-role-manage th {
-  background-color: #30a9e1;
-  color: #ffffff;
+  background-color: #f2f2f2;
+  color: #282626;
 }
 
 #table-company-manage {
@@ -2979,8 +2979,8 @@ body:not(.sidebar-mini) .sidebar-style-2 .sidebar-menu li.active ul.dropdown-men
   border: 1px solid #ddd;
 }
 #table-company-manage th {
-  background-color: #30a9e1;
-  color: #ffffff;
+  background-color: #f2f2f2;
+  color: #1b1919;
 }
 #table-department-manage {
   width: 100%;
@@ -2993,8 +2993,8 @@ body:not(.sidebar-mini) .sidebar-style-2 .sidebar-menu li.active ul.dropdown-men
   border: 1px solid #ddd;
 }
 #table-department-manage th {
-  background-color: #30a9e1;
-  color: #ffffff;
+  background-color: #f2f2f2;
+  color: #252323;
 }
 
 #table-position-manage {
@@ -3007,8 +3007,8 @@ body:not(.sidebar-mini) .sidebar-style-2 .sidebar-menu li.active ul.dropdown-men
   border: 1px solid #ddd;
 }
 #table-position-manage th {
-  background-color: #30a9e1;
-  color: #ffffff;
+  background-color: #f2f2f2;
+  color: #313030;
 }
 
 #table-news-manage {
@@ -3021,8 +3021,8 @@ body:not(.sidebar-mini) .sidebar-style-2 .sidebar-menu li.active ul.dropdown-men
   border: 1px solid #ddd;
 }
 #table-news-manage th {
-  background-color: #30a9e1;
-  color: #ffffff;
+  background-color: #f2f2f2;
+  color: #292727;
 }
 
 #table-service-manage {
@@ -3035,8 +3035,8 @@ body:not(.sidebar-mini) .sidebar-style-2 .sidebar-menu li.active ul.dropdown-men
   border: 1px solid #ddd;
 }
 #table-service-manage th {
-  background-color: #30a9e1;
-  color: #ffffff;
+  background-color: #f2f2f2;
+  color: #202020;
 }
 
 /* #table-permission-manage tr:nth-child(even) {

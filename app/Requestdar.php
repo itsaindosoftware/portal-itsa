@@ -26,7 +26,7 @@ class Requestdar extends Model
         'created_by',
         'created_date',
         'file_doc',
-        'storage_type',
+        // 'storage_type',
         'rev_no_before',
         'rev_no_after',
         'approval_by1',

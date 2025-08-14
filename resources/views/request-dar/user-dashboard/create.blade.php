@@ -144,7 +144,7 @@
                     <fieldset class="border p-3 mb-4 rounded">
                         <legend class="w-auto px-2 text-primary font-weight-bold h6">Alasan & Detail Tambahan</legend>
                         <div class="row">
-                            <div class="col-md-6">
+                            {{-- <div class="col-md-6">
                                 <div class="form-group">
                                     <label class="font-weight-bold">Umur Penyimpanan</label>
                                     <div class="d-flex">
@@ -160,7 +160,7 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </div> --}}
 
                             <div class="col-md-6">
                                 <div class="form-group">
@@ -213,8 +213,9 @@
                     <div class="col-md-8">
                          <select class="form-control" id="filter-type">
                             <option value="">Semua Tipe</option>
-                            <option value="workinstruction">Work Instruction</option>
-                            <option value="procedure">Procedure</option>
+                            @foreach ($reqTypes as $typeDoc)
+                                <option value="{{ $typeDoc->id }}">{{ $typeDoc->request_type }}</option>
+                            @endforeach
                         </select>
                         {{-- <div class="input-group">
                             <div class="input-group-prepend">
@@ -277,8 +278,8 @@
                 </nav>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">
-                    <i class="fa fa-times mr-1"></i>Tutup
+                <button type="button" class="btn btn-danger" data-dismiss="modal">
+                    <i class="fa fa-times mr-1"></i>Close
                 </button>
             </div>
         </div>
@@ -335,8 +336,9 @@
                 // ONLY bind once!
                 $('#document-table tbody').on('click', 'tr', function () {
                     var data = lookupData.row(this).data();
+                    console.log(data)
                     var match = data.title.match(/^([A-Z]{2}-\d{2}-\d{3})\s+(.+)$/);
-
+                    // console.log(match)
                     if (match) {
                         var noDoc = match[1];
                         var nameDocRaw = match[2];
@@ -371,7 +373,7 @@
         $('#create-reqdar').modal('hide');
         $('#reqdarForm')[0].reset();
         $('input[name="typereqform_id"]').prop('checked', false);
-        $('input[name="storage_type"]').prop('checked', false);
+        // $('input[name="storage_type"]').prop('checked', false);
         $('input[name="request_desc_id"]').prop('checked', false);
     }
 

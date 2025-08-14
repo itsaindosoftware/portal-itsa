@@ -16,7 +16,7 @@
             <div class="h5 mb-0 font-weight-bold text-white">{{ $totalDar }}</div>
           </div>
           <div class="col-auto">
-            <i class="fas fa-clipboard-list fa-2x text-white opacity-75"></i>
+           <a href="{{ route('requestdar.index') }}"> <i class="fas fa-clipboard-list fa-2x text-white opacity-75"></i></a>
           </div>
         </div>
       </div>

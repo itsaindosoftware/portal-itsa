@@ -1,3 +1,4 @@
+
 <div class="modal fade" id="add-documents-master">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -8,6 +9,17 @@
                     </button>
                 </div>
                 <div class="modal-body">
+                    <!-- Guidance Section -->
+                    <div class="alert alert-info mb-4">
+                        <h6 class="alert-heading"><i class="fa fa-info-circle"></i> Guidance / Petunjuk Penggunaan:</h6>
+                        <ul class="mb-0 small">
+                            <li><strong>Tekan Enter</strong> pada field Title untuk memunculkan data dari request perubahan</li>
+                            <li><strong>Masukan data langsung</strong> tanpa menekan keyboard Enter untuk input manual</li>
+                            <li><strong>Jika data document baru</strong>, pilih is_archived nya <strong>"New"</strong></li>
+                            <li><strong>Jika menggunakan document dari request</strong>, pilih is_archived nya <strong>"Archived"</strong></li>
+                        </ul>
+                    </div>
+
                     <form id="documentsForm" method="POST" action="{{ route('masterdocs.store') }}" enctype="multipart/form-data">
                         @csrf
 
@@ -24,8 +36,35 @@
                                             <div class="input-group-prepend">
                                                 <span class="input-group-text"><i class="fa fa-heading"></i></span>
                                             </div>
-                                            <input type="text" class="form-control" name="title" id="title" placeholder="Enter document title" required>
+                                            <input type="text" class="form-control" name="title" id="title" placeholder="Tekan Keyboard Enter Untuk Mencari Data / Masukan Data dengan langsung" required>
                                         </div>
+                                        <small class="form-text text-muted">
+                                            <i class="fa fa-lightbulb-o"></i> Tekan <kbd>Enter</kbd> untuk mencari data dari request atau ketik langsung untuk input manual
+                                        </small>
+                                    </div>
+                                </div>
+
+                                <!-- Archive Status -->
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label class="font-weight-bold">Archive Status</label>
+                                        <div class="border rounded p-3" style="background-color: #f8f9fa;">
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="is_archived" id="is_archived" value="new">
+                                                <label class="form-check-label" for="is_archived_new">
+                                                    <i class="fa fa-file-o text-success"></i> <strong>New Document</strong>
+                                                </label>
+                                            </div>
+                                            <div class="form-check form-check-inline ml-4">
+                                                <input class="form-check-input" type="radio" name="is_archived" id="is_archived" value="archived">
+                                                <label class="form-check-label" for="is_archived_archived">
+                                                    <i class="fa fa-archive text-warning"></i> <strong>From Request (Archived)</strong>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <small class="form-text text-muted">
+                                            Pilih "New Document" untuk dokumen baru atau "From Request" jika menggunakan data dari request perubahan
+                                        </small>
                                     </div>
                                 </div>
 
@@ -61,68 +100,54 @@
                                         </div>
                                     </div>
                                 </div>
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    <label class="font-weight-bold">Distribution Departments</label>
-                                    <div class="border rounded p-3" style="max-height: 250px; overflow-y: auto; background-color: #f8f9fa;">
-                                        <!-- Select All Option -->
-                                        <div class="form-check mb-2 border-bottom pb-2">
-                                            <input type="checkbox" class="form-check-input" id="select_all_dept" onchange="toggleAllDepartments(this)">
-                                            <label class="form-check-label font-weight-bold text-primary" for="select_all_dept">
-                                                <i class="fa fa-check-square"></i> Select All Departments
-                                            </label>
-                                        </div>
-                                        
-                                        <!-- Department Checkboxes -->
-                                        <div class="row">
-                                            @foreach ($departments as $dept)
-                                            <div class="col-md-6">
-                                                <div class="form-check mb-2">
-                                                    <input type="checkbox" 
-                                                           class="form-check-input dept-checkbox" 
-                                                           id="dept_{{ $dept->id }}" 
-                                                           name="departments[]" 
-                                                           value="{{ $dept->id }}"
-                                                           onchange="updateSelectAllState()">
-                                                    <label class="form-check-label" for="dept_{{ $dept->id }}">
-                                                        <i class="fa fa-building-o mr-1"></i>{{ $dept->description }}
-                                                    </label>
-                                                </div>
-                                            </div>
-                                            @endforeach
-                                        </div>
-                                        
-                                        <!-- Selected Count Display -->
-                                        <div class="mt-2 pt-2 border-top">
-                                            <small class="text-muted">
-                                                <i class="fa fa-info-circle"></i> 
-                                                Selected: <span id="selected-dept-count">0</span> department(s)
-                                            </small>
-                                        </div>
-                                    </div>
-                                    <small class="form-text text-muted">
-                                        Select one or more departments where this document will be distributed
-                                    </small>
-                                </div>
-                            </div>
-                                {{-- <div class="col-md-12">
+
+                                <!-- Distribution Departments -->
+                                <div class="col-md-12">
                                     <div class="form-group">
-                                        <label class="font-weight-bold">Distribution Dept</label>
-                                        <div class="input-group">
-                                            <div class="input-group-prepend">
-                                                <span class="input-group-text"><i class="fa fa-list"></i></span>
+                                        <label class="font-weight-bold">Distribution Departments</label>
+                                        <div class="border rounded p-3" style="max-height: 250px; overflow-y: auto; background-color: #f8f9fa;">
+                                            <!-- Select All Option -->
+                                            <div class="form-check mb-2 border-bottom pb-2">
+                                                <input type="checkbox" class="form-check-input" id="select_all_dept" onchange="toggleAllDepartments(this)">
+                                                <label class="form-check-label font-weight-bold text-primary" for="select_all_dept">
+                                                    <i class="fa fa-check-square"></i> Select All Departments
+                                                </label>
                                             </div>
-                                            <select class="form-control" name="departments" id="departments" required>
-                                                <option value="">--Select Departments--</option>
-                                                {{-- <p>{{ $departments }}</p> --}}
-                                                {{-- @foreach ($departments as $dept)
-                                                    <option value="{{ $dept->id }}">{{ $dept->description }}</option>
-                                                @endforeach --}}
-                                        
-                                            {{-- </select> --}}
-                                        {{-- </div>
-                                    </div> --}}
-                                {{-- </div>  --}}
+                                            
+                                            <!-- Department Checkboxes -->
+                                            <div class="row">
+                                                @foreach ($departments as $dept)
+                                                <div class="col-md-6">
+                                                    <div class="form-check mb-2">
+                                                        <input type="checkbox" 
+                                                               class="form-check-input dept-checkbox" 
+                                                               id="dept_{{ $dept->id }}" 
+                                                               name="departments[]" 
+                                                               value="{{ $dept->id }}"
+                                                               onchange="updateSelectAllState()">
+                                                        <label class="form-check-label" for="dept_{{ $dept->id }}">
+                                                            <i class="fa fa-building-o mr-1"></i>{{ $dept->description }}
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                @endforeach
+                                            </div>
+                                            
+                                            <!-- Selected Count Display -->
+                                            <div class="mt-2 pt-2 border-top">
+                                                <small class="text-muted">
+                                                    <i class="fa fa-info-circle"></i> 
+                                                    Selected: <span id="selected-dept-count">0</span> department(s)
+                                                </small>
+                                            </div>
+                                        </div>
+                                        <small class="form-text text-muted">
+                                            Select one or more departments where this document will be distributed
+                                        </small>
+                                    </div>
+                                </div>
+
+                                <!-- Effective Date -->
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <label class="font-weight-bold">Effective Date</label>
@@ -155,7 +180,10 @@
                                 </div>
                             </div>
                         </fieldset>
-                        <input type="hidden" name="status-doc" value="new" id="status-doc">
+                        {{-- <input type="hidden" name="status-doc" value="new" id="status-doc"> --}}
+                        <input type="hidden" name="existing_file_path" id="existing-file-path">
+                        <input type="hidden" name="existing_file_name" id="existing-file-name">
+                        <input type="hidden" name="reqdar_id" id="reqdar-id">
                     </form>
                 </div>
                 <div class="modal-footer bg-light">
@@ -190,6 +218,17 @@
                 $('.dept-checkbox').prop('checked', false);
                 $('#select_all_dept').prop('checked', false).prop('indeterminate', false);
                 updateSelectedDeptCount();
+
+                $('#is_archived').prop('checked', true);
+                $('#file_doc').prop('required', true); // Reset required
+                $('#file-preview-area').remove(); // Remove preview
+                
+                // Clear hidden fields
+                $('#existing-file-path').val('');
+                $('#existing-file-name').val('');
+                $('#reqdar-id').val('');
+
+                 $('.custom-file').next('.form-text').html('Supported formats: PDF, Excel (.xlsx/.xls), Word (.doc/.docx) - Max 10MB');
             }
             function toggleAllDepartments(selectAllCheckbox) {
                 const isChecked = selectAllCheckbox.checked;
@@ -249,5 +288,35 @@
                 
                 return selectedDepts.length;
             }
+            $('input[name="is_archived"]').on('change', function() {
+                var selectedValue = $(this).val();
+                
+                if (selectedValue === 'new') {
+                    // Jika pilih new document, file upload wajib
+                    $('#file_doc').prop('required', true);
+                    $('.custom-file-label').text('Choose file...').removeClass('text-info font-weight-bold');
+                    $('#file-preview-area').remove();
+                    
+                    // Clear hidden fields
+                    $('#existing-file-path').val('');
+                    $('#existing-file-name').val('');
+                    $('#reqdar-id').val('');
+                    
+                    // Update help text
+                    $('.custom-file').next('.form-text').html('Supported formats: PDF, Excel (.xlsx/.xls), Word (.doc/.docx) - Max 10MB');
+                    
+                } else if (selectedValue === 'archived') {
+                    // Jika pilih archived, file upload optional jika sudah ada dari request
+                    var existingFileName = $('#existing-file-name').val();
+                    if (existingFileName) {
+                        $('#file_doc').prop('required', false);
+                        // Update help text
+                        $('.custom-file').next('.form-text').html('File upload is optional when using document from request. Choose new file to replace the existing one.');
+                    } else {
+                        $('#file_doc').prop('required', true);
+                        $('.custom-file').next('.form-text').html('Please upload file or select from request lookup (press Enter in Title field)');
+                    }
+                }
+            });
         </script>
     @endpush

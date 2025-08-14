@@ -1,4 +1,4 @@
-<div class="modal fade" tabindex="-1" id="document-lookup-fromreq-modal" tabindex="-1" role="dialog" data-backdrop="false" data-keyboard="true">
+<div class="modal fade" tabindex="-1" id="document-lookup-fromreq-modal-edit" tabindex="-1" role="dialog" data-backdrop="false" data-keyboard="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header bg-primary text-white">
@@ -13,7 +13,7 @@
                 <!-- Search Filter -->
                 <div class="row mb-3">
                     <div class="col-md-8">
-                         <select class="form-control" id="filter-type">
+                         <select class="form-control" id="filter-type-edit">
                             <option value="">Semua Tipe</option>
                              @foreach ($typeDoc as $type)
                                 <option value="{{ $type->id }}">{{ $type->request_type }}</option>
@@ -50,7 +50,7 @@
             </div>
                 <!-- Document Table -->
                 <div class="table-responsive">
-                    <table class="table table-hover table-striped table-bordered" id="document-table">
+                    <table class="table table-hover table-striped table-bordered" id="document-table-edit">
                         <thead class="thead-light">
                             <tr>
                                 <th>#</th>

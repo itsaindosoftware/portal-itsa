@@ -189,8 +189,8 @@ $(document).ready(function(){
                         '<table class="table table-sm table-borderless">' +
                             '<tr><td><strong>No Doc:</strong></td><td>' + (d.no_doc || '-') + '</td></tr>' +
                             '<tr><td><strong>DAR Number:</strong></td><td>' + (d.number_dar || '-') + '</td></tr>' +
-                            '<tr><td><strong>Storage Type:</strong></td><td>' + (d.storage_type || '-') + '</td></tr>' +
-                            '<tr><td><strong>Pages:</strong></td><td>' + (d.storage_type || '-') + '</td></tr>' +
+                            // '<tr><td><strong>Storage Type:</strong></td><td>' + (d.storage_type || '-') + '</td></tr>' +
+                            '<tr><td><strong>Pages:</strong></td><td>' + (d.qty_pages || '-') + '</td></tr>' +
                             '<tr><td><strong>Reason:</strong></td><td>' + (d.reason || '-') + '</td></tr>' +
                             '<tr><td><strong>Rev No After:</strong></td><td>' + (d.rev_no_after || '-') + '</td></tr>' +
                             '<tr><td><strong>Status Transaction:</strong></td><td>' + (d.status || '-') + '</td></tr>' +
@@ -401,9 +401,9 @@ $(document).on('click','#show-create-dar', function(e){
         });
 
         // Check if a storage type is selected
-        if ($('input[name="storage_type"]:checked').length === 0) {
-            isValid = false;
-        }
+        // if ($('input[name="storage_type"]:checked').length === 0) {
+        //     isValid = false;
+        // }
 
         // Check specific fields
         if (!$('#name-doc').val().trim() ||
@@ -434,10 +434,12 @@ $(document).on('click','#show-create-dar', function(e){
      function resetForm() {
        $('#reqdarForm')[0].reset();
         $('input[name="typereqform_id"]').prop('checked', false);
-        $('input[name="storage_type"]').prop('checked', false);
+        // $('input[name="storage_type"]').prop('checked', false);
         $('input[name="request_desc_id"]').prop('checked', false);
         $('.custom-file-label').text('Pilih file PDF/Excel');
         $('#reqdarForm input, #reqdarForm textarea, #reqdarForm select').prop('disabled', false);
+
+        // ('.addrm').prop('disabled', true);
     }
     function showNotification(type, message) {
         if(type == 'success'){
@@ -521,13 +523,27 @@ $(document).on('click','#show-create-dar', function(e){
                 showNotification('error', errorMessage);
             },
             complete: function() {
-                $('.addrm').prop('disabled', false).html('<i class="ti-check"></i> Submit');
+                  $('.addrm').prop('disabled', false).html('<i class="ti-check"></i> Submit');
                   $('#reqdarForm input, #reqdarForm textarea, #reqdarForm select').prop('disabled', false);
             }
         });
         function refreshDataTable() {
             $('#table-request-manage').DataTable().ajax.reload();
         }
+    });
+
+    $(document).ready(function() {
+    // Handle filter button click
+        $('#btn-filter').on('click', function() {
+            $('#table-request-manage').DataTable().ajax.reload();
+        });
+
+        // Handle reset button click
+        $('#btn-reset').on('click', function() {
+            $('#filter-form')[0].reset();
+            $('.daterange-picker').val('');
+            $('#table-request-manage').DataTable().ajax.reload();
+        });
     });
 
     

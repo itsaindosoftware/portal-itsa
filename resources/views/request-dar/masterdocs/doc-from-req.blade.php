@@ -39,7 +39,7 @@
                                                     <i class="fa fa-file-text"></i>
                                                 </span>
                                             </div>
-                                            <textarea class="form-control" id="description" name="description" rows="3" placeholder="Enter document description" required style="resize: vertical; min-height: 100px; border-top-left-radius: 0; border-bottom-left-radius: 0;"></textarea>
+                                            <textarea class="form-control" id="description-req" name="description" rows="3" placeholder="Enter document description" required style="resize: vertical; min-height: 100px; border-top-left-radius: 0; border-bottom-left-radius: 0;"></textarea>
                                         </div>
                                     </div>
                                 </div>
@@ -52,7 +52,7 @@
                                             <div class="input-group-prepend">
                                                 <span class="input-group-text"><i class="fa fa-list"></i></span>
                                             </div>
-                                            <select class="form-control" name="type_docs" id="type-docs" required>
+                                            <select class="form-control" name="type_docs" id="type-docs-req" required>
                                                 <option value="">--Select Document Type--</option>
                                                 @foreach ($typeDoc as $type)
                                                     <option value="{{ $type->id }}">{{ $type->request_type }}</option>
@@ -130,7 +130,7 @@
                                             <div class="input-group-prepend">
                                                 <span class="input-group-text"><i class="fa fa-calendar"></i></span>
                                             </div>
-                                            <input type="date" class="form-control" name="effective_date" id="effective-date" placeholder="Enter Effective Date" required>
+                                            <input type="date" class="form-control" name="effective_date" id="effective-date-req" placeholder="Enter Effective Date" required>
                                         </div>
                                     </div>
                                 </div>
@@ -141,8 +141,8 @@
                                         <label class="font-weight-bold">Upload Document</label>
                                         <div class="custom-file">
                                             <input type="file"
-                                                   class="custom-file-input"
-                                                   id="file_doc"
+                                                   class="custom-file-input-req"
+                                                   id="file_doc_req"
                                                    name="file_doc"
                                                    accept=".pdf,.xlsx,.xls,.doc,.docx"
                                                    required>
@@ -172,20 +172,21 @@
     @push('js')
         <script>
             document.addEventListener('DOMContentLoaded', function() {
-                const fileInput = document.querySelector('.custom-file-input');
+                const fileInput = document.querySelector('.custom-file-input-req');
                 if (fileInput) {
                     fileInput.addEventListener('change', function(e) {
                         var fileName = this.files[0].name;
                         var nextSibling = this.nextElementSibling;
+                        console.log(fileName)
                         nextSibling.innerText = fileName;
                     });
                 }
                 updateSelectedDeptCount();
             });
             function closeModal() {
-                $('#add-documents-master').modal('hide');
+                $('#add-documents-from-req').modal('hide');
                 $('#documentsForm')[0].reset();
-                $('.custom-file-label').text('Choose file...');
+                $('.custom-file-label-req').text('Choose file...');
                 // 
                 $('.dept-checkbox').prop('checked', false);
                 $('#select_all_dept').prop('checked', false).prop('indeterminate', false);

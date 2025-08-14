@@ -292,7 +292,7 @@
                     <fieldset class="border p-3 mb-4 rounded">
                         <legend class="w-auto px-2 text-primary font-weight-bold h6">Alasan & Detail Tambahan</legend>
                         <div class="row">
-                            <div class="col-md-6">
+                            {{-- <div class="col-md-6">
                                 <div class="form-group">
                                     <label class="font-weight-bold">Umur Penyimpanan</label>
                                     <div class="d-flex">
@@ -308,7 +308,7 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </div> --}}
 
                            <div class="col-md-6">
                                 <div class="form-group">
@@ -368,10 +368,11 @@
                 <!-- Search Filter -->
                 <div class="row mb-3">
                     <div class="col-md-8">
-                         <select class="form-control" id="filter-type">
+                         <select class="form-control" id="filter-type-edit">
                             <option value="">Semua Tipe</option>
-                            <option value="workinstruction">Work Instruction</option>
-                            <option value="procedure">Procedure</option>
+                 \          @foreach ($reqTypes as $typeDocs)
+                                 <option value="{{ $typeDocs->id }}">{{ $typeDocs->request_type }}</option>
+                             @endforeach
                         </select>
                         {{-- <div class="input-group">
                             <div class="input-group-prepend">
@@ -478,7 +479,7 @@
                     ajax: {
                         url: "{{ route('requestdar.lookupdokumen') }}",
                         data: function(d) {
-                            d.filterType = $('#filter-type').val();
+                            d.filterType = $('#filter-type-edit').val();
                         }
                     },
                     columns: [
@@ -512,7 +513,7 @@
             }
         }
 
-           $('#filter-type').on('change', function() {
+           $('#filter-type-edit').on('change', function() {
                  $('#document-table-edit').DataTable().ajax.reload();
             });
 
@@ -632,11 +633,11 @@
 
 
                 // Storage type
-            if (response.storage_type === 'month') {
-                $('#storage_type_month_edit').prop('checked', true);
-            } else if (response.storage_type === 'year') {
-                $('#storage_type_year_edit').prop('checked', true);
-            }
+            // if (response.storage_type === 'month') {
+            //     $('#storage_type_month_edit').prop('checked', true);
+            // } else if (response.storage_type === 'year') {
+            //     $('#storage_type_year_edit').prop('checked', true);
+            // }
 
             if (response.file_doc) {
                 $('.custom-file-label-edit').text(response.file_doc.split('/').pop());

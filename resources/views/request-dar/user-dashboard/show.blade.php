@@ -1,4 +1,4 @@
-<div class="modal fade" tabindex="-1" id="view-reqdar" data-backdrop="static" data-keyboard="false">
+<div class="modal fade" tabindex="-1" id="view-reqdar">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header bg-primary text-white">
@@ -286,7 +286,7 @@
                     <!-- Fieldset untuk Alasan dan Detail Tambahan -->
                     <fieldset class="border p-3 mb-4 rounded">
                         <legend class="w-auto px-2 text-primary font-weight-bold h6">Alasan & Detail Tambahan</legend>
-                        <div class="row">
+                        {{-- <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label class="font-weight-bold">Umur Penyimpanan</label>
@@ -303,7 +303,7 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </div> --}}
 
                             <div class="col-md-6">
                                 <div class="form-group">
@@ -330,8 +330,8 @@
                 </form>
             </div>
             <div class="modal-footer bg-light">
-                <button type="button" onclick="" class="btn btn-danger" data-dismiss="modal">
-                    <i class="ti-close"></i> Close
+                <button type="button" class="btn btn-danger closemodal" onclick="closeModalShow()">
+                    <i class="fas fa-close"></i> Close
                 </button>
             </div>
         </div>
@@ -449,11 +449,11 @@
 
 
                 // Storage type
-            if (response.storage_type === 'month') {
-                $('#storage_type_month_view').prop('checked', true);
-            } else if (response.storage_type === 'year') {
-                $('#storage_type_year_view').prop('checked', true);
-            }
+            // if (response.storage_type === 'month') {
+            //     $('#storage_type_month_view').prop('checked', true);
+            // } else if (response.storage_type === 'year') {
+            //     $('#storage_type_year_view').prop('checked', true);
+            // }
 
             if (response.file_doc) {
                 $('.custom-file-label-view').text(response.file_doc.split('/').pop());
@@ -627,6 +627,9 @@
         }, 300);
     }
 
+    function closeModalShow(){
+        $('#view-reqdar').modal('hide');
+    }
 
 </script>
 @endpush
