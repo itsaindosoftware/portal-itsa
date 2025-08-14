@@ -144,7 +144,7 @@
             </div>
 
               <div class="action-button">
-                <a href="http://127.0.0.1:8000/service" target="_blank">
+                <a href="https://192.168.1.7:9002/service" target="_blank">
                     🔍 Lihat Detail & Approve
                 </a>
             </div>
