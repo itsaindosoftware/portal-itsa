@@ -4,6 +4,19 @@
 @section('title-head', 'ApprovedBy1 - Dashboard')
 
 @section('content')
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card" style="background-color: rgb(215, 214, 214); border: none;">
+            <div class="card-body text-center py-4">
+                <h2 class="mb-2" style="color: black;">
+                    <i class="fas fa-file-alt mr-3"></i>
+                    Selamat Datang di Aplikasi Document Action Request (DAR)
+                </h2>
+                <p class="mb-0" style="color: black; font-size: 18px;">Sistem Manajemen Permintaan Aksi Dokumen</p>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="row">
   <!-- Total Request Card -->
   <div class="col-xl-3 col-md-6 mb-4">
