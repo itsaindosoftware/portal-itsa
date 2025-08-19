@@ -224,6 +224,7 @@
             "{{ $dept->description }}",
         @endforeach
     ];
+    
 
     const departmentCounts = [
         @foreach($departmentDistribution as $dept)

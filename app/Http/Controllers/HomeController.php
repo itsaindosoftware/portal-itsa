@@ -676,8 +676,12 @@ class HomeController extends Controller
             $query->limit($limit);
         }
 
-        $distribution = $query->get();
-
+        $distribution = $query->get()->map(function ($item) {
+            // Bersihkan nama department dari karakter khusus dan line breaks
+            $item->description = trim(preg_replace('/\s+/', ' ', $item->description));
+            return $item;
+        });
+        // dd($distribution);
         return [
             'distribution' => $distribution,
             'departmentNames' => json_encode($distribution->pluck('description')->toArray()),
