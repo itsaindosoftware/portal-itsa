@@ -1139,7 +1139,7 @@ $(document).ready(function(){
                 // ONLY bind once!
                 $('#document-table tbody').on('click', 'tr', function () {
                     var data = lookupData.row(this).data();
-                    // console.log(data)
+                    console.log(data)
                 
                     var reqdarId = data.reqdar_id;
 
@@ -1148,6 +1148,7 @@ $(document).ready(function(){
                     var deptIds = deptIdsStr.split(',').map(function(id) {
                         return id.trim();
                     });
+
                     //    console.log(deptIds)
                     // $('.dept-checkbox').prop('checked', false);
                     var count;

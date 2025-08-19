@@ -37,41 +37,40 @@ class MasterDocController extends Controller
                     '=',
                     'master_documents.id'
                 )
-                    ->leftJoin('type_of_reqforms', 'master_documents.type_doc_id', '=', 'type_of_reqforms.id')
+                    ->leftJoin('type_of_reqforms', 'master_documents.type_doc_id', '=', 'type_of_reqforms.id');
 
-                    // ->leftJoin('distribution_dar_depts','master_documents.')
-                    ->select(
-                        'master_documents.title',
-                        // 'master_documents.*',
-                        // 'departments.description as dept_name',
-                        // 'type_of_reqforms.request_type as type_doc_name',
-                        DB::raw('MAX(master_documents.id) as id'),
-                        // DB::raw('MAX(master_documents.dept_id) as dept_id'),
-                        // DB::raw('MAX(departments.description) as dept_name'),
-                        DB::raw('MAX(master_documents.type_doc_id) as type_doc_id'),
-                        DB::raw('MAX(type_of_reqforms.request_type) as type_doc_name'),
-                        DB::raw('MAX(master_documents.file) as file'),
-                        DB::raw('MAX(master_documents.effective_date) as effective_date'),
-                        DB::raw('MAX(master_documents.archived_date) as archived_date'),
-                        DB::raw('MAX(master_documents.created_at) as created_at')
-                    );
 
-                if ($request->get('status') == 'my-docs') {
-                    $data->leftJoin('request_dar', 'request_dar.id', '=', 'distribution_dar_depts.reqdar_id');
-                }
+                // ->leftJoin('distribution_dar_depts','master_documents.')
+                $data->select(
+                    'master_documents.title',
+                    // 'master_documents.*',
+                    // 'departments.description as dept_name',
+                    // 'type_of_reqforms.request_type as type_doc_name',
+                    DB::raw('MAX(master_documents.id) as id'),
+                    // DB::raw('MAX(master_documents.dept_id) as dept_id'),
+                    // DB::raw('MAX(departments.description) as dept_name'),
+                    DB::raw('MAX(master_documents.type_doc_id) as type_doc_id'),
+                    DB::raw('MAX(type_of_reqforms.request_type) as type_doc_name'),
+                    DB::raw('MAX(master_documents.file) as file'),
+                    DB::raw('MAX(master_documents.effective_date) as effective_date'),
+                    DB::raw('MAX(master_documents.archived_date) as archived_date'),
+                    DB::raw('MAX(master_documents.created_at) as created_at')
+                );
+
+
                 // if ($user->hasRole('user-employee') && isset($user->dept)) {
                 //     $data->where('distribution_dar_depts.dept_id', $user->dept->id)->where('is_archived', 'new');
                 // }
-
+                // dd($request->get('status'));
                 if ($request->has('type_docs') && !empty($request->type_docs)) {
                     $data->where('master_documents.type_doc_id', $request->type_docs);
                 }
                 if ($request->get('status') == 'all-docs') {
-                    $data->where('is_archived', 'new');
+                    $data->where('master_documents.is_archived', 'new');
                 } elseif ($request->get('status') == 'archived') {
-                    $data->where('is_archived', 'archived');
+                    $data->where('master_documents.is_archived', 'archived');
                 } elseif ($request->get('status') == 'my-docs') {
-                    $data->where('distribution_dar_depts.dept_id', $user->department_id);
+                    $data->where('master_documents.is_archived', 'archived')->where('distribution_dar_depts.dept_id', $user->department_id);
                 }
                 $data->groupBy('master_documents.title')
                     ->orderBy('created_at', 'desc');
@@ -238,11 +237,24 @@ class MasterDocController extends Controller
                         ]);
                 }
             } elseif ($request->is_archived == 'archived') {
-                DB::connection('portal-itsa')->table('distribution_dar_depts')
+                // delete first
+                DB::connection('portal-itsa')
+                    ->table('distribution_dar_depts')
                     ->where('reqdar_id', $request->reqdar_id)
-                    ->update([
-                        'master_docs_id' => $data->id
-                    ]);
+                    ->delete();
+
+                for ($i = 0; $i < $getDistributiondepartments; $i++) {
+                    DB::connection('portal-itsa')->table('distribution_dar_depts')
+                        ->where('reqdar_id', $request->reqdar_id)
+                        ->insert([
+                            'dept_id' => $request->departments[$i],
+                            'reqdar_id' => $request->reqdar_id,
+                            'master_docs_id' => $data->id,
+                            'effective_date' => $data->effective_date,
+                            'created_at' => Carbon::now(),
+                            'updated_at' => Carbon::now(),
+                        ]);
+                }
             }
 
 
@@ -584,6 +596,7 @@ class MasterDocController extends Controller
             if ($request->has('filterType') && !empty($request->filterType)) {
                 $query->where('request_dar.typereqform_id', $request->filterType);
             }
+            // dd($query);
             // $query->groupBy('distribution_dar_depts.reqdar_id');
             // dd($query);
             return DataTables::of($query)

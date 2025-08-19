@@ -6,7 +6,7 @@
 @section('content')
 <div class="row mb-4">
     <div class="col-12">
-        <div class="card" style="background-color: rgb(215, 214, 214); border: none;">
+        <div class="card" style="background-color: white; border: none;">
             <div class="card-body text-center py-4">
                 <h2 class="mb-2" style="color: black;">
                     <i class="fas fa-file-alt mr-3"></i>
