@@ -14,7 +14,7 @@
                     <i class="fas fa-file-alt mr-3"></i>
                     Selamat Datang di Aplikasi Document Action Request (DAR)
                 </h2>
-                <p class="mb-0" style="color: black; font-size: 18px;">Sistem Manajemen Permintaan Aksi Dokumen</p>
+                <p class="mb-0" style="color: black; font-size: 18px;">Sistem Manajemen Permintaan Perubahan Dokumen</p>
             </div>
         </div>
     </div>

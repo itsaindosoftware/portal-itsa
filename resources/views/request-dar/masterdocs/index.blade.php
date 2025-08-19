@@ -82,8 +82,15 @@
                         <ul class="nav nav-tabs" id="documentsTab" role="tablist">
                             <li class="nav-item">
                                 <a class="nav-link active" id="active-docs-tab" data-toggle="tab" href="#active-docs" role="tab" aria-controls="active-docs" aria-selected="true">
-                                    <i class="fas fa-file-alt"></i> New Documents
+                                    <i class="fas fa-file-alt"></i> All Documents
                                 </a>
+                            </li>
+                             <li class="nav-item">
+                                @role('user-employee')
+                                <a class="nav-link" id="my-docs-tab" data-toggle="tab" href="#my-docs" role="tab" aria-controls="my-docs" aria-selected="false">
+                                    <i class="fas fa-archive"></i> My Documents
+                                </a>
+                                @endrole
                             </li>
                             <li class="nav-item">
                                 @role('sysdev')
@@ -118,10 +125,30 @@
                                 </div>
                             </div>
 
-                            <!-- Archived Documents Tab -->
+                            <!-- My Documents Tab -->
                             <div class="tab-pane fade" id="archived-docs" role="tabpanel" aria-labelledby="archived-docs-tab">
                                 <div class="table-responsive mt-3">
                                     <table class="table table-bordered dataTable no-footer" id="table-archived-docs" width="100%" role="grid">
+                                        <thead>
+                                            <tr>
+                                                <th width="7%">No.</th>
+                                                <th class="text-center">Title</th>
+                                                {{-- <th class="text-center">Department</th> --}}
+                                                <th class="">Effective Date</th>
+                                                <th class="text-center">Type Document</th>
+                                                <th class="text-center">Archive Date</th>
+                                                <th class="text-center">Documents File</th>
+                                                <th class="text-center" width="10%">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                              <div class="tab-pane fade" id="my-docs" role="tabpanel" aria-labelledby="my-docs-tab">
+                                <div class="table-responsive mt-3">
+                                    <table class="table table-bordered dataTable no-footer" id="table-my-docs" width="100%" role="grid">
                                         <thead>
                                             <tr>
                                                 <th width="7%">No.</th>
@@ -162,9 +189,9 @@
 <script>
 $(document).ready(function(){
     // Initialize both DataTables
-    var activeTable = initializeDataTable('#table-active-docs', 'new');
+    var activeTable = initializeDataTable('#table-active-docs', 'all-docs');
     var archivedTable = initializeDataTable('#table-archived-docs', 'archived');
-
+    var myDocsTable = initializeDataTable('#table-my-docs', 'my-docs');
     // Function to initialize DataTable
     function initializeDataTable(tableSelector, status) {
         return $(tableSelector).DataTable({
@@ -214,6 +241,8 @@ $(document).ready(function(){
             activeTable.ajax.reload();
         } else if (target === '#archived-docs') {
             archivedTable.ajax.reload();
+        } else if(target === '#my-docs'){
+            myDocsTable.ajax.reload();
         }
     });
 
@@ -221,12 +250,14 @@ $(document).ready(function(){
     $('#btn-filter').click(function() {
         activeTable.ajax.reload();
         archivedTable.ajax.reload();
+        myDocsTable.ajax.reload();
     });
 
     $('#btn-reset').click(function() {
         $('#type_docs').val('');
         activeTable.ajax.reload();
         archivedTable.ajax.reload();
+        myDocsTable.ajax.reload();
     });
 
     // Create document button handler
