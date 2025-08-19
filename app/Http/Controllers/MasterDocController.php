@@ -38,6 +38,7 @@ class MasterDocController extends Controller
                     'master_documents.id'
                 )
                     ->leftJoin('type_of_reqforms', 'master_documents.type_doc_id', '=', 'type_of_reqforms.id')
+
                     // ->leftJoin('distribution_dar_depts','master_documents.')
                     ->select(
                         'master_documents.title',
@@ -55,6 +56,9 @@ class MasterDocController extends Controller
                         DB::raw('MAX(master_documents.created_at) as created_at')
                     );
 
+                if ($request->get('status') == 'my-docs') {
+                    $data->leftJoin('request_dar', 'request_dar.id', '=', 'distribution_dar_depts.reqdar_id');
+                }
                 // if ($user->hasRole('user-employee') && isset($user->dept)) {
                 //     $data->where('distribution_dar_depts.dept_id', $user->dept->id)->where('is_archived', 'new');
                 // }
