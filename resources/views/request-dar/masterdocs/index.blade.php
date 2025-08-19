@@ -86,7 +86,7 @@
                                 </a>
                             </li>
                              <li class="nav-item">
-                                @role('user-employee')
+                                @role(['user-employee','manager'])
                                 <a class="nav-link" id="my-docs-tab" data-toggle="tab" href="#my-docs" role="tab" aria-controls="my-docs" aria-selected="false">
                                     <i class="fas fa-archive"></i> My Documents
                                 </a>
