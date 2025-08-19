@@ -55,17 +55,19 @@ class MasterDocController extends Controller
                         DB::raw('MAX(master_documents.created_at) as created_at')
                     );
 
-                if ($user->hasRole('user-employee') && isset($user->dept)) {
-                    $data->where('distribution_dar_depts.dept_id', $user->dept->id)->where('is_archived', 'new');
-                }
+                // if ($user->hasRole('user-employee') && isset($user->dept)) {
+                //     $data->where('distribution_dar_depts.dept_id', $user->dept->id)->where('is_archived', 'new');
+                // }
 
                 if ($request->has('type_docs') && !empty($request->type_docs)) {
                     $data->where('master_documents.type_doc_id', $request->type_docs);
                 }
-                if ($request->get('status') == 'new') {
+                if ($request->get('status') == 'all-docs') {
                     $data->where('is_archived', 'new');
                 } elseif ($request->get('status') == 'archived') {
                     $data->where('is_archived', 'archived');
+                } elseif ($request->get('status') == 'my-docs') {
+                    $data->where('distribution_dar_depts.dept_id', $user->department_id);
                 }
                 $data->groupBy('master_documents.title')
                     ->orderBy('created_at', 'desc');
