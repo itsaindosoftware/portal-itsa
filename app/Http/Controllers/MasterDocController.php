@@ -54,7 +54,8 @@ class MasterDocController extends Controller
                     DB::raw('MAX(master_documents.file) as file'),
                     DB::raw('MAX(master_documents.effective_date) as effective_date'),
                     DB::raw('MAX(master_documents.archived_date) as archived_date'),
-                    DB::raw('MAX(master_documents.created_at) as created_at')
+                    DB::raw('MAX(master_documents.created_at) as created_at'),
+                    DB::raw('MAX(master_documents.updated_at) as updated_at')
                 );
 
 
@@ -70,10 +71,13 @@ class MasterDocController extends Controller
                 } elseif ($request->get('status') == 'archived') {
                     $data->where('master_documents.is_archived', 'archived');
                 } elseif ($request->get('status') == 'my-docs') {
-                    $data->where('master_documents.is_archived', 'archived')->where('distribution_dar_depts.dept_id', $user->department_id);
+                    $data->where('master_documents.is_archived', 'archived')
+                        ->where('distribution_dar_depts.dept_id', $user->department_id);
                 }
                 $data->groupBy('master_documents.title')
                     ->orderBy('created_at', 'desc');
+
+                // dd($data);
                 return DataTables::of($data)
                     ->addColumn('action', function ($data) {
                         return view('datatables._action-masterdocs', [
@@ -90,7 +94,7 @@ class MasterDocController extends Controller
                     })
                     ->editColumn('updated_at', function ($data) {
                         if ($data->updated_at) {
-                            return Carbon::parse($data->updated_at0)->format('Y-m-d');
+                            return Carbon::parse($data->updated_at)->format('Y-m-d');
                         } else {
                             return '<span class="text-muted"><i>Belum ada revisi</i></span>';
                         }

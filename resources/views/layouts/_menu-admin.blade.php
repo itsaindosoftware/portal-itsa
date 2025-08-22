@@ -9,7 +9,7 @@
   </li>
 <li class="{{ route('requestdar.index') == request()->url() ? 'active' : '' }}">
     <a class="nav-link" href="{{ route('requestdar.index') }}">
-    <i class="fas fa-clipboard-list"></i> <span>Request Dar</span>
+    <i class="fas fa-clipboard-list"></i> <span>Request DAR</span>
     </a>
   </li>
 @endpermission

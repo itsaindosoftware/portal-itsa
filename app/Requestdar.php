@@ -74,4 +74,23 @@ class Requestdar extends Model
         // Gabungkan bulan dan nomor urut
         return $month . '/' . $formattedNumber;
     }
+    public function distributions()
+    {
+        return $this->hasMany(DistributionDarDepts::class, 'request_dar_id');
+    }
+
+    public function controlLogs()
+    {
+        return $this->hasMany(DocumentControlLog::class, 'request_dar_id');
+    }
+
+    public function department()
+    {
+        return $this->belongsTo(Department::class, 'dept_id');
+    }
+    public function typeDocs()
+    {
+        return $this->belongsTo(Typereqform::class, 'typereqform_id');
+    }
+
 }

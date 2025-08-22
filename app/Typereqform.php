@@ -12,6 +12,11 @@ class Typereqform extends Model
     protected $table = 'type_of_reqforms';
 
     protected $fillable = [
-       'request_type'
-   ];
+        'request_type'
+    ];
+
+    public function requestDars()
+    {
+        return $this->hasMany(Requestdar::class, 'typereqform_id');
+    }
 }

@@ -6,6 +6,8 @@ use App\Http\Controllers\fe\ServiceController;
 use App\Http\Controllers\fe\ContactController;
 use App\Http\Controllers\fe\BerandaController;
 use App\Http\Controllers\fe\NewsController;
+use App\Http\Controllers\DocControltrackController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -90,5 +92,24 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('view-document-master/{param}', 'MasterDocController@viewDocument')->name('masterdocs.view-document');
     Route::get('/download-document-master/{param}', 'MasterDocController@downloadDocument')->name('masterdocs.downloadDocument');
     Route::get('lookup-document-reqdar', 'MasterDocController@loockupDocument')->name('lookupdokumendar');
+    Route::get('document-control-track', 'DocControlTrackController@index')->name('document-control-track');
+    Route::get('/doccontroltrack', [DocControltrackController::class, 'index'])->name('doccontroltrack.index');
 
+    // Data untuk DataTables (AJAX)
+    Route::get('/doccontroltrack/data', [DocControltrackController::class, 'getData'])->name('doccontroltrack.data');
+
+    // Detail distribusi dokumen (AJAX)
+    Route::get('/doccontroltrack/{id}', [DocControltrackController::class, 'show'])->name('doccontroltrack.show');
+
+    // Tandai dokumen diterima (AJAX, POST)
+    Route::post('/doccontroltrack/{id}/received', [DocControltrackController::class, 'markReceived'])->name('doccontroltrack.received');
+
+    // Tandai dokumen dikembalikan (AJAX, POST)
+    Route::post('/doccontroltrack/{id}/returned', [DocControltrackController::class, 'markReturned'])->name('doccontroltrack.returned');
+
+    // Riwayat aktivitas dokumen (AJAX)
+    Route::get('/doccontroltrack/{id}/history', [DocControltrackController::class, 'getHistory'])->name('doccontroltrack.history');
+
+    // Data dashboard summary (AJAX)
+    Route::get('/doccontroltrack-dashboard', [DocControltrackController::class, 'getDashboardData'])->name('doccontroltrack.dashboard');
 });

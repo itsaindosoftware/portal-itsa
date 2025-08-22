@@ -4,7 +4,7 @@
 @permission('manage-dar-system','manage-masterdocs')
 <li class="{{ route('requestdar.index') == request()->url() ? 'active' : '' }}">
     <a class="nav-link" href="{{ route('requestdar.index') }}">
-    <i class="fas fa-clipboard-list"></i> <span>Request Dar</span>
+    <i class="fas fa-clipboard-list"></i> <span>Request DAR</span>
     </a>
   </li>
    <li class="{{ route('masterdocs.index') == request()->url() ? 'active' : '' }}">

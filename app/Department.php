@@ -19,4 +19,13 @@ class Department extends Model
         $getData = \DB::connection('portal-itsa')->table('departments')->get();
         return $getData;
     }
+
+    public function requestDars()
+    {
+        return $this->hasMany(Requestdar::class, 'dept_id');
+    }
+    public function distributionDarDepts()
+    {
+        return $this->hasMany(DistributionDarDepts::class, 'dept_id');
+    }
 }
