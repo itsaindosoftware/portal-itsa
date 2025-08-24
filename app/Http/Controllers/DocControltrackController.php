@@ -165,6 +165,7 @@ class DocControltrackController extends Controller
                 'ddd.last_action_date',
                 'rd.name_doc',
                 'rd.number_dar',
+                'md.title',
                 'dept.description as department_name',
                 'log.action_type',
                 'log.action_date',
@@ -177,6 +178,10 @@ class DocControltrackController extends Controller
                     ->whereRaw('log.id = (SELECT MAX(id) FROM document_control_logs WHERE distribution_id = ddd.id)');
             })
             ->leftJoin('master_documents as md', 'md.id', '=', 'ddd.master_docs_id');
+            // ->where('ddd.dept_id', Auth::user()->dept_id)->get();
+
+            // dd($query);
+
 
         // Filter by department
         if ($request->dept_id) {
@@ -192,7 +197,10 @@ class DocControltrackController extends Controller
         if ($request->start_date && $request->end_date) {
             $query->whereBetween('ddd.effective_date', [$request->start_date, $request->end_date]);
         }
-
+        if (Auth::user()->hasRole('manager')) {
+            // dd('masuk');
+            $query->where('ddd.dept_id', Auth::user()->department_id);
+        }
         // Group by master_docs_id
         $query->where('md.is_archived', 'archived')->groupBy('ddd.master_docs_id');
         // dd($query);
@@ -201,7 +209,7 @@ class DocControltrackController extends Controller
             ->addColumn('document_info', function ($row) {
                 return '
                 <div>
-                    <strong>' . ($row->name_doc ?? '-') . '</strong><br>
+                    <strong>' . ($row->title ?? '-') . '</strong><br>
                     <small class="text-muted">No: ' . ($row->number_dar ?? '-') . '</small>
                 </div>
             ';
@@ -309,9 +317,8 @@ class DocControltrackController extends Controller
 
     public function markReceived(Request $request, $id)
     {
+        // dd($request->all());
         $validator = Validator::make($request->all(), [
-            'receiver_name' => 'required|string|max:100',
-            'position' => 'nullable|string|max:50',
             'action_date' => 'required|date',
             'receiver_signature' => 'nullable|string',
             'remarks' => 'nullable|string'
@@ -328,16 +335,25 @@ class DocControltrackController extends Controller
         try {
             DB::beginTransaction();
 
-            $distribution = DistributionDarDepts::findOrFail($id);
+            $userName = Auth::user()->name;
+            $pos_id = Auth::user()->position_id;
+            // $dept
 
+            $getPosition = DB::connection('portal-itsa')->table('positions')->where('id', $pos_id)->first();
+            $position = '';
+            if ($getPosition) {
+                $position=$getPosition->position_desc;
+            }
+            $distribution = DistributionDarDepts::findOrFail($id);
+            // dd($distribution);
             // Create control log
             DocumentControlLog::logActivity($id, [
-                'request_dar_id' => $distribution->request_dar_id,
+                'request_dar_id' => $distribution->reqdar_id,
                 'dept_id' => $distribution->dept_id,
                 'action_type' => 'received',
                 'action_date' => $request->action_date,
-                'receiver_name' => $request->receiver_name,
-                'position' => $request->position,
+                'receiver_name' => $userName,
+                'position' => $position,
                 'receiver_signature' => $request->receiver_signature,
                 'remarks' => $request->remarks
             ]);
@@ -361,7 +377,7 @@ class DocControltrackController extends Controller
     public function markReturned(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'return_receiver' => 'required|string|max:100',
+            // 'return_receiver' => 'required|string|max:100',
             'return_date' => 'required|date',
             'remarks' => 'nullable|string'
         ]);
@@ -381,11 +397,11 @@ class DocControltrackController extends Controller
 
             // Create control log
             DocumentControlLog::logActivity($id, [
-                'request_dar_id' => $distribution->request_dar_id,
+                'request_dar_id' => $distribution->reqdar_id,
                 'dept_id' => $distribution->dept_id,
                 'action_type' => 'returned',
                 'action_date' => $request->return_date,
-                'return_receiver' => $request->return_receiver,
+                'return_receiver' => Auth::user()->name,
                 'return_date' => $request->return_date,
                 'remarks' => $request->remarks
             ]);
@@ -405,6 +421,7 @@ class DocControltrackController extends Controller
             ], 500);
         }
     }
+
 
     // public function getHistory($id)
     // {
@@ -543,7 +560,7 @@ class DocControltrackController extends Controller
     public function getDashboardData()
     {
         $summary = [
-            'total' => DistributionDarDepts::count(),
+            'total' => DistributionDarDepts::where('current_status', '=','distributed')->count(),
             'pending' => DistributionDarDepts::where('current_status', 'pending')->count(),
             'distributed' => DistributionDarDepts::where('current_status', 'distributed')->count(),
             'received' => DistributionDarDepts::where('current_status', 'received')->count(),

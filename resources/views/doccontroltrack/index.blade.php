@@ -7,384 +7,7 @@
 @section('css')
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/Datatables/dataTables.bootstrap4.min.css') }}">
 <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/custom-edit.css') }}">
-<style>
-.dashboard-card {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border-radius: 10px;
-    transition: transform 0.2s;
-}
-
-.dashboard-card:hover {
-    transform: translateY(-2px);
-}
-
-.status-card {
-    border-radius: 8px;
-    border-left: 4px solid;
-    transition: all 0.2s;
-}
-
-.status-card:hover {
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-}
-
-.status-pending { border-left-color: #6c757d; }
-.status-distributed { border-left-color: #17a2b8; }
-.status-received { border-left-color: #28a745; }
-.status-returned { border-left-color: #007bff; }
-.status-overdue { border-left-color: #dc3545; }
-
-.filter-card {
-    background: #f8f9fa;
-    border-radius: 8px;
-    padding: 20px;
-    margin-bottom: 20px;
-}
-
-/* ===== MODAL FIXES ===== */
-/* Pastikan modal backdrop tidak hitam */
-.modal-backdrop {
-    background-color: rgba(0, 0, 0, 0.5) !important;
-    z-index: 1040 !important;
-}
-
-/* Modal container */
-.modal {
-    z-index: 1050 !important;
-    background-color: transparent !important;
-}
-
-/* Modal dialog */
-.modal-dialog {
-    z-index: 1051 !important;
-    margin: 30px auto !important;
-    max-width: 90% !important;
-}
-
-/* Modal content - pastikan background putih dan visible */
-.modal-content {
-    background-color: #ffffff !important;
-    border: 1px solid rgba(0, 0, 0, 0.2) !important;
-    border-radius: 6px !important;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
-    color: #333333 !important;
-    position: relative !important;
-    z-index: 1052 !important;
-}
-
-/* Modal header */
-.modal-header {
-    background-color: #f8f9fa !important;
-    border-bottom: 1px solid #dee2e6 !important;
-    color: #333333 !important;
-    padding: 15px 20px !important;
-}
-
-.modal-header .modal-title {
-    color: #333333 !important;
-    font-weight: 600 !important;
-    margin: 0 !important;
-}
-
-.modal-header .close {
-    color: #333333 !important;
-    opacity: 0.7 !important;
-    font-size: 24px !important;
-    font-weight: bold !important;
-    text-shadow: none !important;
-}
-
-.modal-header .close:hover {
-    color: #000000 !important;
-    opacity: 1 !important;
-}
-
-/* Modal body */
-.modal-body {
-    background-color: #ffffff !important;
-    color: #333333 !important;
-    padding: 20px !important;
-    max-height: 70vh !important;
-    overflow-y: auto !important;
-}
-
-/* Modal footer */
-.modal-footer {
-    background-color: #f8f9fa !important;
-    border-top: 1px solid #dee2e6 !important;
-    padding: 15px 20px !important;
-}
-
-/* Form elements dalam modal */
-.modal .form-control {
-    background-color: #ffffff !important;
-    border: 1px solid #ced4da !important;
-    color: #333333 !important;
-}
-
-.modal .form-control:focus {
-    background-color: #ffffff !important;
-    border-color: #80bdff !important;
-    color: #333333 !important;
-    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25) !important;
-}
-
-.modal .form-group label {
-    color: #333333 !important;
-    font-weight: 500 !important;
-}
-
-/* Table dalam modal */
-.modal .table {
-    color: #333333 !important;
-    background-color: transparent !important;
-}
-
-.modal .table td,
-.modal .table th {
-    border-color: #dee2e6 !important;
-    color: #333333 !important;
-}
-
-.modal .table-sm td,
-.modal .table-sm th {
-    padding: 8px !important;
-}
-
-/* Badge dalam modal */
-.modal .badge {
-    color: #ffffff !important;
-}
-
-/* Timeline styles untuk history modal */
-.timeline {
-    position: relative;
-    padding-left: 30px;
-}
-
-.timeline-item {
-    position: relative;
-    margin-bottom: 20px;
-}
-
-.timeline-marker {
-    position: absolute;
-    left: -35px;
-    top: 0;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 10px;
-    color: #ffffff;
-}
-
-.timeline-content {
-    background: #f8f9fa;
-    border-radius: 8px;
-    padding: 15px;
-    border-left: 3px solid #dee2e6;
-}
-
-.timeline-header h6 {
-    color: #333333 !important;
-    margin-bottom: 5px;
-}
-
-.timeline-body {
-    color: #666666 !important;
-}
-
-.timeline-body p {
-    color: #666666 !important;
-    margin-bottom: 8px;
-}
-
-.timeline-line {
-    position: absolute;
-    left: -26px;
-    top: 25px;
-    bottom: -15px;
-    width: 2px;
-    background: #dee2e6;
-}
-
-/* Loading spinner dalam modal */
-.modal .fa-spin {
-    color: #007bff !important;
-}
-
-/* Text colors dalam modal */
-.modal .text-muted {
-    color: #6c757d !important;
-}
-
-.modal .text-danger {
-    color: #dc3545 !important;
-}
-
-.modal .text-center {
-    text-align: center !important;
-}
-
-/* Button styles dalam modal */
-.modal .btn {
-    font-weight: 500;
-}
-
-/* Responsive modal */
-@media (max-width: 576px) {
-    .modal-dialog {
-        margin: 10px !important;
-        max-width: 95% !important;
-    }
-    
-    .modal-content {
-        margin: 0 !important;
-    }
-    
-    .modal-body {
-        padding: 15px !important;
-    }
-}
-
-/* Large modal khusus */
-.modal-lg {
-    max-width: 800px !important;
-}
-
-/* Pastikan tidak ada overlay hitam lainnya */
-body.modal-open {
-    padding-right: 0 !important;
-    overflow: hidden;
-}
-
-/* Fix untuk dropdown dalam modal jika ada */
-.modal .dropdown-menu {
-    background-color: #ffffff !important;
-    border: 1px solid #dee2e6 !important;
-    color: #333333 !important;
-    z-index: 1055 !important;
-}
-
-.modal .dropdown-item {
-    color: #333333 !important;
-}
-
-.modal .dropdown-item:hover {
-    background-color: #f8f9fa !important;
-    color: #333333 !important;
-}
-
-/* Pastikan select dalam modal terlihat */
-.modal select.form-control {
-    background-color: #ffffff !important;
-    color: #333333 !important;
-    border: 1px solid #ced4da !important;
-}
-
-/* Textarea dalam modal */
-.modal textarea.form-control {
-    background-color: #ffffff !important;
-    color: #333333 !important;
-    border: 1px solid #ced4da !important;
-    resize: vertical !important;
-}
-
-/* Required field indicator */
-.modal .text-danger {
-    color: #dc3545 !important;
-}
-
-/* Success/Error messages dalam modal */
-.modal .alert {
-    background-color: transparent;
-    border-radius: 6px;
-    margin-bottom: 15px;
-}
-
-.modal .alert-success {
-    background-color: #d4edda !important;
-    border-color: #c3e6cb !important;
-    color: #155724 !important;
-}
-
-.modal .alert-danger {
-    background-color: #f8d7da !important;
-    border-color: #f5c6cb !important;
-    color: #721c24 !important;
-}
-
-/* Khusus untuk prevent modal hitam di beberapa theme */
-.modal.show .modal-dialog {
-    transform: none !important;
-}
-
-.modal.fade .modal-dialog {
-    transition: transform 0.3s ease-out !important;
-    transform: translate(0, -50px) !important;
-}
-
-.modal.show .modal-dialog {
-    transform: none !important;
-}
-.controlled-distribution-form .table td, 
-.controlled-distribution-form .table th {
-    vertical-align: middle;
-    font-size: 11px;
-}
-
-.signature-cell {
-    height: 40px;
-    position: relative;
-}
-
-.signature-display {
-    font-size: 18px;
-    color: #007bff;
-    font-weight: bold;
-}
-
-.custom-checkbox {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-}
-
-.custom-checkbox input[type="checkbox"] {
-    transform: scale(1.3);
-    margin: 0;
-}
-
-.dotted-line {
-    border-bottom: 1px dotted #333;
-    height: 20px;
-}
-
-.border-bottom {
-    border-bottom: 1px dotted #333 !important;
-}
-
-.form-control-plaintext {
-    background: none !important;
-    border: none !important;
-    padding: 0 !important;
-}
-
-.modal-xl {
-    max-width: 1400px;
-}
-
-@media (max-width: 1200px) {
-    .modal-xl {
-        max-width: 95%;
-    }
-}
-</style>
+@include('doccontroltrack.css.css')
 @endsection
 
 @section('content')
@@ -478,7 +101,7 @@ body.modal-open {
                     </div>
                     @endrole
                     @role('manager')
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <label>Status</label>
                         <select id="filter-status" class="form-control">
                             <option value="">Semua Status</option>
@@ -537,7 +160,7 @@ body.modal-open {
                                 <tr>
                                     <th width="5%">No</th>
                                     <th width="20%">Informasi Dokumen</th>
-                                    <th width="15%">Departemen</th>
+                                    {{-- <th width="15%">Departemen</th> --}}
                                     <th width="10%">Status</th>
                                     <th width="15%">Aktivitas Terakhir</th>
                                     <th width="10%">Waktu Berlalu</th>
@@ -604,7 +227,7 @@ body.modal-open {
             </div>
         </div>
     </div>
-</div> --}} 
+</div> --}}
 
 {{-- Modal Mark Received --}}
 <div class="modal fade" id="receivedModal" tabindex="-1" role="dialog" aria-labelledby="receivedModalLabel" aria-hidden="true">
@@ -619,28 +242,28 @@ body.modal-open {
                 </div>
                 <div class="modal-body">
                     <input type="hidden" id="received-distribution-id">
-                    
-                    <div class="form-group">
+
+                    {{-- <div class="form-group">
                         <label>Nama Penerima <span class="text-danger">*</span></label>
                         <input type="text" class="form-control" id="receiver-name" required>
                     </div>
-                    
+
                     <div class="form-group">
                         <label>Posisi/Jabatan</label>
                         <input type="text" class="form-control" id="receiver-position">
-                    </div>
-                    
+                    </div> --}}
+
                     <div class="form-group">
                         <label>Tanggal Diterima <span class="text-danger">*</span></label>
                         <input type="date" class="form-control" id="received-date" required>
                     </div>
-                    
+
                     <div class="form-group">
                         <label>Tanda Tangan (Digital)</label>
-                        <textarea class="form-control" id="receiver-signature" rows="3" 
+                        <textarea class="form-control" id="receiver-signature" rows="3"
                                   placeholder="Base64 signature atau path file"></textarea>
                     </div>
-                    
+
                     <div class="form-group">
                         <label>Catatan</label>
                         <textarea class="form-control" id="received-remarks" rows="2"></textarea>
@@ -670,17 +293,17 @@ body.modal-open {
                 </div>
                 <div class="modal-body">
                     <input type="hidden" id="returned-distribution-id">
-                    
+
                     <div class="form-group">
                         <label>Diterima Kembali Oleh <span class="text-danger">*</span></label>
                         <input type="text" class="form-control" id="return-receiver" required>
                     </div>
-                    
+
                     <div class="form-group">
                         <label>Tanggal Dikembalikan <span class="text-danger">*</span></label>
                         <input type="date" class="form-control" id="return-date" required>
                     </div>
-                    
+
                     <div class="form-group">
                         <label>Catatan</label>
                         <textarea class="form-control" id="return-remarks" rows="3"></textarea>
@@ -726,13 +349,13 @@ let docControlTable;
 $(document).ready(function() {
     // Initialize DataTable
     initDataTable();
-    
+
     // Load dashboard data
     loadDashboardData();
-    
+
     // Set default date to today
     $('#received-date, #return-date').val(new Date().toISOString().split('T')[0]);
-    
+
     // Form submissions
     $('#receivedForm').on('submit', handleReceivedForm);
     $('#returnedForm').on('submit', handleReturnedForm);
@@ -754,7 +377,7 @@ function initDataTable() {
         columns: [
             { data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false },
             { data: 'document_info', name: 'document_info', orderable: false },
-            { data: 'department_name', name: 'department.name' },
+            // { data: 'department_name', name: 'department.name' },
             { data: 'status_badge', name: 'current_status' },
             { data: 'last_activity', name: 'last_activity', orderable: false },
             { data: 'days_since', name: 'days_since', orderable: false },
@@ -771,14 +394,14 @@ function initDataTable() {
 $(document).ready(function() {
     // Fix modal backdrop issue
     $.fn.modal.Constructor.prototype._enforceFocus = function() {};
-    
+
     // Pastikan modal cleanup ketika ditutup
     $('.modal').on('hidden.bs.modal', function (e) {
         // Remove any lingering backdrops
         $('.modal-backdrop').remove();
         $('body').removeClass('modal-open');
         $('body').css('padding-right', '');
-        
+
         // Clear modal content if needed
         if (this.id === 'detailModal') {
             $('#detail-content').empty();
@@ -787,14 +410,14 @@ $(document).ready(function() {
             $('#history-content').empty();
         }
     });
-    
+
     // Pastikan modal show dengan benar
     $('.modal').on('show.bs.modal', function (e) {
         var modal = $(this);
-        
+
         // Set z-index yang tepat
         modal.css('z-index', 1050);
-        
+
         // Pastikan backdrop ada
         setTimeout(function() {
             if ($('.modal-backdrop').length === 0) {
@@ -802,7 +425,7 @@ $(document).ready(function() {
             }
         }, 100);
     });
-    
+
     // Handle multiple modals jika diperlukan
     $(document).on('show.bs.modal', '.modal', function () {
         var zIndex = 1040 + (10 * $('.modal:visible').length);
@@ -811,7 +434,7 @@ $(document).ready(function() {
             $('.modal-backdrop').not('.modal-stack').css('z-index', zIndex - 1).addClass('modal-stack');
         }, 0);
     });
-    
+
     // Pastikan ketika modal ditutup, backdrop juga hilang
     $(document).on('hidden.bs.modal', '.modal', function () {
         if ($('.modal.show').length > 0) {
@@ -829,7 +452,7 @@ $(document).ready(function() {
 function openModal(modalId) {
     // Tutup modal lain terlebih dahulu
     $('.modal').modal('hide');
-    
+
     // Tunggu sebentar lalu buka modal yang diinginkan
     setTimeout(function() {
         $('#' + modalId).modal('show');
@@ -857,7 +480,7 @@ function viewDetail(id) {
         console.error('ID is required for viewDetail');
         return;
     }
-    
+
     // Show loading dalam modal
     $('#detail-content').html(`
         <div class="text-center p-4">
@@ -882,7 +505,7 @@ function generateDocumentControlForm(data) {
     const document = data.document;
     const distributions = data.distributions;
     const effectiveDate = document.effective_date ? formatDate(document.effective_date) : '-';
-    
+
     let html = `
         <div class="controlled-distribution-form">
             <!-- Form Header -->
@@ -958,7 +581,7 @@ function generateDocumentControlForm(data) {
         const returnedInfo = dist.returned_info;
         const isReceived = dist.current_status === 'received' || dist.current_status === 'returned';
         const isReturned = dist.current_status === 'returned';
-        
+
         html += `
             <tr>
                 <td class="text-center font-weight-bold">${dist.department_code}</td>
@@ -1019,6 +642,30 @@ function generateDocumentControlForm(data) {
     html += `
                     </tbody>
                 </table>
+                <div class="signature-section mt-4">
+                    <div class="row justify-content-end">
+                        <div class="col-md-6">
+                            <table class="table table-bordered">
+                                <tbody>
+                                    <tr>
+                                        <td class="text-center align-middle" style="height: 80px; width: 50%;">
+                                            <div style="height: 60px;">
+                                                <strong></strong>
+                                            </div>
+                                            <strong>PREPARED BY</strong>
+                                        </td>
+                                        <td class="text-center align-middle" style="height: 80px; width: 50%;">
+                                            <div style="height: 60px;">
+                                                <strong></strong>
+                                            </div>
+                                            <strong>APPROVED BY</strong>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>`;
 
@@ -1026,21 +673,21 @@ function generateDocumentControlForm(data) {
 }
 function formatDateShort(dateString) {
     if (!dateString) return '';
-    
+
     const date = new Date(dateString);
     const day = date.getDate().toString().padStart(2, '0');
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
                    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     const month = months[date.getMonth()];
     const year = date.getFullYear().toString().slice(-2);
-    
+
     return `${day}-${month}-${year}`;
 }
 
 function printDocumentForm() {
     const content = document.getElementById('detail-content').innerHTML;
     const printWindow = window.open('', '_blank');
-    
+
     printWindow.document.write(`
         <!DOCTYPE html>
         <html>
@@ -1052,10 +699,10 @@ function printDocumentForm() {
                 .form-header { margin-bottom: 20px; }
                 .form-group { margin-bottom: 10px; }
                 .table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-                .table th, .table td { 
-                    border: 1px solid #000; 
-                    padding: 4px; 
-                    text-align: left; 
+                .table th, .table td {
+                    border: 1px solid #000;
+                    padding: 4px;
+                    text-align: left;
                     font-size: 10px;
                 }
                 .table th { background-color: #f0f0f0; font-weight: bold; }
@@ -1093,7 +740,7 @@ function printDocumentForm() {
         </body>
         </html>
     `);
-    
+
     printWindow.document.close();
     setTimeout(() => {
         printWindow.print();
@@ -1127,10 +774,10 @@ function markReceived(id) {
     }
     $('#received-distribution-id').val(id);
     $('#receivedForm')[0].reset();
-    
+
     // Set default date
     $('#received-date').val(new Date().toISOString().split('T')[0]);
-    
+
     openModal('receivedModal');
     // $('#received-distribution-id').val(id);
     // $('#receivedModal').modal('show');
@@ -1145,16 +792,16 @@ function markReturned(id) {
     // $('#returnedModal').modal('show');
     $('#returned-distribution-id').val(id);
     $('#returnedForm')[0].reset();
-    
+
     // Set default date
     $('#return-date').val(new Date().toISOString().split('T')[0]);
-    
+
     openModal('returnedModal');
 }
 
 function handleReceivedForm(e) {
     e.preventDefault();
-    
+
     const id = $('#received-distribution-id').val();
     const data = {
         receiver_name: $('#receiver-name').val(),
@@ -1164,15 +811,15 @@ function handleReceivedForm(e) {
         remarks: $('#received-remarks').val(),
         _token: '{{ csrf_token() }}'
     };
-    
-    $.post('/doccontroltrack/mark-received/' + id, data)
+
+    $.post('/doccontroltrack/' + id + '/received', data)
         .done(function(response) {
             if (response.success) {
                 $('#receivedModal').modal('hide');
                 $('#receivedForm')[0].reset();
                 docControlTable.ajax.reload();
                 loadDashboardData();
-                
+
                 // Show success message
                 Swal.fire({
                     icon: 'success',
@@ -1188,7 +835,7 @@ function handleReceivedForm(e) {
             if (xhr.responseJSON && xhr.responseJSON.message) {
                 errorMessage = xhr.responseJSON.message;
             }
-            
+
             Swal.fire({
                 icon: 'error',
                 title: 'Gagal!',
@@ -1199,7 +846,7 @@ function handleReceivedForm(e) {
 
 function handleReturnedForm(e) {
     e.preventDefault();
-    
+
     const id = $('#returned-distribution-id').val();
     const data = {
         return_receiver: $('#return-receiver').val(),
@@ -1207,7 +854,7 @@ function handleReturnedForm(e) {
         remarks: $('#return-remarks').val(),
         _token: '{{ csrf_token() }}'
     };
-    
+
     $.post('/doccontroltrack/mark-returned/' + id, data)
         .done(function(response) {
             if (response.success) {
@@ -1215,7 +862,7 @@ function handleReturnedForm(e) {
                 $('#returnedForm')[0].reset();
                 docControlTable.ajax.reload();
                 loadDashboardData();
-                
+
                 // Show success message
                 Swal.fire({
                     icon: 'success',
@@ -1231,7 +878,7 @@ function handleReturnedForm(e) {
             if (xhr.responseJSON && xhr.responseJSON.message) {
                 errorMessage = xhr.responseJSON.message;
             }
-            
+
             Swal.fire({
                 icon: 'error',
                 title: 'Gagal!',
@@ -1251,23 +898,23 @@ function viewHistory(id) {
             <p class="mt-2">Memuat riwayat...</p>
         </div>
     `);
-    
+
     // $('#historyModal').modal('show');
     openModal('historyModal');
-    
+
     $.get('/doccontroltrack/' + id + '/history')
         .done(function(data) {
             let html = '';
-            
+
             if (data.length > 0) {
                 html = '<div class="timeline">';
-                
+
                 data.forEach(function(log, index) {
                     const isLast = index === data.length - 1;
                     const actionColor = getActionColor(log.action_type);
                     const actionText = getActionText(log.action_type);
                     const actionIcon = getActionIcon(log.action_type);
-                    
+
                     html += `
                         <div class="timeline-item">
                             <div class="timeline-marker bg-${actionColor}">
@@ -1286,7 +933,7 @@ function viewHistory(id) {
                         </div>
                     `;
                 });
-                
+
                 html += '</div>';
             } else {
                 html = `
@@ -1296,7 +943,7 @@ function viewHistory(id) {
                     </div>
                 `;
             }
-            
+
             $('#history-content').html(html);
         })
         .fail(function() {
@@ -1367,62 +1014,62 @@ function getActionIcon(actionType) {
 
 function getLogDetails(log) {
     let details = '';
-    
+
     if (log.creator && log.creator.name) {
         details += `<p class="mb-1"><strong>Oleh:</strong> ${log.creator.name}</p>`;
     }
-    
+
     if (log.receiver_name) {
         details += `<p class="mb-1"><strong>Penerima:</strong> ${log.receiver_name}</p>`;
     }
-    
+
     if (log.position) {
         details += `<p class="mb-1"><strong>Posisi:</strong> ${log.position}</p>`;
     }
-    
+
     if (log.return_receiver) {
         details += `<p class="mb-1"><strong>Diterima kembali oleh:</strong> ${log.return_receiver}</p>`;
     }
-    
+
     if (log.action_date && log.action_date !== log.created_at) {
         details += `<p class="mb-1"><strong>Tanggal Aksi:</strong> ${formatDate(log.action_date)}</p>`;
     }
-    
+
     if (log.remarks) {
         details += `<p class="mb-0"><strong>Catatan:</strong> ${log.remarks}</p>`;
     }
-    
+
     return details || '<p class="mb-0 text-muted">Tidak ada detail tambahan</p>';
 }
 
 function formatDate(dateString) {
     if (!dateString) return '-';
-    
+
     const date = new Date(dateString);
-    const options = { 
-        year: 'numeric', 
-        month: 'long', 
-        day: 'numeric' 
+    const options = {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
     };
-    
+
     return date.toLocaleDateString('id-ID', options);
 }
 
 function formatDateTime(dateString) {
     if (!dateString) return '-';
-    
+
     const date = new Date(dateString);
-    const dateOptions = { 
-        year: 'numeric', 
-        month: 'short', 
-        day: 'numeric' 
+    const dateOptions = {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
     };
-    const timeOptions = { 
-        hour: '2-digit', 
-        minute: '2-digit' 
+    const timeOptions = {
+        hour: '2-digit',
+        minute: '2-digit'
     };
-    
-    return date.toLocaleDateString('id-ID', dateOptions) + ' ' + 
+
+    return date.toLocaleDateString('id-ID', dateOptions) + ' ' +
            date.toLocaleTimeString('id-ID', timeOptions);
 }
 
@@ -1443,7 +1090,7 @@ function exportToExcel() {
         start_date: $('#filter-start-date').val(),
         end_date: $('#filter-end-date').val()
     };
-    
+
     const queryString = $.param(filters);
     window.open(`/doccontroltrack/export/excel?${queryString}`, '_blank');
 }
@@ -1455,7 +1102,7 @@ function exportToPDF() {
         start_date: $('#filter-start-date').val(),
         end_date: $('#filter-end-date').val()
     };
-    
+
     const queryString = $.param(filters);
     window.open(`/doccontroltrack/export/pdf?${queryString}`, '_blank');
 }
@@ -1475,7 +1122,7 @@ $(document).on('keydown', function(e) {
         e.preventDefault();
         applyFilters();
     }
-    
+
     // Escape to close modals
     if (e.keyCode === 27) {
         $('.modal').modal('hide');
@@ -1486,7 +1133,7 @@ $(document).on('keydown', function(e) {
 function printDocumentControl() {
     const printWindow = window.open('', '_blank');
     const currentDate = new Date().toLocaleDateString('id-ID');
-    
+
     const printContent = `
         <!DOCTYPE html>
         <html>
@@ -1538,7 +1185,7 @@ function printDocumentControl() {
         </body>
         </html>
     `;
-    
+
     printWindow.document.write(printContent);
     printWindow.document.close();
     printWindow.print();
