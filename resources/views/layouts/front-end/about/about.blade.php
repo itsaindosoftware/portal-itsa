@@ -23,7 +23,7 @@
             </p>
             <ul class="mb-4" style="font-size: 1.1rem; line-height: 1.8; color: #555; padding-left: 30px;">
               <li style="margin-bottom: 15px; list-style-type: disc;">
-                <strong>Document Action Request System (DARS)</strong>: for document submission, approval and tracking.
+                <strong>Document Action Request (DAR)</strong>: for document submission, approval and tracking.
               </li>
               <li style="margin-bottom: 15px; list-style-type: disc;">
                 <strong>Digital Asset Registration (DAM)</strong>: for secure management of corporate digital assets.
