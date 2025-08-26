@@ -115,7 +115,7 @@
                                 <i class="fas fa-cogs"></i>
                             </div>
                         </div>
-                        <h4 class="app-title">Document Action Request Application</h4>
+                        <h4 class="app-title">Document Action Request (DAR)</h4>
                         <p class="app-description">Handle DAR requests and workflow management</p>
                         <div class="app-arrow">
                             <i class="fas fa-arrow-right"></i>
@@ -130,7 +130,7 @@
                                 <i class="fas fa-cogs"></i>
                             </div>
                         </div>
-                        <h4 class="app-title">Document Action Request Application</h4>
+                        <h4 class="app-title">Document Action Request (DAR)</h4>
                         <p class="app-description">Handle DAR requests and workflow management</p>
                         <div class="app-arrow">
                             <i class="fas fa-arrow-right"></i>
@@ -152,7 +152,7 @@
                                 <i class="fas fa-ticket-alt"></i>
                             </div>
                         </div>
-                        <h4 class="app-title">IT Request</h4>
+                        <h4 class="app-title">IT Request Form</h4>
                         <p class="app-description">Submit and manage IT support requests</p>
                         <div class="app-arrow">
                             <i class="fas fa-arrow-right"></i>
@@ -167,7 +167,7 @@
                                 <i class="fas fa-ticket-alt"></i>
                             </div>
                         </div>
-                        <h4 class="app-title">IT Request</h4>
+                        <h4 class="app-title">IT Request Form</h4>
                         <p class="app-description">Submit and manage IT support requests</p>
                         <div class="app-arrow">
                             <i class="fas fa-arrow-right"></i>
@@ -189,8 +189,8 @@
                                 <i class="fas fa-wrench"></i>
                             </div>
                         </div>
-                        <h4 class="app-title">IT Maintenance Order</h4>
-                        <p class="app-description">Schedule and track IT equipment maintenance</p>
+                        <h4 class="app-title">Maintenance Order Form</h4>
+                        <p class="app-description">Schedule and track equipment maintenance</p>
                         <div class="app-arrow">
                             <i class="fas fa-arrow-right"></i>
                         </div>
@@ -204,8 +204,8 @@
                                 <i class="fas fa-wrench"></i>
                             </div>
                         </div>
-                        <h4 class="app-title">IT Maintenance Order</h4>
-                        <p class="app-description">Schedule and track IT equipment maintenance</p>
+                        <h4 class="app-title">Maintenance Order Form</h4>
+                        <p class="app-description">Schedule and track equipment maintenance</p>
                         <div class="app-arrow">
                             <i class="fas fa-arrow-right"></i>
                         </div>
@@ -226,7 +226,7 @@
                                 <i class="fas fa-handshake"></i>
                             </div>
                         </div>
-                        <h4 class="app-title">IT Borrowing</h4>
+                        <h4 class="app-title">IT Borrowing Goods</h4>
                         <p class="app-description">Request and manage IT equipment borrowing</p>
                         <div class="app-arrow">
                             <i class="fas fa-arrow-right"></i>
@@ -241,7 +241,7 @@
                                 <i class="fas fa-handshake"></i>
                             </div>
                         </div>
-                        <h4 class="app-title">IT Borrowing</h4>
+                        <h4 class="app-title">IT Borrowing Goods</h4>
                         <p class="app-description">Request and manage IT equipment borrowing</p>
                         <div class="app-arrow">
                             <i class="fas fa-arrow-right"></i>

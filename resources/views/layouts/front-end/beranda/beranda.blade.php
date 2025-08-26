@@ -20,7 +20,7 @@
       <h1 class="display-3 fw-bold">Welcome to Portal ITSA</h1>
       <p class="lead">
         Portal ITSA is an integrated platform of PT Indonesia Thai Summit Auto that connects multiple internal applications, 
-        including the Document Action Request System, Digital Asset Registration, and other enterprise solutions designed to 
+        including the Document Action Request(DAR), Digital Asset Registration, and other enterprise solutions designed to 
         support efficiency, productivity, and collaboration across departments.
       </p>
       {{-- <p class="lead">Integrated platform for Document Action Request System and Digital Asset Registration of PT Indonesia Thai Summit Auto.</p> --}}
@@ -147,19 +147,19 @@
             </p>
             <ul class="mb-4" style="font-size: 1.1rem; line-height: 1.8; color: #555; padding-left: 30px;">
               <li style="margin-bottom: 15px; list-style-type: disc;">
-                <strong>Document Action Request System (DARS)</strong>: for document submission, approval and tracking.
+                <strong>Document Action Request (DAR)</strong>: for document submission, approval and tracking.
               </li>
               <li style="margin-bottom: 15px; list-style-type: disc;">
-                <strong>Digital Asset Registration (DAM)</strong>: for secure management of corporate digital assets.
+                <strong>Digital Asset Registration</strong>: for secure management of corporate digital assets.
               </li>
               <li style="margin-bottom: 15px; list-style-type: disc;">
-                <strong>IT Request</strong>: for submitting IT support requests and tracking their status.
+                <strong>IT Request Form</strong>: for submitting IT support requests and tracking their status.
                </li>
                 <li style="margin-bottom: 15px; list-style-type: disc;">
-                  <strong>IT Maintenance Order</strong>: for scheduling and managing IT equipment maintenance.
+                  <strong>Maintenance Order Form</strong>: for scheduling and managing IT equipment maintenance.
                 </li>
                   <li style="margin-bottom: 15px; list-style-type: disc;">
-                    <strong>IT Borrowing</strong>: for managing the borrowing of IT equipment and resources.
+                    <strong>IT Borrowing Goods</strong>: for managing the borrowing of IT equipment and resources.
                   </li>
             </ul>
             <p class="mb-4" style="font-size: 1.1rem; line-height: 1.8; color: #555; text-align: justify;">
