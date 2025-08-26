@@ -61,6 +61,9 @@
           <ul>
             <li><a href="{{ route('service') }}">Document Action Request System</a></li>
             <li><a href="{{ route('service') }}">Digital Asset Registration</a></li>
+            <li><a href="#">IT Request</a></li>
+            <li><a href="#">IT Maintenance Order</a></li>
+            <li><a href="#">IT Borrowing</a></li>
             <li><a href="#">Helpdesk IT</a></li>
           </ul>
         </div>

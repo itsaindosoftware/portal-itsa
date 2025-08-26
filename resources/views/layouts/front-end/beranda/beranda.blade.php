@@ -18,7 +18,12 @@
   <div class="container position-relative" style="z-index: 2;">
     <div class="hero-content text-white text-center" style="padding-top: 150px;">
       <h1 class="display-3 fw-bold">Welcome to Portal ITSA</h1>
-      <p class="lead">Integrated platform for Document Action Request System and Digital Asset Registration of PT Indonesia Thai Summit Auto.</p>
+      <p class="lead">
+        Portal ITSA is an integrated platform of PT Indonesia Thai Summit Auto that connects multiple internal applications, 
+        including the Document Action Request System, Digital Asset Registration, and other enterprise solutions designed to 
+        support efficiency, productivity, and collaboration across departments.
+      </p>
+      {{-- <p class="lead">Integrated platform for Document Action Request System and Digital Asset Registration of PT Indonesia Thai Summit Auto.</p> --}}
       <a href="{{ route('service') }}" class="btn btn-primary btn-lg mt-4">Explore Services</a>
     </div>
   </div>
@@ -27,6 +32,58 @@
 
   {{-- SERVICE --}}
   <section class="features section-padding bg-light" id="layanan">
+    <div class="container">
+      <div class="text-center mb-5">
+        <h2 class="fw-bold">ITSA Portal Services</h2>
+        <div class="divider mx-auto my-4"></div>
+        <p class="lead">Integrated system access for company operational and documentation needs</p>
+      </div>
+      
+      <!-- Horizontal Scroll Container -->
+      <div class="services-scroll-container position-relative">
+        <button class="scroll-nav-btn prev" id="prevBtn">
+          <i class="fas fa-chevron-left"></i>
+        </button>
+        
+        <div class="services-scroll-wrapper" id="servicesWrapper">
+          @foreach ($service as $item)
+          <div class="service-card">
+            <div class="feature-img text-center my-4">
+              @if ($loop->index == '0')
+                <img src="{{ asset('assets/assets-itsaportal/img/dar.png') }}" alt="Document Action Request System" style="height: 80px;">
+              @elseif ($loop->index == '1')
+                <img src="{{ asset('assets/assets-itsaportal/img/da.png') }}" alt="Digital Asset Management" style="height: 80px;">
+              @elseif ($loop->index == '2')
+                <img src="{{ asset('assets/assets-itsaportal/img/it-req.png') }}" alt="IT Request" style="height: 80px;">
+              @elseif ($loop->index == '3')
+                <img src="{{ asset('assets/assets-itsaportal/img/it-maint.png') }}" alt="IT Maintenance Order" style="height: 80px;">
+              @elseif ($loop->index == '4')
+                <img src="{{ asset('assets/assets-itsaportal/img/borrow.png') }}" alt="IT Borrowing" style="height: 80px;">
+              @endif
+            </div>
+            <div class="feature-content">
+              <h3 class="h5 text-center fw-bold">{{ $item->title }}</h3>
+              <p class="text-center">{{ $item->description }}</p>
+              <div class="text-center mt-auto">
+                <a href="{{ route('service') }}" class="btn btn-primary mt-3" target="_blank">
+                  <i class="fas fa-external-link-alt me-2"></i>Access
+                </a>
+              </div>
+            </div>
+          </div>
+          @endforeach
+        </div>
+        
+        <button class="scroll-nav-btn next" id="nextBtn">
+          <i class="fas fa-chevron-right"></i>
+        </button>
+      </div>
+      
+      <!-- Scroll Indicators -->
+      <div class="scroll-indicators text-center mt-4" id="scrollIndicators"></div>
+    </div>
+  </section>
+  {{-- <section class="features section-padding bg-light" id="layanan">
     <div class="container">
       <div class="text-center mb-5">
         <h2 class="fw-bold">ITSA Portal Services</h2>
@@ -68,7 +125,7 @@
 
       </div>
     </div>
-  </section>
+  </section> --}}
 
   {{-- ABOUT SECTION --}}
   <section class="about-portal" id="tentang" style="padding-top: 100px; padding-bottom: 100px; background-color: #f8f9fa; overflow: visible;">
@@ -95,6 +152,15 @@
               <li style="margin-bottom: 15px; list-style-type: disc;">
                 <strong>Digital Asset Registration (DAM)</strong>: for secure management of corporate digital assets.
               </li>
+              <li style="margin-bottom: 15px; list-style-type: disc;">
+                <strong>IT Request</strong>: for submitting IT support requests and tracking their status.
+               </li>
+                <li style="margin-bottom: 15px; list-style-type: disc;">
+                  <strong>IT Maintenance Order</strong>: for scheduling and managing IT equipment maintenance.
+                </li>
+                  <li style="margin-bottom: 15px; list-style-type: disc;">
+                    <strong>IT Borrowing</strong>: for managing the borrowing of IT equipment and resources.
+                  </li>
             </ul>
             <p class="mb-4" style="font-size: 1.1rem; line-height: 1.8; color: #555; text-align: justify;">
               This portal is designed to facilitate service integration and increase efficiency and productivity across all company units.
@@ -439,3 +505,161 @@
   </section>
 
 @endsection
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const wrapper = document.getElementById('servicesWrapper');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const indicators = document.getElementById('scrollIndicators');
+  const cards = wrapper.querySelectorAll('.service-card');
+  
+  let currentIndex = 0;
+  const cardWidth = 300;
+  const gap = 20;
+  let visibleCards = Math.floor(wrapper.parentElement.offsetWidth / (cardWidth + gap));
+  const maxIndex = Math.max(0, cards.length - visibleCards);
+  
+  let isDragging = false;
+  let startX = 0;
+  let scrollLeft = 0;
+  
+  // Create indicators
+  function createIndicators() {
+    indicators.innerHTML = '';
+    const totalPages = maxIndex + 1;
+    for (let i = 0; i < totalPages; i++) {
+      const dot = document.createElement('div');
+      dot.className = 'scroll-dot';
+      dot.addEventListener('click', () => goToIndex(i));
+      indicators.appendChild(dot);
+    }
+  }
+  
+  // Update navigation buttons
+  function updateNavButtons() {
+    prevBtn.disabled = currentIndex <= 0;
+    nextBtn.disabled = currentIndex >= maxIndex;
+  }
+  
+  // Update indicators
+  function updateIndicators() {
+    const dots = indicators.querySelectorAll('.scroll-dot');
+    dots.forEach((dot, index) => {
+      dot.classList.toggle('active', index === currentIndex);
+    });
+  }
+  
+  // Go to specific index
+  function goToIndex(index) {
+    currentIndex = Math.max(0, Math.min(index, maxIndex));
+    const scrollPosition = currentIndex * (cardWidth + gap);
+    
+    wrapper.scrollTo({
+      left: scrollPosition,
+      behavior: 'smooth'
+    });
+    
+    updateNavButtons();
+    updateIndicators();
+  }
+  
+  // Navigation functions
+  function scrollPrev() {
+    if (currentIndex > 0) {
+      goToIndex(currentIndex - 1);
+    }
+  }
+  
+  function scrollNext() {
+    if (currentIndex < maxIndex) {
+      goToIndex(currentIndex + 1);
+    }
+  }
+  
+  // Event listeners
+  prevBtn.addEventListener('click', scrollPrev);
+  nextBtn.addEventListener('click', scrollNext);
+  
+  // Mouse drag
+  wrapper.addEventListener('mousedown', (e) => {
+    isDragging = true;
+    wrapper.classList.add('dragging');
+    startX = e.clientX;
+    scrollLeft = wrapper.scrollLeft;
+  });
+  
+  document.addEventListener('mousemove', (e) => {
+    if (!isDragging) return;
+    e.preventDefault();
+    const x = e.clientX;
+    const walk = (x - startX) * 1.5;
+    wrapper.scrollLeft = scrollLeft - walk;
+  });
+  
+  document.addEventListener('mouseup', () => {
+    if (!isDragging) return;
+    isDragging = false;
+    wrapper.classList.remove('dragging');
+    
+    // Snap to nearest position
+    const scrollPos = wrapper.scrollLeft;
+    const cardStep = cardWidth + gap;
+    const newIndex = Math.round(scrollPos / cardStep);
+    goToIndex(newIndex);
+  });
+  
+  // Touch events
+  let touchStartX = 0;
+  
+  wrapper.addEventListener('touchstart', (e) => {
+    touchStartX = e.touches[0].clientX;
+    startX = touchStartX;
+    scrollLeft = wrapper.scrollLeft;
+  });
+  
+  wrapper.addEventListener('touchmove', (e) => {
+    e.preventDefault();
+    const touchX = e.touches[0].clientX;
+    const walk = (touchX - startX) * 1.5;
+    wrapper.scrollLeft = scrollLeft - walk;
+  });
+  
+  wrapper.addEventListener('touchend', () => {
+    const scrollPos = wrapper.scrollLeft;
+    const cardStep = cardWidth + gap;
+    const newIndex = Math.round(scrollPos / cardStep);
+    goToIndex(newIndex);
+  });
+  
+  // Initialize
+  if (maxIndex > 0) {
+    createIndicators();
+  }
+  updateNavButtons();
+  updateIndicators();
+  
+  // Handle window resize
+  window.addEventListener('resize', () => {
+    const newVisibleCards = Math.floor(wrapper.parentElement.offsetWidth / (cardWidth + gap));
+    if (newVisibleCards !== visibleCards) {
+      visibleCards = newVisibleCards;
+      const newMaxIndex = Math.max(0, cards.length - visibleCards);
+      if (newMaxIndex !== maxIndex) {
+        maxIndex = newMaxIndex;
+        currentIndex = Math.min(currentIndex, maxIndex);
+        if (maxIndex > 0) {
+          createIndicators();
+        } else {
+          indicators.innerHTML = '';
+        }
+        updateNavButtons();
+        updateIndicators();
+      }
+    }
+  });
+});
+</script>
+
+@endpush
+

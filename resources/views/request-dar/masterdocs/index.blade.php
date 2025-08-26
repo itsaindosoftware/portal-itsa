@@ -226,7 +226,7 @@ $(document).ready(function(){
                 { data: 'title', name: 'title', className: 'text-left' },
                 // { data: 'dept_name', name: 'dept_name', className:'text-center' },
                 { data: 'effective_date', name: 'effective_date', className:'text-center' },
-                { data: 'type_doc_name', name: 'type_doc_name',className: 'text-center' },
+                { data: 'type_doc_name', name: 'type_of_reqforms.request_type',className: 'text-center' },
                 { data: status === 'archived' ? 'archived_date' : 'updated_at', name: status === 'archived' ? 'archived_date' : 'updated_at', className: 'text-center' },
                 { data: 'file', name: 'file',className: 'text-left' },
                 { data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-center' }
