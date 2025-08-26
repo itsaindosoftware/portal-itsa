@@ -26,7 +26,7 @@
                 <strong>Document Action Request (DAR)</strong>: for document submission, approval and tracking.
               </li>
               <li style="margin-bottom: 15px; list-style-type: disc;">
-                <strong>Digital Asset Registration (DAM)</strong>: for secure management of corporate digital assets.
+                <strong>Digital Asset Registration</strong>: for secure management of corporate digital assets.
               </li>
               <li style="margin-bottom: 15px; list-style-type: disc;">
                 <strong>IT Request</strong>: for submitting IT support requests and tracking their status.
