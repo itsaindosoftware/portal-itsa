@@ -190,7 +190,7 @@
                             </div>
                         </div>
                         <h4 class="app-title">Maintenance Order Form</h4>
-                        <p class="app-description">Schedule and track equipment maintenance</p>
+                        <p class="app-description">Submit and track equipment maintenance</p>
                         <div class="app-arrow">
                             <i class="fas fa-arrow-right"></i>
                         </div>
@@ -205,7 +205,7 @@
                             </div>
                         </div>
                         <h4 class="app-title">Maintenance Order Form</h4>
-                        <p class="app-description">Schedule and track equipment maintenance</p>
+                        <p class="app-description">Submit and track equipment maintenance</p>
                         <div class="app-arrow">
                             <i class="fas fa-arrow-right"></i>
                         </div>

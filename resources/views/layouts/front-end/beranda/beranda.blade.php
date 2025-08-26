@@ -156,7 +156,7 @@
                 <strong>IT Request Form</strong>: for submitting IT support requests and tracking their status.
                </li>
                 <li style="margin-bottom: 15px; list-style-type: disc;">
-                  <strong>Maintenance Order Form</strong>: for scheduling and managing IT equipment maintenance.
+                  <strong>Maintenance Order Form</strong>: for submit and managing equipment maintenance.
                 </li>
                   <li style="margin-bottom: 15px; list-style-type: disc;">
                     <strong>IT Borrowing Goods</strong>: for managing the borrowing of IT equipment and resources.
