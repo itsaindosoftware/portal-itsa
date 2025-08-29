@@ -1078,4 +1078,206 @@ body {
       color: #040404;
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
+    /* add new css */
+    /* Fix the service cards layout */
+.services-scroll-wrapper {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  cursor: grab;
+  user-select: none;
+  padding: 10px 20px;
+  align-items: stretch; /* This ensures equal height */
+}
+
+.service-card {
+  flex: 0 0 300px; /* Fixed width */
+  min-height: 420px; /* Minimum height */
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid #e9ecef;
+}
+
+.service-card .feature-img {
+  padding: 30px 20px;
+  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+  min-height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.service-card .feature-content {
+  flex: 1;
+  padding: 25px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.service-card .feature-content h3 {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 15px;
+  text-align: center;
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1.3;
+}
+
+.service-card .feature-content p {
+  color: #666;
+  text-align: center;
+  line-height: 1.5;
+  font-size: 0.95rem;
+  flex: 1;
+  margin-bottom: 20px;
+}
+
+.service-card .text-center {
+  margin-top: auto;
+  padding-top: 10px;
+}
+
+.service-card .btn {
+  padding: 10px 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border-radius: 25px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 120px;
+  justify-content: center;
+}
+
+/* Navigation buttons positioning */
+.scroll-nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  color: white;
+  border: none;
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  font-size: 16px;
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.scroll-nav-btn.prev {
+  left: -22px;
+}
+
+.scroll-nav-btn.next {
+  right: -22px;
+}
+
+.scroll-nav-btn:hover {
+  background: linear-gradient(135deg, #0056b3, #004085);
+  transform: translateY(-50%) scale(1.05);
+}
+
+.scroll-nav-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  background: #6c757d;
+}
+
+/* Container adjustments */
+.services-scroll-container {
+  position: relative;
+  overflow: visible;
+  padding: 10px 50px;
+  margin: 0 -20px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .service-card {
+    flex: 0 0 280px;
+    min-height: 400px;
+  }
+  
+  .services-scroll-container {
+    padding: 10px 40px;
+    margin: 0 -15px;
+  }
+  
+  .scroll-nav-btn.prev {
+    left: -18px;
+  }
+  
+  .scroll-nav-btn.next {
+    right: -18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .service-card {
+    flex: 0 0 260px;
+    min-height: 380px;
+  }
+  
+  .services-scroll-container {
+    padding: 10px 35px;
+    margin: 0 -10px;
+  }
+  
+  .scroll-nav-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 14px;
+  }
+}
+/* Typed css */
+.typing-h1 {
+  overflow: hidden;
+  white-space: nowrap;
+  border-right: 3px solid #fff;
+  width: 0;
+  animation: typing-h1 4s steps(30, end) forwards, blink 0.7s step-end infinite;
+}
+
+@keyframes typing-h1 {
+  from { width: 0 }
+  to { width: 100% }
+}
+
+/* P animation (mulai setelah H1 selesai) */
+.typing-p {
+  overflow: hidden;
+  white-space: nowrap;
+  border-right: 2px solid #fff;
+  width: 0;
+  animation: typing-p 6s steps(80, end) forwards, blink 0.7s step-end infinite;
+  animation-delay: 4s; /* tunggu h1 selesai */
+}
+
+@keyframes typing-p {
+  from { width: 0 }
+  to { width: 100% }
+}
+
+/* Cursor blink */
+@keyframes blink {
+  from, to { border-color: transparent }
+  50% { border-color: #fff }
+}
   </style> 

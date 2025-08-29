@@ -15,7 +15,9 @@
           <ul>
             <li><a href="#">Document Action Request System</a></li>
             <li><a href="#">Digital Asset Registration</a></li>
-            <li><a href="#">Helpdesk IT</a></li>
+            <li><a href="#">IT Request</a></li>
+            <li><a href="#">IT Maintenance Order</a></li>
+            <li><a href="#">IT Borrowing</a></li>
           </ul>
         </div>
         <div class="footer-col">

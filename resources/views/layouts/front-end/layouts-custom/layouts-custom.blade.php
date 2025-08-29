@@ -59,8 +59,11 @@
         <div class="footer-col">
           <h4>Layanan</h4>
           <ul>
-            <li><a href="{{ route('service') }}">Document Action Request System</a></li>
+            <li><a href="{{ route('service') }}">Document Action Request(DAR)</a></li>
             <li><a href="{{ route('service') }}">Digital Asset Registration</a></li>
+            <li><a href="#">IT Request Form</a></li>
+            <li><a href="#">Maintenance Order Form</a></li>
+            <li><a href="#">IT Borrowing Goods</a></li>
             <li><a href="#">Helpdesk IT</a></li>
           </ul>
         </div>
@@ -110,6 +113,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // ... kode lainnya
   }
 });
+
+
   </script>
 
   @stack('scripts')

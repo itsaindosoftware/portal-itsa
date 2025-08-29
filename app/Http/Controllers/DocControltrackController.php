@@ -163,6 +163,7 @@ class DocControltrackController extends Controller
                 'ddd.current_status',
                 'ddd.effective_date',
                 'ddd.last_action_date',
+                'ddd.reqdar_id',
                 'rd.name_doc',
                 'rd.number_dar',
                 'md.title',
@@ -178,9 +179,9 @@ class DocControltrackController extends Controller
                     ->whereRaw('log.id = (SELECT MAX(id) FROM document_control_logs WHERE distribution_id = ddd.id)');
             })
             ->leftJoin('master_documents as md', 'md.id', '=', 'ddd.master_docs_id');
-            // ->where('ddd.dept_id', Auth::user()->dept_id)->get();
+        // ->where('ddd.dept_id', Auth::user()->dept_id)->get();
 
-            // dd($query);
+        // dd($query);
 
 
         // Filter by department
@@ -261,6 +262,7 @@ class DocControltrackController extends Controller
                 return '<span class="text-muted">-</span>';
             })
             ->addColumn('actions', function ($row) {
+                // dd($row);
                 $actions = '<div class="btn-group" role="group">';
 
                 // View Detail Button
@@ -282,9 +284,16 @@ class DocControltrackController extends Controller
                 if (Auth::user()->hasRole('manager')) {
                     if ($row->current_status == 'received') {
                         $actions .= '<button type="button" class="btn btn-sm btn-primary" onclick="markReturned(' . $row->id . ')" title="Tandai Dikembalikan">
-                    <i class="fas fa-undo"></i>
-                </button>';
+                            <i class="fas fa-undo"></i>
+                        </button>';
                     }
+                }
+                if (Auth::user()->hasRole('sysdev')) {
+                    // $getCountDist = DistributionDarDepts::where('reqdar_id', $row->reqdar_id)->where('current_status', 'received')->count();
+                    // if ($getCountDist) {
+                    $actions .= '<button type="button" class="btn btn-sm btn-success" onclick="markPrepared(' . $row->id . ')" title="Prepared Document">
+                        <i class="fas fa-check"></i>"';
+                    // }
                 }
 
 
@@ -342,7 +351,7 @@ class DocControltrackController extends Controller
             $getPosition = DB::connection('portal-itsa')->table('positions')->where('id', $pos_id)->first();
             $position = '';
             if ($getPosition) {
-                $position=$getPosition->position_desc;
+                $position = $getPosition->position_desc;
             }
             $distribution = DistributionDarDepts::findOrFail($id);
             // dd($distribution);
@@ -560,7 +569,7 @@ class DocControltrackController extends Controller
     public function getDashboardData()
     {
         $summary = [
-            'total' => DistributionDarDepts::where('current_status', '=','distributed')->count(),
+            'total' => DistributionDarDepts::where('current_status', '=', 'distributed')->count(),
             'pending' => DistributionDarDepts::where('current_status', 'pending')->count(),
             'distributed' => DistributionDarDepts::where('current_status', 'distributed')->count(),
             'received' => DistributionDarDepts::where('current_status', 'received')->count(),

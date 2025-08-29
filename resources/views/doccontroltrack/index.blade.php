@@ -279,7 +279,58 @@
         </div>
     </div>
 </div>
+{{-- Modal Prepared By SYD --}}
 
+<div class="modal fade" id="preparedModal" tabindex="-1" role="dialog" aria-labelledby="preparedModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form id="preparedForm">
+                <div class="modal-header">
+                    <h5 class="modal-title">Prepared Document</h5>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="prepared-distribution-id">
+
+                    {{-- <div class="form-group">
+                        <label>Nama Penerima <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="receiver-name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Posisi/Jabatan</label>
+                        <input type="text" class="form-control" id="receiver-position">
+                    </div> --}}
+
+                    <div class="form-group">
+                        <label>Tanggal Diterima <span class="text-danger">*</span></label>
+                        <input type="date" class="form-control" id="prepared-date" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Tanda Tangan (Digital)</label>
+                        <textarea class="form-control" id="prepared-by" rows="3"
+                                  placeholder="Base64 signature atau path file"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Catatan</label>
+                        <textarea class="form-control" id="received-remarks" rows="2"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-check"></i> Tandai Diterima
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{{-- SYD --}}
 {{-- Modal Mark Returned --}}
 <div class="modal fade" id="returnedModal" tabindex="-1" role="dialog" role="dialog" aria-labelledby="returnedModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -649,23 +700,24 @@ function generateDocumentControlForm(data) {
                                 <tbody>
                                     <tr>
                                         <td class="text-center align-middle" style="height: 80px; width: 50%;">
-                                            <div style="height: 60px;">
-                                                <strong></strong>
-                                            </div>
+                                            <div style="height: 60px;"></div>
                                             <strong>PREPARED BY</strong>
+                                            <div class="mt-2">
+                                                <small>DATE: __________</small>
+                                            </div>
                                         </td>
                                         <td class="text-center align-middle" style="height: 80px; width: 50%;">
-                                            <div style="height: 60px;">
-                                                <strong></strong>
-                                            </div>
+                                            <div style="height: 60px;"></div>
                                             <strong>APPROVED BY</strong>
+                                            <div class="mt-2">
+                                                <small>DATE: __________</small>
+                                            </div>
                                         </td>
                                     </tr>
                                 </tbody>
                             </table>
                         </div>
                     </div>
-                </div>
             </div>
         </div>`;
 
@@ -781,6 +833,22 @@ function markReceived(id) {
     openModal('receivedModal');
     // $('#received-distribution-id').val(id);
     // $('#receivedModal').modal('show');
+}
+
+function markPrepared(id) {
+    if (!id) {
+        console.error('ID is required for markPrepared');
+        return;
+    }
+    $('#prepared-distribution-id').val(id);
+    $('#preparedForm')[0].reset();
+
+    // Set default date
+    $('#prepared-date').val(new Date().toISOString().split('T')[0]);
+
+    openModal('preparedModal');
+    // $('#prepared-distribution-id').val(id);
+    // $('#preparedModal').modal('show');
 }
 
 function markReturned(id) {
